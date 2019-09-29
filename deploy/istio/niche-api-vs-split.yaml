@@ -6,15 +6,12 @@ spec:
   hosts:
     - niche-api
   http:
-  - match:
-    - headers:
-        city:
-          exact: shandong
-    route:
-    - destination:
-        host: niche-api
-        subset: v2
   - route:
     - destination:
         host: niche-api
         subset: v1
+      weight: 50
+    - destination:
+        host: niche-api
+        subset: v2
+      weight: 50

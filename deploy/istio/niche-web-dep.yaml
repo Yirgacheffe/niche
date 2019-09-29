@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: niche-web
-        image: soline74/niche-web:dev-81fbdd3
+        image: soline74/niche-web:dev-ac756d1
         env:
         - name: API_SERVICE
           value: "niche-api"

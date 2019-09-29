@@ -48,4 +48,10 @@ var routes = Routes{
 		"/test",
 		testHandler,
 	},
+	Route{
+		"search",
+		"GET",
+		"/search",
+		searchHandler,
+	},
 }

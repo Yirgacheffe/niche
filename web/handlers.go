@@ -10,6 +10,16 @@ import (
 	"os"
 )
 
+const (
+	requestID            = "x-request-id"
+	zipkinB3TraceID      = "x-b3-traceid"
+	zipkinB3SpanID       = "x-b3-spanid"
+	zipkinB3ParentSpanID = "x-b3-parentspanid"
+	zipkinB3Sampled      = "x-b3-sampled"
+	zipkinB3Flags        = "x-b3-flags"
+	zipkinB3             = "b3"
+)
+
 type Config struct {
 	Key          string `json:"Key"`
 	BackColor    string `json:"BackColor"`

@@ -151,19 +151,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		kubePodIP = "192.168.1.100"
 	}
 
-	// Parameter city
-	params := r.URL.Query()
-	city := params.Get("city")
-
-	// Propogation b3 headers for tracing
-	var xRequestID = r.Header.Get("x-request-id")
-	var xB3TraceID = r.Header.Get("x-b3-traceid")
-	var xB3SpanID = r.Header.Get("x-b3-spanId")
-	var xB3ParentSpanID = r.Header.Get("x-b3-parentspanid")
-	var xB3Sampled = r.Header.Get("x-b3-sampled")
-	var xB3Flags = r.Header.Get("x-b3-flags")
-	var b3 = r.Header.Get("b3")
-
 	var htmlHeader = "<!DOCTYPE html><html><head><style>table, th, td {border: 1px solid black;font-family: 'Courier New';font-size: 28px;color: white}th, td {padding: 20px;}</style></head><font color=black><h1>Istio Canary Demo Homepage - 2019</h1><body style=background-color:white>"
 
 	fmt.Fprintf(w, htmlHeader)
@@ -177,7 +164,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 		j := 1
 		for j <= 5 {
-			fmt.Fprintf(w, createTableCellWithCity(city, xRequestID, xB3TraceID, xB3SpanID, xB3ParentSpanID, xB3Sampled, xB3Flags, b3))
+			fmt.Fprintf(w, createTableCellWithCityAndTracing(r))
 			j = j + 1
 		}
 
@@ -190,7 +177,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createTableCellWithCity(city string, xRequestID, xB3TraceID, xB3SpanID, xB3ParentSpanID, xB3Sampled, xB3Flags, b3 string) string {
+func createTableCellWithCityAndTracing(r *http.Request) string {
 
 	var apiService = os.Getenv("API_SERVICE")
 	if len(apiService) == 0 {
@@ -211,36 +198,29 @@ func createTableCellWithCity(city string, xRequestID, xB3TraceID, xB3SpanID, xB3
 		log.Fatal(err)
 	}
 
+	// Get Url param 'City', set to Header
+	params := r.URL.Query()
+	city := params.Get("city")
+
 	if len(city) != 0 {
 		request.Header.Add("city", city)
 	}
 
-	if len(xRequestID) != 0 {
-		request.Header.Add("x-request-id", xRequestID)
+	// Headers must be passed for Jaeger Distributed Tracing
+	b3Headers := []string{
+		"x-request-id",
+		"x-b3-traceid",
+		"x-b3-spanId",
+		"x-b3-parentspanid",
+		"x-b3-sampled",
+		"x-b3-flags",
+		"b3",
 	}
 
-	if len(xB3TraceID) != 0 {
-		request.Header.Add("x-b3-traceid", xB3TraceID)
-	}
-
-	if len(xB3SpanID) != 0 {
-		request.Header.Add("x-b3-spanId", xB3SpanID)
-	}
-
-	if len(xB3ParentSpanID) != 0 {
-		request.Header.Add("x-b3-parentspanid", xB3ParentSpanID)
-	}
-
-	if len(xB3Sampled) != 0 {
-		request.Header.Add("x-b3-sampled", xB3Sampled)
-	}
-
-	if len(xB3Flags) != 0 {
-		request.Header.Add("x-b3-flags", xB3Flags)
-	}
-
-	if len(b3) != 0 {
-		request.Header.Add("b3", b3)
+	for _, b3Header := range b3Headers {
+		if r.Header.Get(b3Header) != "" {
+			request.Header.Add(b3Header, r.Header.Get(b3Header))
+		}
 	}
 
 	response, err := client.Do(request)

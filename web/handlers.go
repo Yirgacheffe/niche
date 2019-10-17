@@ -69,7 +69,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			j = j + 1
 		}
 
-		fmt.Fprintf(w, "<t/r>")
+		fmt.Fprintf(w, "</tr>")
 		i = i + 1
 	}
 
@@ -124,8 +124,9 @@ func createTableCell() string {
 	json.Unmarshal(responseData, &configObj)
 	backColor := configObj.BackColor
 	apiVersion := configObj.AppVersion
+	podName := configObj.KubePodName
 
-	return "<td bgcolor=" + backColor + "align=center>" + apiVersion + "</td>"
+	return "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
 
 }
 
@@ -168,7 +169,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 			j = j + 1
 		}
 
-		fmt.Fprintf(w, "<t/r>")
+		fmt.Fprintf(w, "</tr>")
 		i = i + 1
 	}
 
@@ -241,7 +242,8 @@ func createTableCellWithCityAndTracing(r *http.Request) string {
 	json.Unmarshal(responseData, &configObj)
 	backColor := configObj.BackColor
 	apiVersion := configObj.AppVersion
+	podName := configObj.KubePodName
 
-	return "<td bgcolor=" + backColor + "align=center>" + apiVersion + "</td>"
+	return "<td bgcolor=" + backColor + "align=center>" + apiVersion + ":" + podName + "</td>"
 
 }

@@ -13,9 +13,9 @@ LABEL   org.label-schema.vcs-ref=$VCS_REF \
         org.label-schema.build-date=$BUILD_DATE \
         org.label-schema.docker.dockerfile="/api/Dockerfile"
 
-ENV GIT_SHA = ${VCS_REF}
-ENV IMAGE_BUILD_DATE = ${BUILD_DATE}
-ENV IMAGE_TAG = ${IMAGE_TAG_REF}
+ENV GIT_SHA ${VCS_REF}
+ENV IMAGE_BUILD_DATE ${BUILD_DATE}
+ENV IMAGE_TAG ${IMAGE_TAG_REF}
 
 WORKDIR /app
 ADD ./niche-api /app/

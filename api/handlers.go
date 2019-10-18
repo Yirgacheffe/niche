@@ -29,7 +29,7 @@ func homePageHandler(w http.ResponseWriter, r *http.Request) {
 func configHandler(w http.ResponseWriter, r *http.Request) {
 
 	var appVersion = os.Getenv("IMAGE_TAG")
-	var backColor = "crimson"
+	var backColor = "asparagus"
 	var imageBuildeDate = os.Getenv("IMAGE_BUILD_DATE")
 
 	var kubeNodeName = os.Getenv("KUBE_NODE_NAME")
@@ -42,7 +42,7 @@ func configHandler(w http.ResponseWriter, r *http.Request) {
 
 	configs := Config{Key: "10", BackColor: backColor, AppVersion: appVersion, BuildDate: imageBuildeDate, KubeNodeName: kubeNodeName, KubePodName: kubePodName, KubePodIP: kubePodIP}
 
-	if backColor == "red" {
+	if backColor == "crimson" {
 		r := random(50, 100)
 		time.Sleep(time.Duration(r) * time.Millisecond)
 	}

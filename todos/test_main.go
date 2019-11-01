@@ -268,18 +268,24 @@ func routineTestF(n int) {
 	}
 }
 
+// Directional
+// func pinger(c chan<- string)
 func pinger(c chan string) {
-	for i := 0; ; i++ {
+	// for i := 0; ; i++ {
+	for i := 0; i < 10; i++ {
 		c <- "ping"
 	}
 }
 
 func ponger(c chan string) {
-	for i := 0; ; i++ {
+	// for i := 0; ; i++ {
+	for i := 0; i < 10; i++ {
 		c <- "pong"
 	}
 }
 
+// Directional
+// func printer(c <-chan string)
 func printer(c chan string) {
 	for {
 		msg := <-c
@@ -781,6 +787,42 @@ func main() {
 
 	var pInput string
 	fmt.Scanln(&pInput)
+
+	fmt.Println("--------------------------")
+	cxx1 := make(chan string)
+	cxx2 := make(chan string)
+
+	go func() {
+		for {
+			cxx1 <- "from 1"
+			time.Sleep(time.Second * 2)
+		}
+	}()
+
+	go func() {
+		for {
+			cxx2 <- "from 2"
+			time.Sleep(time.Second * 3)
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case msg1 := <-cxx1:
+				fmt.Println("Message 1:", msg1)
+			case msg2 := <-cxx2:
+				fmt.Println("Message 2:", msg2)
+			case <-time.After(time.Second):
+				fmt.Println("Timeout")
+			default:
+				fmt.Println("Nothing ready")
+			}
+		}
+	}()
+
+	var scInput string
+	fmt.Scanln(&scInput)
 
 	fmt.Println("--------------------------")
 	http.HandleFunc("/hello", helloHTTPHandler)

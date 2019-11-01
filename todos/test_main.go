@@ -3,11 +3,15 @@ package main
 import (
 	"bytes"
 	"container/list"
+	"crypto/sha1"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"hash/crc32"
+	"io"
 	"io/ioutil"
 	"math"
+	"net"
 	"os"
 	"path/filepath"
 	"sort"
@@ -186,6 +190,61 @@ func (m *MultiShape) area() float64 {
 		area += s.area()
 	}
 	return area
+}
+
+func server() {
+
+	ln, err := net.Listen("tcp", ":9999")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for {
+		c, err := ln.Accept()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		go handleServerConnection(c)
+	}
+
+}
+
+func handleServerConnection(c net.Conn) {
+
+	var msg string
+	err := gob.NewDecoder(c).Decode(&msg)
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Received:", msg)
+	}
+
+	c.Close()
+
+}
+
+func client() {
+
+	c, err := net.Dial("tcp", "127.0.0.1:9999")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	msg := "Hello, this is client"
+	fmt.Println("Sending:", msg)
+
+	err = gob.NewEncoder(c).Encode(msg)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c.Close()
+
 }
 
 func main() {
@@ -621,5 +680,35 @@ func main() {
 
 	cryv := cryh.Sum32()
 	fmt.Println(cryv)
+
+	// Hash a file
+	xsff, err := os.Open("test.txt")
+	if err != nil {
+		return
+	}
+
+	defer xsff.Close()
+
+	xsffhr := crc32.NewIEEE()
+	_, err = io.Copy(xsffhr, xsff)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(xsffhr.Sum32)
+
+	// sha1
+	xsssha := sha1.New()
+	xsssha.Write([]byte("test123"))
+
+	bsXefsf := xsssha.Sum([]byte{})
+	fmt.Println(bsXefsf)
+
+	fmt.Println("--------------------------")
+	go server()
+	go client()
+
+	var inputAgain string
+	fmt.Scanln(&inputAgain)
 
 }

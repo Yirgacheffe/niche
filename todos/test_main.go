@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 var xx = "Hello, world, xx!"
@@ -257,6 +258,14 @@ func helloHTTPHandler(res http.ResponseWriter, r *http.Request) {
 	res.Header().Set("Content-type", "text/html")
 	io.WriteString(res, helloIndexHTML)
 
+}
+
+func routineTestF(n int) {
+	for i := 0; i < 10; i++ {
+		fmt.Println(n, ":", i)
+		amt := time.Duration(rand.Intn(250))
+		time.Sleep(time.Millisecond * amt)
+	}
 }
 
 func main() {
@@ -728,6 +737,19 @@ func main() {
 	flag.Parse()
 
 	fmt.Println(rand.Intn(*maxps))
+
+	fmt.Println("--------------------------")
+	go routineTestF(0)
+
+	var rInput string
+	fmt.Scanln(&rInput)
+
+	for i := 0; i < 10; i++ {
+		go routineTestF(i)
+	}
+
+	var xInput string
+	fmt.Scanln(&xInput)
 
 	fmt.Println("--------------------------")
 	http.HandleFunc("/hello", helloHTTPHandler)

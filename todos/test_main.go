@@ -268,6 +268,27 @@ func routineTestF(n int) {
 	}
 }
 
+func pinger(c chan string) {
+	for i := 0; ; i++ {
+		c <- "ping"
+	}
+}
+
+func ponger(c chan string) {
+	for i := 0; ; i++ {
+		c <- "pong"
+	}
+}
+
+func printer(c chan string) {
+	for {
+		msg := <-c
+
+		fmt.Println(msg)
+		time.Sleep(time.Second * 1)
+	}
+}
+
 func main() {
 
 	fmt.Println("1 + 1 =", 1+1)
@@ -750,6 +771,16 @@ func main() {
 
 	var xInput string
 	fmt.Scanln(&xInput)
+
+	fmt.Println("--------------------------")
+	var ct = make(chan string)
+
+	go pinger(ct)
+	go ponger(ct)
+	go printer(ct)
+
+	var pInput string
+	fmt.Scanln(&pInput)
 
 	fmt.Println("--------------------------")
 	http.HandleFunc("/hello", helloHTTPHandler)

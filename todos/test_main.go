@@ -6,11 +6,13 @@ import (
 	"crypto/sha1"
 	"encoding/gob"
 	"errors"
+	"flag"
 	"fmt"
 	"hash/crc32"
 	"io"
 	"io/ioutil"
 	"math"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -721,6 +723,13 @@ func main() {
 	var inputAgain string
 	fmt.Scanln(&inputAgain)
 
+	fmt.Println("--------------------------")
+	maxps := flag.Int("max", 6, "the max value")
+	flag.Parse()
+
+	fmt.Println(rand.Intn(*maxps))
+
+	fmt.Println("--------------------------")
 	http.HandleFunc("/hello", helloHTTPHandler)
 	http.ListenAndServe(":9000", nil)
 	http.Handle("/assets/", http.FileServer(http.Dir("assets")))

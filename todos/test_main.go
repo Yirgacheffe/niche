@@ -789,6 +789,11 @@ func main() {
 	fmt.Scanln(&pInput)
 
 	fmt.Println("--------------------------")
+
+	// buffered channel
+	// cyx1 := make(chan string, 2)
+	// cyx2 := make(chan string, 5)
+
 	cxx1 := make(chan string)
 	cxx2 := make(chan string)
 

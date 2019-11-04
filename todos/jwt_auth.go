@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -58,6 +59,25 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := jwt.New(jwt.GetSigningMethod("RS256"))
+	// Customize claims for login users
+	claims := jwt.MapClaims{
+		"iss": "admin",
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(time.Minute * 30).Unix(),
+	}
+
+	t := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), claims)
+
+	tokenString, err := t.SignedString(signKey)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "Sorry, error happened while Signing Token!")
+		log.Printf("Token Signing error: %v\n", err)
+		return
+	}
+
+	// response := Token{tokenString}
+	// jsonResponse(response, w)
 
 }

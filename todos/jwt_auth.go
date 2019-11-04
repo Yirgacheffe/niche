@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -24,6 +26,16 @@ var (
 type User struct {
 	UserName string `json:"username"`
 	Password string `json:"password"`
+}
+
+// Token structure JWT
+type Token struct {
+	Token string `json:"token"`
+}
+
+// Response text
+type Response struct {
+	Text string `json:"text"`
 }
 
 func init() {
@@ -77,10 +89,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// response := Token{tokenString}
-	// jsonResponse(response, w)
-
-	// jsonResponse(Token{tokenString}, w)
+	response := Token{tokenString}
+	jsonResponse(response, w)
 
 }
 
@@ -95,5 +105,25 @@ func jsonResponse(response interface{}, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
+
+}
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func main() {
+
+	r := mux.NewRouter()
+	r.HandleFunc("/login", loginHandler).Methods("POST")
+	r.HandleFunc("/auth", authHandler).Methods("POST")
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+
+	log.Println("Listening...")
+	server.ListenAndServe()
 
 }

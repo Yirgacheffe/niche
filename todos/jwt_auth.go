@@ -80,4 +80,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// response := Token{tokenString}
 	// jsonResponse(response, w)
 
+	// jsonResponse(Token{tokenString}, w)
+
+}
+
+func jsonResponse(response interface{}, w http.ResponseWriter) {
+
+	json, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+
 }

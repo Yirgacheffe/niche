@@ -1,0 +1,149 @@
+package main
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"time"
+
+	runtime "github.com/banzaicloud/logrus-runtime-formatter"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
+)
+
+type Greeting struct {
+	ID          string    `json:"id,omitempty"`
+	ServiceName string    `json:"service,omitempty"`
+	Message     string    `json:"message,omitempty"`
+	CreatedAt   time.Time `json:"created,omitempty"`
+}
+
+var greetings []Greeting
+
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	log.Debug(r)
+
+	greetings = nil
+
+	CallNextServiceWithTrace("http://service-d/api/ping", w, r)
+	CallNextServiceWithTrace("http://service-e/api/ping", w, r)
+
+	var tmpGreeting = Greeting{
+		ID:          uuid.New().String(),
+		ServiceName: "Service-B",
+		Message:     "Namaste, from service B.",
+		CreatedAt:   time.Now().Local(),
+	}
+
+	greetings = append(greetings, tmpGreeting)
+
+	err := json.NewEncoder(w).Encode(greetings)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_, err := w.Write([]byte("{ \"alive\": true }"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func CallNextServiceWithTrace(url string, w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(url)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Error(err)
+	}
+
+	headers := []string{
+		"x-request-id",
+		"x-b3-traceid",
+		"x-b3-spanid",
+		"x-b3-parentspanid",
+		"x-b3-sampled",
+		"x-b3-flags",
+		"x-ot-span-context",
+	}
+
+	for _, header := range headers {
+		if r.Header.Get(header) != "" {
+			req.Header.Add(header, r.Header.Get(header))
+		}
+	}
+
+	log.Info(req)
+
+	client := &http.Client{}
+
+	response, err := client.Do(req)
+	if err != nil {
+		log.Error(err)
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Error(err)
+	}
+
+	var tmpGreetings []Greeting
+
+	err = json.Unmarshal(body, &tmpGreetings)
+	if err != nil {
+		log.Error(err)
+	}
+
+	for _, r := range tmpGreetings {
+		greetings = append(greetings, r)
+	}
+
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
+func init() {
+
+	formatter := runtime.Formatter{ChildFormatter: &log.JSONFormatter{}}
+	formatter.Line = true
+	log.SetFormatter(&formatter)
+	log.SetOutput(os.Stdout)
+
+	level, err := log.ParseLevel(getEnv("LOG_LEVEL", "info"))
+	if err != nil {
+		log.Error(err)
+	}
+
+	log.SetLevel(level)
+
+}
+
+func main() {
+	router := mux.NewRouter()
+
+	router.PathPrefix("/api").Subrouter()
+	router.HandleFunc("/ping", PingHandler).Methods("GET")
+	router.HandleFunc("/health", HealthCheckHandler).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":8080", router))
+}

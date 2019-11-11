@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
 
 	runtime "github.com/banzaicloud/logrus-runtime-formatter"
-	"github.com/streadway/amqp"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -27,69 +26,23 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+	log.Debug(r)
+
+	CallNextServiceWithTrace("http://service-g/api/ping", w, r)
+	CallNextServiceWithTrace("http://service-h/api/ping", w, r)
+
 	greetings = nil
 
 	tmpGreeting := Greeting{
 		ID:          uuid.New().String(),
-		ServiceName: "Service-D",
-		Message:     "Shalom, from Service-D!",
+		ServiceName: "Service-E",
+		Message:     "Bonjour, de Service-E!",
 		CreatedAt:   time.Now().Local(),
 	}
 
 	greetings = append(greetings, tmpGreeting)
 
-	err := json.NewEncoder(w).Encode(greetings)
-	if err != nil {
-		log.Error(err)
-	}
-
-	b, err := json.Marshal(tmpGreeting)
-	if err != nil {
-		log.Error(err)
-	}
-
-	SendMessage(b)
-
-}
-
-func SendMessage(b []byte) {
-
-	log.Info(b)
-
-	conn, err := amqp.Dial(os.Getenv("RABBITMQ_CONN"))
-	if err != nil {
-		log.Error(err)
-	}
-
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	if err != nil {
-		log.Error(err)
-	}
-
-	q, err := ch.QueueDeclare(
-		"service-d",
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	if err != nil {
-		log.Error(err)
-	}
-
-	err = ch.Publish(
-		"",
-		q.Name,
-		false,
-		false,
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        b,
-		})
-
+	err := json.NewEncoder(w).Encode(tmpGreeting)
 	if err != nil {
 		log.Error(err)
 	}
@@ -100,9 +53,63 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	_, err := w.Write([]byte("{ \"alive\": true }"))
+	_, err := w.Write([]byte("{\"alive\": true}"))
 	if err != nil {
 		log.Error(err)
+	}
+
+}
+
+func CallNextServiceWithTrace(url string, w http.ResponseWriter, r *http.Request) {
+
+	log.Info(url)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Error(err)
+	}
+
+	headers := []string{
+		"x-request-id",
+		"x-b3-traceid",
+		"x-b3-spanid",
+		"x-b3-parentspanid",
+		"x-b3-sampled",
+		"x-b3-flags",
+		"x-ot-span-context",
+	}
+
+	for _, header := range headers {
+		if r.Header.Get(header) != "" {
+			req.Header.Set(header, r.Header.Get(header))
+		}
+	}
+
+	log.Info(req)
+
+	client := &http.Client{}
+
+	response, err := client.Do(req)
+	if err != nil {
+		log.Error(err)
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Error(err)
+	}
+
+	var tmpGreetings []Greeting
+	err = json.Unmarshal(body, &tmpGreetings)
+	if err != nil {
+		log.Error(err)
+	}
+
+	for _, r := range tmpGreetings {
+		greetings = append(greetings, r)
 	}
 
 }
@@ -131,17 +138,11 @@ func init() {
 
 func main() {
 	router := mux.NewRouter()
+
 	api := router.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/ping", PingHandler).Methods("GET")
 	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
 
-	var server = &http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
-
 	log.Fatal("Listening...")
-	server.ListenAndServe()
-
-	// log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -1,24 +1,25 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"os"
 	"time"
 
 	runtime "github.com/banzaicloud/logrus-runtime-formatter"
-	"github.com/streadway/amqp"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Greeting struct {
 	ID          string    `json:"id,omitempty"`
 	ServiceName string    `json:"service,omitempty"`
 	Message     string    `json:"message,omitempty"`
-	CreatedAt   time.Time `json:"created,omitempty"`
+	CreatedAt   time.Time `json:"created,omitempty`
 }
 
 var greetings []Greeting
@@ -27,15 +28,16 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	greetings = nil
-
 	tmpGreeting := Greeting{
 		ID:          uuid.New().String(),
-		ServiceName: "Service-D",
-		Message:     "Shalom, from Service-D!",
-		CreatedAt:   time.Now().Local(),
+		ServiceName: "Service-G",
+		Message:     "Ahlan, from Service-G!",
+		CreatedAt:   time.Now().Locale(),
 	}
 
+	CallMongoDB(tmpGreeting)
+
+	greetings = nil
 	greetings = append(greetings, tmpGreeting)
 
 	err := json.NewEncoder(w).Encode(greetings)
@@ -43,64 +45,33 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 
-	b, err := json.Marshal(tmpGreeting)
-	if err != nil {
-		log.Error(err)
-	}
-
-	SendMessage(b)
-
-}
-
-func SendMessage(b []byte) {
-
-	log.Info(b)
-
-	conn, err := amqp.Dial(os.Getenv("RABBITMQ_CONN"))
-	if err != nil {
-		log.Error(err)
-	}
-
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	if err != nil {
-		log.Error(err)
-	}
-
-	q, err := ch.QueueDeclare(
-		"service-d",
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	if err != nil {
-		log.Error(err)
-	}
-
-	err = ch.Publish(
-		"",
-		q.Name,
-		false,
-		false,
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        b,
-		})
-
-	if err != nil {
-		log.Error(err)
-	}
-
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	_, err := w.Write([]byte("{ \"alive\": true }"))
+	_, err := w.Write([]byte("{\"alive\": true}"))
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func CallMongoDB(greeting Greeting) {
+
+	log.Info(greeting)
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_CONN")))
+	if err != nil {
+		log.Error(err)
+	}
+
+	defer client.Disconnect(nil)
+
+	collection := client.Database("service-g").Collection("greetings")
+	ctx, _ = context.WithTimeout(context.Background(), 5*time.Second)
+
+	_, err = collection.InsertOne(ctx, greeting)
 	if err != nil {
 		log.Error(err)
 	}
@@ -125,23 +96,15 @@ func init() {
 	if err != nil {
 		log.Error(err)
 	}
-
 	log.SetLevel(level)
 }
 
 func main() {
 	router := mux.NewRouter()
+
 	api := router.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/ping", PingHandler).Methods("GET")
 	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
 
-	var server = &http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
-
-	log.Fatal("Listening...")
-	server.ListenAndServe()
-
-	// log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

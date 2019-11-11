@@ -108,9 +108,9 @@ func init() {
 func main() {
 	router := mux.NewRouter()
 
-	router.PathPrefix("/api").Subrouter()
-	router.HandleFunc("/ping", PingHandler).Methods("GET")
-	router.HandleFunc("/health", HealthCheckHandler).Methods("GET")
+	api := router.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/ping", PingHandler).Methods("GET")
+	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

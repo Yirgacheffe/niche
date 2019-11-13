@@ -12,10 +12,14 @@ EXPOSE 8000
 # Add git for fetching dependencies
 # Ca-certificates for HTTPS
 # TimeZones
-RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates
+RUN apk update && apk add --no-cache git ca-certificates tzdata
 
 # Create appuser.
 RUN adduser -D -g '' appuser
+
+# Set ENV variables
+ENV GOPATH /go
+# ENV GOPROXY https://goproxy.io
 
 # Copy files
 WORKDIR $GOPATH/src/greetings
@@ -47,7 +51,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs
 COPY --from=builder /etc/passwd /etc/passwd
 
 # COPY binary file
-COPY --from=builder $GOPATH/bin/greetings $GOPATH/bin/greetings
+COPY --from=builder $GOPATH/bin/greetings /greetings
 
 # Use 'appuser'
 USER appuser

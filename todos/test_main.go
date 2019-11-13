@@ -297,6 +297,9 @@ func printer(c chan string) {
 
 func main() {
 
+	var xyznn complex128 = complex(1, 5)
+	fmt.Printf("%v, %T\n", xyznn, xyznn)
+
 	fmt.Println("1 + 1 =", 1+1)
 	fmt.Println("1 + 1 =", 1.0+1.0)
 

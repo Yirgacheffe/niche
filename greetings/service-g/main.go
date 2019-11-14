@@ -19,7 +19,7 @@ type Greeting struct {
 	ID          string    `json:"id,omitempty"`
 	ServiceName string    `json:"service,omitempty"`
 	Message     string    `json:"message,omitempty"`
-	CreatedAt   time.Time `json:"created,omitempty`
+	CreatedAt   time.Time `json:"created,omitempty"`
 }
 
 var greetings []Greeting

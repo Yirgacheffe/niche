@@ -131,6 +131,7 @@ func init() {
 
 func main() {
 	router := mux.NewRouter()
+
 	api := router.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/ping", PingHandler).Methods("GET")
 	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
@@ -140,7 +141,7 @@ func main() {
 		Handler: router,
 	}
 
-	log.Fatal("Listening...")
+	log.Info("Listening...")
 	server.ListenAndServe()
 
 	// log.Fatal(http.ListenAndServe(":8080", router))

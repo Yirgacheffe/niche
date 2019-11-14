@@ -173,6 +173,6 @@ func main() {
 	api.Handle("/metrics", promhttp.Handler())
 
 	handler := c.Handler(router)
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Info(http.ListenAndServe(":8080", handler))
 
 }

@@ -112,5 +112,5 @@ func main() {
 	api.HandleFunc("/ping", PingHandler).Methods("GET")
 	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Info(http.ListenAndServe(":8080", router))
 }

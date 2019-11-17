@@ -6,8 +6,8 @@ metadata:
     app: niche-greetings-a
     service: niche-greetings-a
 spec:
-    ports:
-      - name: http
-        port: 8080
-    selector:
-        app: niche-greetings-a
+  ports:
+    - name: http
+      port: 8080
+  selector:
+      app: niche-greetings-a

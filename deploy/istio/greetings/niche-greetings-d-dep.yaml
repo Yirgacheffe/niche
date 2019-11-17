@@ -1,25 +1,25 @@
-apiVersion: apps/v1
+appVersion: apps/v1
 kind: Deployment
 metadata:
-  name: niche-greetings-a
+  name: niche-greetings-d
   labels:
-    app: niche-greetings-a
+    app: niche-greetings-d
     version: v1
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: niche-greetings-a
+      app: niche-greetings-d
       version: v1
   template:
     metadata:
       labels:
-        app: niche-greetings-a
+        app: niche-greetings-d
         version: v1
     spec:
       containers:
-      - name: niche-greetings-a
-        image: soline74/niche-greetings-a:dev-debc1ed
+      - name: niche-greetings-d
+        image: soline74/niche-greetings-d:dev-debc1ed
         resources:
           requests:
             cpu: "100m"

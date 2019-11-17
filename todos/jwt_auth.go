@@ -110,6 +110,43 @@ func jsonResponse(response interface{}, w http.ResponseWriter) {
 
 func authHandler(w http.ResponseWriter, r *http.Request) {
 
+	token, err := jwt.ParseFromRequest(r, func(token *jwt.Token) (interface{}, error) {
+		return verifyKey, nil
+	})
+
+	if err != nil {
+		switch err.(type) {
+		case *jwt.ValidationError:
+			vErr := err.(*jwt.ValidationError)
+			switch vErr.Errors {
+			case jwt.ValidationErrorExpired:
+				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintln(w, "Token Expired, get a new one.")
+				return
+			default:
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintln(w, "Error while Parse Token!")
+				log.Printf("ValidationError error: %+v\n", vErr.Errors)
+				return
+			}
+		default:
+			w.WriterHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, "Error while Parsing Token!")
+			log.Printf("Token parse error: %v\n", err)
+			return
+		}
+	}
+
+	var response
+
+	if token.Valid {
+		response = Response{ "Authorized to the system" }
+	} else {
+		response = Response{ "Invalid token" }
+	}
+
+	jsonResponse(response, w)
+
 }
 
 func main() {

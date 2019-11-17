@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: amqp-external-mesh
+spec:
+  hosts:
+  - dummy.codefly-rabbitmq.io
+  addresses:
+  - "10.103.121.45"
+  ports:
+  - name: rabbitmq
+    number: 5672
+    protocal: TCP
+  location: MESH_EXTERNAL
+  resolution: NONE

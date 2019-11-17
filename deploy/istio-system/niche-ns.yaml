@@ -1,6 +1,0 @@
-apiVersion: vq
-kind: Namespace
-metadata:
-  name: app-niche
-  labels:
-    name: app-niche

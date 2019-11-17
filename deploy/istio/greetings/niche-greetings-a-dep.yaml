@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-greetings-a
+  labels:
+    app: niche-greetings-a
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: niche-greetings-a
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: niche-greetings-a
+        version: v1
+    spec:
+      containers:
+      - name: niche-greetings-a
+        image: soline74/niche-greetings-a:dev-debc1ed
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 300m
+            memory: 200Mi
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080

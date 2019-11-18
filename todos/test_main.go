@@ -22,6 +22,18 @@ import (
 	"time"
 )
 
+const (
+    _ = iota // ignore first value by assigning to blank identifier
+    KB = 1 << ( 10 * iota )
+    MB
+    GB
+    TB
+    PB
+    EB
+    ZB
+    YB
+)
+
 var xx = "Hello, world, xx!"
 
 type Point struct {
@@ -836,6 +848,10 @@ func main() {
 	http.HandleFunc("/hello", helloHTTPHandler)
 	http.ListenAndServe(":9000", nil)
 	http.Handle("/assets/", http.FileServer(http.Dir("assets")))
+
+	fmt.Println("--------------------------")
+	fileSize := 400000
+    fmt.Printf("%.2fGB\n", fileSize / GB)
 
 }
 

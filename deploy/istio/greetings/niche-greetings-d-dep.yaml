@@ -1,4 +1,4 @@
-appVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: niche-greetings-d
@@ -27,6 +27,14 @@ spec:
           limits:
             cpu: "200m"
             memory: "256Mi"
+        env:
+        - name: LEVEL_LOG
+          value: info
+        - name: RABBITMQ_CONN
+          valueFrom:
+            secretKeyRef:
+              name: niche-srv-config
+              key: rabbitmq.conn
         imagePullPolicy: Never
         ports:
         - containerPort: 8080

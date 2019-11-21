@@ -3,7 +3,7 @@
 #
 # Install greeting service into istio
 #
-readonly -a srvs=(a b d e f g h)
+readonly -a srvs=(a b c d e f g h)
 readonly ns=niche-dev
 
 for i in "${srvs[@]}"

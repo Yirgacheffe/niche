@@ -23,12 +23,32 @@ spec:
   gateways:
   - niche-gateway
   http:
-  - match: 
+  - match:
     - uri:
-      prefix: /
+        prefix: "/web"
+    rewrite:
+      uri: "/"
     route:
     - destination:
-        host: niche-greetings-a
+        host: niche-web
+        subset: v1
         port:
           number: 8080
----
+  - match:
+    - uri:
+        prefix: "/search"
+    route:
+    - destination:
+        host: niche-web
+        subset: v1
+        port:
+          number: 8080
+  - match: 
+    - uri:
+      prefix: "/"
+    route:
+    - destination:
+        host: niche-docs
+        subset: v1
+        port:
+          number: 80

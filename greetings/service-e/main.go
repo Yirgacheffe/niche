@@ -28,8 +28,8 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r)
 
-	CallNextServiceWithTrace("http://niche-greetings-g/api/ping", w, r)
-	CallNextServiceWithTrace("http://niche-greetings-h/api/ping", w, r)
+	CallNextServiceWithTrace("http://niche-greetings-g:8080/api/ping", w, r)
+	CallNextServiceWithTrace("http://niche-greetings-h:8080/api/ping", w, r)
 
 	greetings = nil
 

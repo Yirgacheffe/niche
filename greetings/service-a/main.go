@@ -33,8 +33,8 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	greetings = nil
 
-	CallNextServiceWithTrace("http://niche-greetings-b/api/ping", w, r)
-	CallNextServiceWithTrace("http://niche-greetings-c/api/ping", w, r)
+	CallNextServiceWithTrace("http://niche-greetings-b:8080/api/ping", w, r)
+	CallNextServiceWithTrace("http://niche-greetings-c:8080/api/ping", w, r)
 
 	tmpGreeting := Greeting{
 		ID:          uuid.New().String(),

@@ -31,4 +31,5 @@ spec:
         host: niche-greetings-a
         port:
           number: 8080
+      weight: 100
 ---

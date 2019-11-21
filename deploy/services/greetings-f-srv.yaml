@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: niche-greetings-f
-        image: soline74/niche-greetings-f:dev-1323f4b
+        image: soline74/niche-greetings-f:dev-b74ee79
         resources:
           requests:
             cpu: "100m"

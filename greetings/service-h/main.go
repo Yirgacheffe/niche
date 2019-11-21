@@ -61,7 +61,7 @@ func CallMongoDB(greeting Greeting) {
 	log.Debug(greeting)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("MONGO_CONN"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.getEnv("MONGO_CONN")))
 	if err != nil {
 		log.Error(err)
 	}

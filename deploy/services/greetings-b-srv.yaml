@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: niche-greetings-b
-        image: soline74/niche-greetings-b:dev-b74ee79
+        image: soline74/niche-greetings-b:dev-4c5e1eb
         resources:
           requests:
             cpu: "100m"
@@ -37,5 +37,6 @@ spec:
   selector:
     app: niche-greetings-b
   ports:
-  - port: 8080
+  - name: http
+    port: 8080
     targetPort: 8080

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-greetings-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-greetings-c
+  template:
+    metadata:
+      labels:
+        app: niche-greetings-c
+    spec:
+      containers:
+      - name: niche-greetings-c
+        image: soline74/niche-greetings-c:dev-1323f4b
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        env:
+        - name: LOG_LEVEL
+          value: info
+        - name: MONGO_CONN
+          valueFrom:
+            secretKeyRef:
+              name: niche-srv-config
+              key: mongodb.conn
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-greetings-c
+spec:
+  selector:
+    app: niche-greetings-c
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

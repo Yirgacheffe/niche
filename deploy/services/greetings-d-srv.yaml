@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-greetings-d
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-greetings-d
+  template:
+    metadata:
+      labels:
+        app: niche-greetings-d
+    spec:
+      containers:
+      - name: niche-greetings-d
+        image: soline74/niche-greetings-d:dev-debc1ed
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        env:
+        - name: LEVEL_LOG
+          value: info
+        - name: RABBITMQ_CONN
+          valueFrom:
+            secretKeyRef:
+              name: niche-srv-config
+              key: rabbitmq.conn
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-greetings-d
+spec:
+  selector:
+    app: niche-greetings-d
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

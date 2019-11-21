@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-greetings-e
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-greetings-e
+  template:
+    metadata:
+      labels:
+        app: niche-greetings-e
+    spec:
+      containers:
+      - name: niche-greetings-e
+        image: soline74/niche-greetings-e:dev-1323f4b
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        env:
+        - name: LEVEL_LOG
+          value: info
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-greetings-e
+spec:
+  selector:
+    app: niche-greetings-e
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

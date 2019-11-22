@@ -41,7 +41,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	CallMongoDB(tmpGreeting)
 
-	err := json.NewEncoder(w).Encode(tmpGreeting)
+	err := json.NewEncoder(w).Encode(greetings)
 	if err != nil {
 		log.Error(err)
 	}
@@ -61,7 +61,7 @@ func CallMongoDB(greeting Greeting) {
 	log.Debug(greeting)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.getEnv("MONGO_CONN")))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_CONN")))
 	if err != nil {
 		log.Error(err)
 	}

@@ -41,7 +41,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	greetings = append(greetings, tmpGreeting)
 	CallMongoDB(tmpGreeting)
 
-	err := json.NewEncoder(w).Encode(&greetings)
+	err := json.NewEncoder(w).Encode(greetings)
 	if err != nil {
 		log.Error(err)
 	}

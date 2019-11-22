@@ -31,8 +31,6 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	CallNextServiceWithTrace("http://niche-greetings-g:8080/api/ping", w, r)
 	CallNextServiceWithTrace("http://niche-greetings-h:8080/api/ping", w, r)
 
-	greetings = nil
-
 	tmpGreeting := Greeting{
 		ID:          uuid.New().String(),
 		ServiceName: "Service-E",
@@ -40,9 +38,10 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   time.Now().Local(),
 	}
 
+	greetings = nil
 	greetings = append(greetings, tmpGreeting)
 
-	err := json.NewEncoder(w).Encode(tmpGreeting)
+	err := json.NewEncoder(w).Encode(greetings)
 	if err != nil {
 		log.Error(err)
 	}

@@ -2,19 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: niche-greetings-h
+  labels:
+    app: niche-greetings-h
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: niche-greetings-h
+      version: v1
   template:
     metadata:
       labels:
         app: niche-greetings-h
+        version: v1
     spec:
       containers:
       - name: niche-greetings-h
-        image: soline74/niche-greetings-h:dev-e3aa376
+        image: soline74/niche-greetings-h:dev-e7fd186
         resources:
           requests:
             cpu: "100m"
@@ -38,10 +43,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: niche-greetings-h
+  labels:
+    app: niche-greetings-h
 spec:
   selector:
     app: niche-greetings-h
   ports:
   - name: http
     port: 8080
-    targetPort: 8080

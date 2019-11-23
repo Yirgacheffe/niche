@@ -80,7 +80,7 @@ func CallNextServiceWithTrace(url string, w http.ResponseWriter, r *http.Request
 
 	var tmpGreetings []Greeting
 
-	w.Header().Set("Content-Type", "application/json:charset=utf-8")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -95,7 +95,7 @@ func CallNextServiceWithTrace(url string, w http.ResponseWriter, r *http.Request
 		"x-b3-parentspanid",
 		"x-b3-sampled",
 		"x-b3-flags",
-		"b3",
+		"x-ot-span-context",
 	}
 
 	for _, b3Header := range b3Headers {

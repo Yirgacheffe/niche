@@ -27,6 +27,7 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	log.Debug(r)
+	greetings = nil
 
 	CallNextServiceWithTrace("http://niche-greetings-g:8080/api/ping", w, r)
 	CallNextServiceWithTrace("http://niche-greetings-h:8080/api/ping", w, r)
@@ -38,7 +39,6 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   time.Now().Local(),
 	}
 
-	greetings = nil
 	greetings = append(greetings, tmpGreeting)
 
 	err := json.NewEncoder(w).Encode(greetings)

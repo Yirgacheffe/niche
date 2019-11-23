@@ -28,6 +28,8 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+	greetings = nil
+
 	tmpGreeting := Greeting{
 		ID:          uuid.New().String(),
 		ServiceName: "Service-G",
@@ -36,8 +38,6 @@ func PingHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	CallMongoDB(tmpGreeting)
-
-	greetings = nil
 	greetings = append(greetings, tmpGreeting)
 
 	err := json.NewEncoder(w).Encode(greetings)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -22,11 +21,7 @@ type Config struct {
 
 type Configs []Config
 
-func homePageHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "RUNNING")
-}
-
-func configHandler(w http.ResponseWriter, r *http.Request) {
+func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	var appVersion = os.Getenv("IMAGE_TAG")
 	var backColor = "asparagus"
@@ -59,13 +54,6 @@ func configHandler(w http.ResponseWriter, r *http.Request) {
 func random(min, max int) int {
 	rand.Seed(time.Now().UTC().UnixNano())
 	return rand.Intn(max-min) + min
-}
-
-func testHandler(resp http.ResponseWriter, req *http.Request) {
-	resp.Header().Add("Content-Type", "text/html")
-	resp.WriteHeader(http.StatusOK)
-
-	fmt.Fprint(resp, "Running with OK status, Have Fun!")
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

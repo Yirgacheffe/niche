@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-api-v1
+  labels:
+    app: niche-api
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-api
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: niche-api
+        version: v1
+    spec:
+      containers:
+      - name: niche-api
+        image: soline74/niche-api:dev-9248113
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-api-v2
+  labels:
+    app: niche-api
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-api
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: niche-api
+        version: v2
+    spec:
+      containers:
+      - name: niche-api
+        image: soline74/niche-api:dev-b74ee79
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-api
+  labels:
+    app: niche-api
+    service: niche-api
+spec:
+    ports:
+      - name: http
+        port: 8081
+    selector:
+        app: niche-api
+---

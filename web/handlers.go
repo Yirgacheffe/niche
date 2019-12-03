@@ -237,6 +237,6 @@ func createTableCellWithCityAndTracing(r *http.Request) string {
 	apiVersion := configObj.AppVersion
 	podName := configObj.KubePodName
 
-	return "<td bgcolor=" + backColor + "align=center>" + apiVersion + ":" + podName + "</td>"
+	return "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
 
 }

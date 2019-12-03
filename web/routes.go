@@ -15,6 +15,27 @@ type Route struct {
 
 type Routes []Route
 
+var routes = Routes{
+	Route{
+		"Index",
+		"GET",
+		"/",
+		HomeHandler,
+	},
+	Route{
+		"Search",
+		"GET",
+		"/search",
+		SearchHandler,
+	},
+	Route{
+		"HealthCheck",
+		"GET",
+		"/health",
+		HealthCheckHandler,
+	},
+}
+
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
@@ -33,25 +54,4 @@ func NewRouter() *mux.Router {
 
 	return router
 
-}
-
-var routes = Routes{
-	Route{
-		"index",
-		"GET",
-		"/",
-		homeHandler,
-	},
-	Route{
-		"test",
-		"GET",
-		"/test",
-		testHandler,
-	},
-	Route{
-		"search",
-		"GET",
-		"/search",
-		searchHandler,
-	},
 }

@@ -30,7 +30,7 @@ type Config struct {
 	KubePodIP    string `json:"KubePodIP"`
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var gitSHA = os.Getenv("GIT_SHA")
 	if len(gitSHA) == 0 {
@@ -78,13 +78,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func testHandler(resp http.ResponseWriter, req *http.Request) {
-	resp.Header().Add("Content-Type", "text/html")
-	resp.WriteHeader(http.StatusOK)
-
-	fmt.Fprint(resp, "Running with OK status, Have Fun!")
-}
-
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
@@ -130,7 +123,7 @@ func createTableCell() string {
 
 }
 
-func searchHandler(w http.ResponseWriter, r *http.Request) {
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	var gitSHA = os.Getenv("GIT_SHA")
 	if len(gitSHA) == 0 {

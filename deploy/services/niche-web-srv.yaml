@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: niche-web
-        image: soline74/niche-web:dev-ac756d1
+        image: soline74/niche-web:dev-5c869b5
         env:
         - name: API_SERVICE
           value: "niche-api"
@@ -39,11 +39,26 @@ spec:
               fieldPath: status.podIP
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: "100m"
+            memory: "128Mi"
           limits:
-            cpu: 300m
-            memory: 200Mi
+            cpu: "200m"
+            memory: "256Mi"
         imagePullPolicy: Never
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-web
+  labels:
+    app: niche-web
+    service: niche-web
+spec:
+    ports:
+      - name: http
+        port: 8081
+    selector:
+      app: niche-web
+---

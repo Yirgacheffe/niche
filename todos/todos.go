@@ -119,7 +119,7 @@ func main() {
 	r.HandleFunc("/api/notes/{id}", DeleteNoteHandler).Methods("DELETE")
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081",
 		Handler: r,
 	}
 

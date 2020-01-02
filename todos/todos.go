@@ -1,19 +1,25 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/gorilla/mux"
 )
 
 type Note struct {
+	ID          string    `json:"id,omitempty"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	CreatedOn   time.Time `json:"createdon"`
+	CreatedOn   time.Time `json:"created_on,omitempty"`
 }
 
 var noteStore = make(map[string]Note)
@@ -21,6 +27,8 @@ var id int = 0
 
 // HTTP Post - /api/notes
 func PostNoteHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	var note Note
 
@@ -40,7 +48,6 @@ func PostNoteHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(j)
 
@@ -106,6 +113,54 @@ func DeleteNoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+
+}
+
+func CallMongoDB(note Note) {
+
+	log.Println(note)
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_CONN")))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Disconnect(nil)
+
+	collection := client.Database("todo-app").Collection("notes")
+	ctx, _ = context.WithTimeout(context.Background(), 5*time.Second)
+
+	_, err = collection.InsertOne(ctx, note)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Disconnect(ctx)
+
+}
+
+func InsertMongoDB(note Note) {
+
+	log.Println(note)
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_CONN"))
+
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Disconnect(nil)
+
+	collection := client.Database("todo-app").Collection("notes")
+	_, err = collection.InsertOne(ctx, note)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Disconnect(ctx)
 
 }
 

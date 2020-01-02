@@ -1,23 +1,24 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"crypto/rsa"
 	"io/ioutil"
 	"log"
-	"net/http"
+	"time"
 
-	"fortio.org/fortio/log"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
+// using asymmetric crypto/RSA keys, openssl genrsa
 const (
 	privKeyPath = "keys/niche.rsa"
 	pubKeyPath  = "keys/niche.rsa.pub"
 )
 
-var signKey, verifyKey []byte
+var (
+	verifyKey *rsa.PublicKey
+	signKey   *rsa.PrivateKey
+)
 
 // User structure for parsing login credentials
 type User struct {
@@ -25,56 +26,50 @@ type User struct {
 	Password string `json:"password"`
 }
 
-func init() {
+func InitKeys() {
 	var err error
 
-	signKey, err = ioutil.ReadFile(privKeyPath)
+	signBytes, err := ioutil.ReadFile(privKeyPath)
 	if err != nil {
-		log.Fatal("Error reading private key")
-		return
+		log.Fatalf("[initKeys]: %s\n", err)
+		panic(err)
 	}
 
-	verifyKey, err = ioutil.ReadFile(pubKeyPath)
+	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
 	if err != nil {
-		log.Fatal("Error reading public key")
-		return
-	}
-}
-
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-
-	var user User
-
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Println(w, "Request body error, can not parse parameters.")
-		return
+		log.Fatalf("[initKeys]: %s\n", err)
+		panic(err)
 	}
 
-	//
-	if user.UserName != "xyz1234" && user.Password != "1qwe4edc" {
-		w.WriteHeader(http.StatusForbidden)
-		fmt.Println(w, "Wrong credentials.")
-		return
+	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	if err != nil {
+		log.Fatal("error")
+	}
+
+	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	if err != nil {
+		log.Fatal("error")
 	}
 
 }
 
-func authHandler(w http.ResponseWriter, r *http.Request) {
+func GenerateJWT(name, role string) (string, error) {
 
-}
+	claims := jwt.MapClaims{
+		"iss":  "admin",
+		"exp":  time.Now().Add(time.Minute * 20).Unix(),
+		"name": name,
+		"role": role,
+	}
 
-func main() {
+	// create a signer for rsa 256
+	t := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), claims)
 
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, AllowCredentials: true, AllowedMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
-	})
+	tokenString, err := t.SignedString(signKey)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
 
-	router := mux.NewRouter()
-	router.HandleFunc("/login", loginHandler).Methods("POST")
-
-	handler := c.Handler(router)
-	log.Fatal(http.ListenAndServe(":80801", handler))
-
+	return tokenString, nil
 }

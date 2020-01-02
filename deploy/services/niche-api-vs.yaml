@@ -5,6 +5,8 @@ metadata:
 spec:
   hosts:
     - niche-api
+  gateways:
+    - mesh
   http:
   - route:
     - destination:

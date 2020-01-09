@@ -15,7 +15,7 @@ import (
 
 const (
 	DBName = "todos-app"
-	URI    = "mongodb://root:DsoN4DVgY5@localhost:27017"
+	URI    = "mongodb://user:password@localhost:27017"
 
 	notesColl = "notes"
 )

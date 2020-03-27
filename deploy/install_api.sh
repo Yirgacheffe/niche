@@ -6,10 +6,10 @@
 readonly ns=niche-dev
 
 # Inject sidecar
-istioctl kube-inject -f "./services/niche-api-srv.yaml" | kubectl apply -n ${ns} -f -
+istioctl kube-inject -f "./resources/niche-api-srv.yaml" | kubectl apply -n ${ns} -f -
 
-kubectl apply -f "./services/niche-api-dest.yaml" -n ${ns}
-kubectl apply -f "./services/niche-api-vs.yaml"   -n ${ns}
+kubectl apply -f "./resources/niche-api-dest.yaml" -n ${ns}
+kubectl apply -f "./resources/niche-api-vs.yaml"   -n ${ns}
 
 # List niche api pods
 kubectl get pods -n ${ns} | grep niche-api

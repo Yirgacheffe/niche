@@ -6,8 +6,8 @@
 readonly ns=niche-dev
 
 # Inject sidecar
-istioctl kube-inject -f "./services/niche-web-srv.yaml" | kubectl apply -n ${ns} -f -
-kubectl apply -f "./services/niche-web-dest.yaml" -n ${ns}
+istioctl kube-inject -f "./resources/niche-web-srv.yaml" | kubectl apply -n ${ns} -f -
+kubectl  apply       -f "./resources/niche-web-dest.yaml" -n ${ns}
 
 # List niche api pods
 kubectl get pods -n ${ns} | grep niche-web

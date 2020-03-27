@@ -37,11 +37,6 @@ func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	configs := Config{Key: "10", BackColor: backColor, AppVersion: appVersion, BuildDate: imageBuildeDate, KubeNodeName: kubeNodeName, KubePodName: kubePodName, KubePodIP: kubePodIP}
 
-	if backColor == "crimson" {
-		r := random(50, 100)
-		time.Sleep(time.Duration(r) * time.Millisecond)
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 

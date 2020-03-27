@@ -9,7 +9,7 @@ readonly ns=niche-dev
 for i in "${srvs[@]}"
 do
     # Cleanup greetings service
-    kubectl delete -f "./services/greetings-${i}-srv.yaml" -n ${ns}
+    kubectl delete -f "./resources/greetings-${i}-srv.yaml" -n ${ns}
     
 done
 

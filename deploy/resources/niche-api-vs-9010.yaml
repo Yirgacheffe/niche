@@ -8,15 +8,12 @@ spec:
   gateways:
     - mesh
   http:
-  - match:
-    - headers:
-        city:
-          exact: shandong
-    route:
-    - destination:
-        host: niche-api
-        subset: v2
   - route:
     - destination:
         host: niche-api
         subset: v1
+      weight: 90
+    - destination:
+        host: niche-api
+        subset: v2
+      weight: 10

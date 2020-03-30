@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: niche-api
+spec:
+  hosts:
+    - niche-api
+  gateways:
+    - mesh
+  http:
+  - route:
+    - destination:
+        host: niche-api
+        subset: v2

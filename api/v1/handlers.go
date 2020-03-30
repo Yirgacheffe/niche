@@ -3,10 +3,8 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"math/rand"
 	"net/http"
 	"os"
-	"time"
 )
 
 type Config struct {
@@ -44,11 +42,6 @@ func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-}
-
-func random(min, max int) int {
-	rand.Seed(time.Now().UTC().UnixNano())
-	return rand.Intn(max-min) + min
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

@@ -42,5 +42,6 @@ spec:
             port:
               number: 8081
           weight: 100
+          timeout: 1s
 ---
 

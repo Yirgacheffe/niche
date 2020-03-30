@@ -1,0 +1,1 @@
+fortio load -t 10s http://localhost:80/search

@@ -11,9 +11,5 @@ spec:
   - route:
     - destination:
         host: niche-api
-        subset: v1
-      weight: 90
-    - destination:
-        host: niche-api
-        subset: v2
-      weight: 10
+        subset: v3
+    timeout: 0.5s

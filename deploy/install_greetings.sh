@@ -13,5 +13,3 @@ do
 done
 
 kubectl get pods -n ${ns}
-
-kubectl apply -f ./niche-http-gw.yaml -n ${ns}

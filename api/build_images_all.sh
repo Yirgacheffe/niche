@@ -4,7 +4,7 @@
 #
 
 # --
-readonly -a apis=(v1 v2)
+readonly -a apis=(v1 v2 v3)
 
 for i in "${apis[@]}"
 do

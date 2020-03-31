@@ -14,5 +14,3 @@ do
 done
 
 kubectl get pods -n ${ns}
-
-kubectl delete -f ./niche-http-gw.yaml -n ${ns}

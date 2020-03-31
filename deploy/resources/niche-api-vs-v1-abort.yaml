@@ -8,12 +8,12 @@ spec:
   gateways:
     - mesh
   http:
-  - route:
+  - fault:
+      abort:
+        httpStatus: 500
+        percentage: 
+          value: 100
+    route:
     - destination:
         host: niche-api
         subset: v1
-      weight: 90
-    - destination:
-        host: niche-api
-        subset: v2
-      weight: 10

@@ -13,4 +13,4 @@ WORKDIR /app
 ADD ./niche-web /app/
 
 ENTRYPOINT ["/app/niche-web"]
-EXPOSE 8081
+EXPOSE 8082

@@ -8,16 +8,12 @@ spec:
   gateways:
     - mesh
   http:
-  - fault:
-      abort:
-        httpStatus: 503
-        percentage: 
-          value: 50
-    route:
-    - destination:
-        host: niche-api
-        subset: v1
   - route:
     - destination:
         host: niche-api
         subset: v1
+      weight: 100
+    mirror:
+      host: niche-api
+      subset: v2
+    mirror_percent: 20

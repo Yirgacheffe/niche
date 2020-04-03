@@ -12,18 +12,14 @@ import (
 )
 
 const (
-	htmlHeader = "<!DOCTYPE html><html><head><style>table, th, td {border: 1px solid black;font-family: 'Courier New';font-size: 28px;color: white}th, td {padding: 20px;}</style></head><font color=black><h1>Istio Canary Demo Homepage - 2019</h1><body style=background-color:white>"
+	htmlHeader = "<!DOCTYPE html><html><head><style>table, th, td {border: 1px solid black;font-family: 'Courier New';font-size: 20px;color: white}th, td {padding: 10px;}</style></head><font color=black><h1>Istio Canary Demo Homepage - 2019</h1><body style=background-color:white>"
 	htmlTitle  = "<p>Repo Git: %s <br>Web image build date: %s <br>Running on: (%s / %s)</p><br><table>"
 )
 
 type Config struct {
-	Key          string `json:"Key"`
-	BackColor    string `json:"BackColor"`
-	AppVersion   string `json:"AppVersion"`
-	BuildDate    string `json:"BuildDate"`
-	KubeNodeName string `json:"KubeNodeName"`
-	KubePodName  string `json:"KubePodName"`
-	KubePodIP    string `json:"KubePodIP"`
+	BackColor   string `json:"BackColor"`
+	AppVersion  string `json:"AppVersion"`
+	KubePodName string `json:"KubePodName"`
 }
 
 // HomeHandler handle Index page, just say hello
@@ -65,15 +61,23 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, htmlHeader)
 	fmt.Fprintf(w, htmlTitle, gitSHA, imageBuildDate, kubePodName, kubePodIP)
 
-	// loop throught the api to build table
+	// Make channel to call api in go routine
+	ch := make(chan string)
 	i := 1
+	for i <= 25 {
+		go createTableCell(r, ch)
+		i = i + 1
+	}
+
+	// loop throught the api to build table
+	i = 1
 
 	for i <= 5 {
 		fmt.Fprintf(w, "<tr>")
 
 		j := 1
 		for j <= 5 {
-			fmt.Fprintf(w, createTableCell(r))
+			fmt.Fprintf(w, <-ch)
 			j = j + 1
 		}
 
@@ -85,7 +89,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createTableCell(r *http.Request) string {
+func createTableCell(r *http.Request, ch chan<- string) {
 
 	var apiService = os.Getenv("API_SERVICE")
 	if len(apiService) == 0 {
@@ -94,13 +98,12 @@ func createTableCell(r *http.Request) string {
 
 	var apiPort = os.Getenv("API_PORT")
 	if len(apiPort) == 0 {
-		apiPort = "80"
+		apiPort = "8081"
 	}
 
 	url := "http://" + apiService + ":" + apiPort + "/configs"
 
 	client := &http.Client{Timeout: time.Second * 3}
-
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -117,24 +120,35 @@ func createTableCell(r *http.Request) string {
 
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		ch <- "<td bgcolor=#A9A9A9 align=center>Service Unavailable!</td>"
+		return
 	}
 
 	defer response.Body.Close()
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		ch <- "<td bgcolor=#A9A9A9 align=center>Service Unavailable!</td>"
+		return
 	}
 
 	log.Printf(string(responseData))
 
 	var configObj Config
-	json.Unmarshal(responseData, &configObj)
+	err = json.Unmarshal(responseData, &configObj)
+	if err != nil {
+		log.Println(err)
+		ch <- "<td bgcolor=#A9A9A9 align=center>Incorrect Response!</td>"
+		return
+	}
+
 	backColor := configObj.BackColor
 	apiVersion := configObj.AppVersion
 	podName := configObj.KubePodName
 
-	return "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
+	ch <- "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
+	return
 
 }

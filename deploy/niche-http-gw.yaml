@@ -40,7 +40,7 @@ spec:
             host: niche-web
             subset: v1
             port:
-              number: 8081
+              number: 8082
           weight: 100
 ---
 

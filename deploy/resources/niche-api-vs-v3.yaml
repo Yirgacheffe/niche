@@ -8,10 +8,7 @@ spec:
   gateways:
     - mesh
   http:
-    - route:
-        - destination:
-            host: niche-api
-            subset: v1
-      retries:
-        attempts: 3
-        perTryTimeout: 2s
+  - route:
+    - destination:
+        host: niche-api
+        subset: v3

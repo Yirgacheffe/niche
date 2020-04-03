@@ -8,16 +8,11 @@ spec:
   gateways:
     - mesh
   http:
-    - fault:
-        delay:
-          fixedDelay: 2s
-          percentage:
-            value: 50
-      route:
-        - destination:
-            host: niche-api
-            subset: v1
     - route:
         - destination:
             host: niche-api
-            subset: v1
+            subset: v3
+      retries:
+        attempts: 3
+        perTryTimeout: 1s
+        retryOn: 5xx

@@ -136,6 +136,52 @@ spec:
         ports:
         - containerPort: 8081
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-api-v4
+  labels:
+    app: niche-api
+    version: v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-api
+      version: v4
+  template:
+    metadata:
+      labels:
+        app: niche-api
+        version: v4
+    spec:
+      containers:
+      - name: niche-api
+        image: soline74/niche-api:dev-519a1a0
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
 apiVersion: v1
 kind: Service
 metadata:

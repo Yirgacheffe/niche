@@ -11,5 +11,8 @@ spec:
     - route:
         - destination:
             host: niche-api
-            subset: v3
-      timeout: 1s
+            subset: v4
+      retries:
+        attempts: 3
+        perTryTimeout: 1s
+        retryOn: 5xx

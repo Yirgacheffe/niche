@@ -103,7 +103,7 @@ func createTableCell(r *http.Request, ch chan<- string) {
 
 	url := "http://" + apiService + ":" + apiPort + "/configs"
 
-	client := &http.Client{Timeout: time.Second * 3}
+	client := &http.Client{Timeout: time.Second * 5}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)

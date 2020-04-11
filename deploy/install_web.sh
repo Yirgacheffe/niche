@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Install api service into istio
+# Install web service into istio
 #
 readonly ns=niche-dev
 
@@ -9,5 +9,5 @@ readonly ns=niche-dev
 istioctl kube-inject -f "./resources/niche-web-srv.yaml" | kubectl apply -n ${ns} -f -
 kubectl  apply       -f "./resources/niche-web-dest.yaml" -n ${ns}
 
-# List niche api pods
+# List niche web pods
 kubectl get pods -n ${ns} | grep niche-web

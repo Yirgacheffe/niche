@@ -1,12 +1,10 @@
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
-  name: foxnews-ext-mesh
+  name: wttr-ext-mesh
 spec:
   hosts:
-    - foxnews.com
-  exportTo:
-    - "."
+    - wttr.in
   ports:
     - number: 80
       name: http-port

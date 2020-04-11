@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Clean up niche services
+# Clean up niche api services
 #
 readonly ns=niche-dev
 

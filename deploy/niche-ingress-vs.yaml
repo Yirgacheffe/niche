@@ -27,5 +27,3 @@ spec:
             port:
               number: 8082
           weight: 100
----
-

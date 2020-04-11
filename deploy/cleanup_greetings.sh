@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Clean up niche services
+# Clean up greeting services
 #
 readonly -a srvs=(a b c d e f g h)
 readonly ns=niche-dev

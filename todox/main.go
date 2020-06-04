@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -17,7 +19,6 @@ func PostNoteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	var noteReq, note Notex
-
 	err := json.NewDecoder(r.Body).Decode(&noteReq)
 	if err != nil {
 		panic(err)
@@ -46,10 +47,9 @@ func PostNoteHandler(w http.ResponseWriter, r *http.Request) {
 // ListNoteHandler - /api/notes
 func ListNoteHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	notes := FindAllNotesInMongoDB()
-
+	notes := FindAllNotes()
 	notesInJson, err := json.Marshal(notes)
 	if err != nil {
 		panic(err)
@@ -63,7 +63,7 @@ func ListNoteHandler(w http.ResponseWriter, r *http.Request) {
 // GetNoteHandler - /api/notes/{id}
 func GetNoteHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	vars := mux.Vars(r)
 	objID := vars["id"]
@@ -84,19 +84,32 @@ func GetNoteHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// HealthCheckHandler - Check if it is alive
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	io.WriteString(w, `{"alive": true}`)
+}
+
 func main() {
 
-	r := mux.NewRouter().StrictSlash(false)
-	r.HandleFunc("/api/notes", PostNoteHandler).Methods("POST")
-	r.HandleFunc("/api/notes", ListNoteHandler).Methods("GET")
-	r.HandleFunc("/api/notes/{id}", GetNoteHandler).Methods("GET")
+	router := mux.NewRouter()
+
+	api := router.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/notes", PostNoteHandler).Methods("POST")
+	api.HandleFunc("/notes", ListNoteHandler).Methods("GET")
+	api.HandleFunc("/notes/{id}", GetNoteHandler).Methods("GET")
+	api.HandleFunc("/health", HealthCheckHandler).Methods("GET")
+
+	api.Handle("/metrics", promhttp.Handler())
 
 	server := &http.Server{
 		Addr:    ":8081",
-		Handler: r,
+		Handler: router,
 	}
 
-	log.Println("Listening on 8081 ...")
+	log.Println("Todox Application will start, listening on 8081 ...")
 	server.ListenAndServe()
 
 }

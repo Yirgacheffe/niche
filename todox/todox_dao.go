@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	DBName = "todos-app"
+	DBName = "todox-app"
 	URI    = "mongodb://root:DsoN4DVgY5@localhost:27017"
 
 	notesColl = "notes"
@@ -27,7 +27,7 @@ func init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Get mongo connection string uri
+	// Get MongoDB Connection
 	var connURI = os.Getenv("MONGO_CONN")
 
 	if len(connURI) == 0 {
@@ -48,7 +48,8 @@ func init() {
 	db = client.Database(DBName)
 }
 
-func FindAllNotesInMongoDB() []Notex {
+// FindAllNotes - Query Notex from database
+func FindAllNotes() []Notex {
 
 	cursor, err := db.Collection(notesColl).Find(ctx, bson.M{})
 	if err != nil {
@@ -68,6 +69,7 @@ func FindAllNotesInMongoDB() []Notex {
 	return notesResult
 }
 
+// InsertMongoDB - Create new Notex
 func InsertMongoDB(note Notex) string {
 	log.Println(note)
 
@@ -82,24 +84,24 @@ func InsertMongoDB(note Notex) string {
 	return id.Hex()
 }
 
+// FindByID - Grab note by ID
 func FindByID(id string) Notex {
 
 	log.Println(id)
 
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatal("Bad parameter id: ", id)
+		log.Fatal("Bad ID parameter: ", id)
 	}
 
 	coll := db.Collection(notesColl)
-	result := coll.FindOne(ctx, bson.M{"_id": objID})
 
+	result := coll.FindOne(ctx, bson.M{"_id": objID})
 	if err = result.Err(); err != nil {
 		log.Fatal(err)
 	}
 
 	note := Notex{}
-
 	err = result.Decode(&note)
 	if err != nil {
 		log.Fatal(err)
@@ -109,3 +111,5 @@ func FindByID(id string) Notex {
 	return note
 
 }
+
+// Don't know why add this bottom line here -----------------

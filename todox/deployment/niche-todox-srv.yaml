@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-todox
+  labels:
+    app: niche-todox
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-todox
+      version: v1
+  template:
+    metadata:
+      labels: 
+        app: niche-todox
+        version: v1
+    spec:
+      containers:
+      - name: niche-todox
+        image: soline74/niche-todox:dev-01a1733
+        env:
+        - name: MONGO_CONN
+          valueFrom:
+            secretKeyRef:
+              name: niche-srv-config
+              key: mongodb.conn
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-todox
+  labels:
+    app: niche-todox
+    service: niche-todox
+spec:
+    ports:
+      - name: http
+        port: 8081
+    selector:
+      app: niche-todox
+---

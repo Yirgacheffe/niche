@@ -19,6 +19,15 @@ spec:
 #          weight: 100
     - match:
         - uri:
+            prefix: "/api"
+      route:
+        - destination:
+            host: niche-todox
+            port:
+              number: 8081
+          weight: 100
+    - match:
+        - uri:
             prefix: "/"
       route:
         - destination:

@@ -11,6 +11,7 @@ ENV APP_VERSION $VERSION
 
 WORKDIR /app
 ADD ./niche-web /app/
+ADD ./tmpls/index.html /app/tmpls/
 
 ENTRYPOINT ["/app/niche-web"]
 EXPOSE 8082

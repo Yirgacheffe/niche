@@ -1,68 +1,32 @@
 package main
 
 import (
-	"crypto/rsa"
-	"io/ioutil"
-	"time"
-
-	jwt "github.com/dgrijalva/jwt-go"
-	log "github.com/sirupsen/logrus"
+	"encoding/json"
+	"net/http"
 )
 
-// using asymmetric crypto/RSA keys, openssl genrsa
-const (
-	privKeyPath = "keys/niche.rsa"
-	pubKeyPath  = "keys/niche.rsa.pub"
-)
-
-var (
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
-)
-
-func init() {
-	var err error
-
-	signBytes, err := ioutil.ReadFile(privKeyPath)
-	if err != nil {
-		log.Fatalf("[initKeys]: %s\n", err)
-		panic(err)
-	}
-
-	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
-	if err != nil {
-		log.Fatalf("[initKeys]: %s\n", err)
-		panic(err)
-	}
-
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	if err != nil {
-		log.Fatal("error")
-	}
-
-	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	if err != nil {
-		log.Fatal("error")
-	}
+// AppError - Application Error for logging
+type AppError struct {
+	HTTPStatus int    `json:"status"`
+	Message    string `json:"message"`
 }
 
-// GenerateJWT - Generate jwt token
-func GenerateJWT(name, role string) (string, error) {
+// ErrorResponse - Wrap up the AppError
+type ErrorResponse struct {
+	Errors AppError `json:"error"`
+}
 
-	claims := jwt.MapClaims{
-		"iss":  "nichesoft.io",
-		"exp":  time.Now().Add(time.Minute * 20).Unix(),
-		"name": name,
-		"role": role,
+// DisplayAppError - Send back the AppError
+func DisplayAppError(w http.ResponseWriter, code int, message string) {
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+
+	errObj := AppError{
+		HTTPStatus: code, Message: message,
 	}
 
-	// create a signer for rsa 256
-	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	tokenString, err := t.SignedString(signKey)
-	if err != nil {
-		return "", err
+	if j, err := json.Marshal(ErrorResponse{Errors: errObj}); err != nil {
+		w.Write(j)
 	}
-
-	return tokenString, nil
-
 }

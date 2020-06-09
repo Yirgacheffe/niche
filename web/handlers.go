@@ -31,7 +31,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// Just practice the template
 	err := tmpl.Execute(w, nil)
 	if err != nil {
-		log.Printf(err)
+		log.Println(err)
 		fmt.Fprintf(w, "Hi, Seems an error happened to render Index Page.")
 	}
 

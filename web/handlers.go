@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -24,7 +25,16 @@ type Config struct {
 
 // HomeHandler handle Index page, just say hello
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from index page!")
+
+	tmpl := template.Must(template.ParseFiles("./tmpls/index.html"))
+
+	// Just practice the template
+	err := tmpl.Execute(w, nil)
+	if err != nil {
+		log.Printf(err)
+		fmt.Fprintf(w, "Hi, Seems an error happened to render Index Page.")
+	}
+
 }
 
 // HealthCheckHandler is necessary for container to check liveness

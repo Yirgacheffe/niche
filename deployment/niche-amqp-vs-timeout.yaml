@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: cloudamqp-ext-mesh
+specs:
+  hosts:
+    - cougar.rmq.cloudamqp.com
+  http:
+    - timeout:  3s
+      route:
+        - destination:
+            cougar.rmq.cloudamqp.com
+          weight: 100 

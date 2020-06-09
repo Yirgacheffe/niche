@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: niche-configs
+spec:
+  hosts:
+    - niche-configs
+  gateways:
+    - mesh
+  http:
+  - fault:
+      abort:
+        httpStatus: 503
+        percentage: 
+          value: 50
+    route:
+    - destination:
+        host: niche-configs
+        subset: v1
+  - route:
+    - destination:
+        host: niche-configs
+        subset: v1

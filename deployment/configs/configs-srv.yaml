@@ -1,0 +1,198 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-configs-v1
+  labels:
+    app: niche-configs
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-configs
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: niche-configs
+        version: v1
+    spec:
+      containers:
+      - name: niche-configs
+        image: soline74/niche-configs:dev-9248113
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-configs-v2
+  labels:
+    app: niche-configs
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-configs
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: niche-configs
+        version: v2
+    spec:
+      containers:
+      - name: niche-configs
+        image: soline74/niche-configs:dev-b74ee79
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-configs-v3
+  labels:
+    app: niche-configs
+    version: v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-configs
+      version: v3
+  template:
+    metadata:
+      labels:
+        app: niche-configs
+        version: v3
+    spec:
+      containers:
+      - name: niche-configs
+        image: soline74/niche-configs:dev-e1be533
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-configs-v4
+  labels:
+    app: niche-configs
+    version: v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-configs
+      version: v4
+  template:
+    metadata:
+      labels:
+        app: niche-configs
+        version: v4
+    spec:
+      containers:
+      - name: niche-configs
+        image: soline74/niche-configs:dev-519a1a0
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-configs
+  labels:
+    app: niche-configs
+    service: niche-configs
+spec:
+    ports:
+      - name: http
+        port: 8081
+    selector:
+        app: niche-configs
+---

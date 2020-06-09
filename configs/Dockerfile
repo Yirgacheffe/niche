@@ -1,0 +1,16 @@
+FROM alpine
+
+# Set arguments
+ARG VCS_REF
+ARG BUILD_DATE
+ARG IMAGE_TAG_REF
+
+ENV GIT_SHA ${VCS_REF}
+ENV IMAGE_BUILD_DATE ${BUILD_DATE}
+ENV IMAGE_TAG ${IMAGE_TAG_REF}
+
+WORKDIR /app
+ADD ./niche-configs /app/
+
+ENTRYPOINT [ "/app/niche-configs" ]
+EXPOSE 8081

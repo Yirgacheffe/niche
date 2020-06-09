@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: niche-configs
+spec:
+  hosts:
+    - niche-configs
+  gateways:
+    - mesh
+  http:
+  - match:
+    - headers:
+        city:
+          exact: TJ
+    route:
+    - destination:
+        host: niche-configs
+        subset: v2
+  - route:
+    - destination:
+        host: niche-configs
+        subset: v1

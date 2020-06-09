@@ -1,0 +1,31 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: niche-configs
+spec:
+  host: niche-configs
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+      trafficPolicy:
+        connectionPool:
+          tcp:
+            maxConnections: 1
+          http:
+            http1MaxPendingRequests:  1
+            maxRequestsPerConnection: 1
+        outlierDetection:
+          consecutiveErrors: 2
+          intervals: 2s
+          baseEjectionTime: 30s
+          maxEjectionPercent: 100
+    - name: v2
+      labels:
+        version: v2
+    - name: v3
+      labels:
+        version: v3
+    - name: v4
+      labels:
+        version: v4

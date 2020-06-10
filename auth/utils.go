@@ -26,7 +26,12 @@ func DisplayAppError(w http.ResponseWriter, code int, message string) {
 		HTTPStatus: code, Message: message,
 	}
 
-	if j, err := json.Marshal(ErrorResponse{Errors: errObj}); err != nil {
+	errResponse := ErrorResponse{
+		errObj,
+	}
+
+	if j, err := json.Marshal(errResponse); err == nil {
 		w.Write(j)
 	}
+
 }

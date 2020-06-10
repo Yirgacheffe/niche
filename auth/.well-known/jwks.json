@@ -1,0 +1,12 @@
+{
+    "keys": [
+      {
+        "kty": "RSA",
+        "kid": "492710a7fcdb153960ce01f760520a32c8455dff",
+        "use": "nichesoft.io",
+        "e": "AQAB",
+        "alg": "RS256",
+        "n": "wl6TaY_3dsuLczYH_hioeQ5JjcLKLGYb--WImN9_IKMkOj49dgs25wkjsdI9XGJYhhPJLlvfjIfXH49ZGA_XKLx7fggNaBRZcj1y-"
+      }
+    ]
+  }

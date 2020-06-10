@@ -9,10 +9,30 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Jwks - List all json web keys for application
+type Jwks struct {
+	Keys []JSONWebKey `json:"keys"`
+}
+
+// JSONWebKey - Public key to Json web key
+type JSONWebKey struct {
+	Kty string `json:"kty"`
+	Kid string `json:"kid"`
+	Use string `json:"use"`
+	E   string `json:"e"`
+	N   string `json:"n"`
+	Alg string `json:"alg"`
+}
+
 // using asymmetric crypto/RSA keys, openssl genrsa
 const (
 	privKeyPath = "keys/niche.rsa"
 	pubKeyPath  = "keys/niche.rsa.pub"
+)
+
+const (
+	jwtIss = "nichesoft.io"
+	jwtAud = "todox-app"
 )
 
 var (
@@ -50,8 +70,9 @@ func init() {
 func GenerateJWT(name, role string) (string, error) {
 
 	claims := jwt.MapClaims{
-		"iss":  "nichesoft.io",
-		"exp":  time.Now().Add(time.Minute * 20).Unix(),
+		"iss":  jwtIss,
+		"aud":  jwtAud,
+		"exp":  time.Now().Add(time.Minute * 10).Unix(),
 		"name": name,
 		"role": role,
 	}

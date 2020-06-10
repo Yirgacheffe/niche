@@ -13,7 +13,7 @@ type AppError struct {
 
 // ErrorResponse - Wrap up the AppError
 type ErrorResponse struct {
-	Errors AppError `json:"error"`
+	Errors []AppError `json:"errors"`
 }
 
 // DisplayAppError - Send back the AppError
@@ -27,7 +27,9 @@ func DisplayAppError(w http.ResponseWriter, code int, message string) {
 	}
 
 	errResponse := ErrorResponse{
-		errObj,
+		[]AppError{
+			errObj,
+		},
 	}
 
 	if j, err := json.Marshal(errResponse); err == nil {

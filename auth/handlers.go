@@ -46,6 +46,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 // JwksHandler - Provide JWK url for token verification
 func JwksHandler(w http.ResponseWriter, r *http.Request) {
 
+	jwk := JSONWebKey{
+		Kty: "RSA",
+		Kid: "5UoLr4eKYMA3LeFszcWarhNxz",
+		Use: "nichesoft.io",
+		E:   "AQAB",
+		N:   "",
+		Alg: "RS256",
+	}
+
+	jwks := []JSONWebKey{}
+	jwks = append(jwks, jwk)
+
+	if j, err := json.Marshal(jwks); err != nil {
+		panic(err)
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(j)
+	}
+
 }
 
 // HealthCheckHandler - monitor purpose

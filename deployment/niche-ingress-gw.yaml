@@ -1,3 +1,18 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: niche-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -6,7 +21,7 @@ spec:
   hosts:
     - "*"
   gateways:
-    - istio-system/istio-ingressgateway # namespace/gateway
+    - niche-gateway
   http:
 #    - match:
 #        - uri:
@@ -17,15 +32,15 @@ spec:
 #            port:
 #              number: 8080
 #          weight: 100
-    - match:
-        - uri:
-            prefix: "/api"
-      route:
-        - destination:
-            host: niche-todox
-            port:
-              number: 8081
-          weight: 100
+#    - match:
+#        - uri:
+#            prefix: "/api"
+#      route:
+#        - destination:
+#            host: niche-todox
+#            port:
+#              number: 8081
+#          weight: 100
     - match:
         - uri:
             prefix: "/"

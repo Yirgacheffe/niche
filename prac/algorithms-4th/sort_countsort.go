@@ -2,6 +2,20 @@ package main
 
 import "fmt"
 
+func findMax(a []int) int {
+
+	max := 0
+
+	for _, e := range a {
+		if e > max {
+			max = e
+		}
+	}
+
+	return max
+
+}
+
 func sort(a []int) []int {
 
 	// make the counter from max range
@@ -37,7 +51,9 @@ func main() {
 
 	a := []int{5, 1, 9, 51, 9, 2, 0}
 
+	fmt.Println(findMax(a))
 	fmt.Println(a)
+
 	b := sort(a)
 	fmt.Println(b)
 

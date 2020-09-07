@@ -31,6 +31,8 @@ func isSubsetInBruteforce(p, s []int) bool {
 
 }
 
+// Version 1: Brute force
+// Version 2: Binery Search
 func main() {
 
 	p := []int{11, 1, 13, 36, 25, 9, 14, 20}

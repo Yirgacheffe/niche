@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"sync"
 )
 
@@ -14,7 +15,25 @@ func produce(data chan int, wg *sync.WaitGroup) {
 }
 
 func consume(data chan int, done chan bool) {
-	// WIP ...
+
+	f, err := os.Create("test_concurrency_write.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	defer f.Close()
+
+	for d := range data {
+		_, err = fmt.Fprintln(f, d)
+		if err != nil {
+			fmt.Println(err)
+			done <- false
+		}
+	}
+
+	fmt.Println("Write file concurrency successfully!")
+	done <- true
 }
 
 func main() {

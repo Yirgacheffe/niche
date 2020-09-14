@@ -8,6 +8,9 @@ import (
 
 func main() {
 
+	// absolute path
+	// data, err := ioutil.ReadFile("/home/naveen/Documents/filehandling/test.txt")
+
 	fptr := flag.String("fpath", "data.txt", "target file path")
 	flag.Parse()
 

@@ -1,0 +1,21 @@
+# --- !Ups
+
+--
+CREATE DATABASE IF NOT EXISTS TOLLGATE default charset utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- Created table 'clients' in database
+CREATE TABLE `TUS_FILES` (
+
+  ID                INT             NOT NULL AUTO_INCREMENT,
+  OFFSET            INT             NOT NULL,
+  UPLOAD_LENGTH     INT             NOT NULL,
+  IS_COMPLETE       ENUM('Y', 'N')  NOT NULL,
+  CREATED_AT        TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UPDATED_AT        TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`)
+
+) ENGINE=InnoDB DEFAULT CHARSET = utf8mb4 AUTO_INCREMENT = 1;
+
+# --- !Downs
+DROP TABLE    "TUS_FILES"       IF EXISTS;
+DROP DATABASE "TOLLGATE"        IF EXISTS;

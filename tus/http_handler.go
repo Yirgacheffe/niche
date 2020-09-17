@@ -28,20 +28,17 @@ func (h *FileHandler) DetailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	vars := mux.Vars(r)
-	fID, err := strconv.Atoi(vars["id"])
+	params := mux.Vars(r)
+	fID, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	f, err := h.fileRepo.GetByID(int64(fID))
 	if err != nil {
-		log.Println(err)
 		w.WriteHeader(http.StatusNotFound)
-
 		return
 	}
 
@@ -49,6 +46,29 @@ func (h *FileHandler) DetailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Upload-Offset", strconv.Itoa(f.Offset))
 	w.WriteHeader(http.StatusOK)
+
+}
+
+// PatchFileHandler - /api/files/{id}
+func (h *FileHandler) PatchFileHandler(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	fID, err := strconv.Atoi(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	f, err := h.fileRepo.GetByID(int64(fID))
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	// if file upload complete
+	if f.IsComplete == "Y" {
+
+	}
 
 }
 

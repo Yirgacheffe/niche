@@ -1,18 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 var (
 	dbHost, dbPort, dbUser, dbPazz, dbName string
 )
-
-func init() {
-
-}
 
 func main() {
 
@@ -47,30 +45,21 @@ func main() {
 		os.Exit(-1)
 	}
 
-	fileRepo := NewMySQLFileRepo(db.SQL)
+	fh := NewFileHandler(db)
 
-	/*
+	// Start the server
+	router := mux.NewRouter()
 
-		f := File{
-			Offset:       101,
-			UploadLength: 101,
-			IsComplete:   "N",
-		}
+	api := router.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/files/{id:[0-9]+}", fh.DetailsHandler).Methods("HEAD")
+	api.HandleFunc("/health", HealthHandler).Methods("GET")
 
-		id, err := fileRepo.Create(&f)
-		if err != nil {
-			log.Println("Create file ", err)
-
-		}
-
-	*/
-
-	f, err := fileRepo.GetByID(1)
-	if err != nil {
-		log.Println(err)
+	server := &http.Server{
+		Addr:    ":8083",
+		Handler: router,
 	}
 
-	fmt.Printf("ID = %d\n", f.ID)
-	fmt.Println(f)
+	log.Println("Tus application will start, listening on 8083 ...")
+	server.ListenAndServe()
 
 }

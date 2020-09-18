@@ -67,7 +67,8 @@ func (h *FileHandler) PatchFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if file upload complete
 	if f.IsComplete == "Y" {
-
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
 	}
 
 }
@@ -78,4 +79,8 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	io.WriteString(w, `{"alive": true}`)
+}
+
+func responseWithErrorCode(w http.ResponseWriter, code int, message string) {
+
 }

@@ -21,4 +21,10 @@ func main() {
 	envs := os.Environ()
 	fmt.Printf("os.Environ => %v\n", envs)
 
+	fruit := os.Getenv("FRUIT")
+	fmt.Printf("os.Getenv(\"FRUIT\") => %s\n", fruit)
+
+	orange, oExists := os.LookupEnv("ORANGE")
+	fmt.Printf("os.LookupEnv(\"ORANGE\") => %v (exists: %v)\n", orange, oExists)
+
 }

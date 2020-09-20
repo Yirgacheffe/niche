@@ -44,7 +44,7 @@ func main() {
 	apple = os.Getenv("FRUIT")
 	fmt.Printf("os.Getenv(\"FRUIT\") => %s\n", apple)
 
-	// os expand, expand env
+	// os expand, it should be string functions ???
 	// Replace the place holder
 	expdMapper := func(ph string) string {
 		switch ph {
@@ -62,6 +62,9 @@ func main() {
 
 	fmt.Println(formatted)
 
-	//
+	// os.ExpandEnv
+	os.Setenv("COUNTRY", "Japan")
+	raww := "I am living in ${COUNTRY}."
+	fmt.Printf("os.ExpandEnv => %s\n", os.ExpandEnv(raww))
 
 }

@@ -18,4 +18,7 @@ func main() {
 
 	fmt.Printf("os.DevNull => %v\n", os.DevNull)
 
+	envs := os.Environ()
+	fmt.Printf("os.Environ => %v\n", envs)
+
 }

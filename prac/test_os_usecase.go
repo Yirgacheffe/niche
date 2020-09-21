@@ -8,6 +8,7 @@ import (
 
 func main() {
 
+	// Global constant and variables
 	fmt.Println(strings.Join(os.Args[1:], " "))
 	fmt.Println(os.Args[1:])
 
@@ -66,5 +67,35 @@ func main() {
 	os.Setenv("COUNTRY", "Japan")
 	raww := "I am living in ${COUNTRY}."
 	fmt.Printf("os.ExpandEnv => %s\n", os.ExpandEnv(raww))
+
+	// System and User info
+	hostName, err := os.Hostname()
+	if err == nil {
+		fmt.Printf("os.HostName => %s\n", hostName)
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err == nil {
+		fmt.Printf("os.UserHomeDir => %s\n", homeDir)
+	}
+
+	// current work directory and change it
+	currWd, _ := os.Getwd()
+	fmt.Printf("os.Getwd [before]=> %v\n", currWd)
+
+	os.Chdir("..")
+	aftrWd, _ := os.Getwd()
+	fmt.Printf("os.Getwd [after ]=> %v\n", aftrWd)
+
+	os.Chdir("/Users/aaron/proj/golang-exec/niche/prac")
+	aftrrWd, _ := os.Getwd()
+	fmt.Printf("os.Getwd [after2]=> %v\n", aftrrWd)
+
+	// executable program path
+	execDir, _ := os.Executable()
+	fmt.Printf("os.Executable => %v\n", execDir)
+
+	tmpDir := os.TempDir()
+	fmt.Printf("os.TempDir => %v\n", tmpDir)
 
 }

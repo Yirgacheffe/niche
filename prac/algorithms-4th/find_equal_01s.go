@@ -38,20 +38,11 @@ func bruteForce(a []int) {
 		}
 	}
 
-	fmt.Printf("Max lenth is: %d\n", maxlen)
 	fmt.Printf("Index is: %d -> %d\n", startIdx, maxlen)
 
 }
 
-func max(a, b int) int {
-	if a > b {
-		return a
-	} else {
-		return b
-	}
-}
-
-// // Using map store the sum - index pair
+// Using map store the sum - index pair
 func betterForce(a []int) {
 
 	hmap := make(map[int]int)
@@ -81,9 +72,7 @@ func betterForce(a []int) {
 	}
 
 	startIdx := endIdx - maxlen + 1
-
-	fmt.Println(startIdx)
-	fmt.Println(endIdx)
+	fmt.Printf("Index is: %d -> %d\n", startIdx, endIdx)
 
 }
 

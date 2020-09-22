@@ -39,11 +39,29 @@ func main() {
 
 	sleep3Cmd.Start()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 5; i++ {
 		fmt.Println(i)
 	}
 
 	// Waitting for sleep 3 command to finish
 	sleep3Cmd.Wait()
+
+	// Construct command
+	vCmd := exec.Command("go", "version")
+	vCmd.Stderr = os.Stdout
+	vCmd.Stdout = os.Stdout
+
+	if err = vCmd.Run(); err != nil {
+		fmt.Println(err)
+	}
+
+	// Command Output
+	oCmd := exec.Command("go", "version")
+
+	if output, err := oCmd.Output(); err != nil {
+		fmt.Println("Error: ", err)
+	} else {
+		fmt.Printf("exec.Output => %s\n", output)
+	}
 
 }

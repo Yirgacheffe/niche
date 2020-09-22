@@ -5,6 +5,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"path"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -22,6 +24,27 @@ func NewFileHandler(db *DB) *FileHandler {
 // FileHandler ... Http handler
 type FileHandler struct {
 	fileRepo FileRepo
+}
+
+const tusFolderName = "tus_file_server"
+
+func makeFileDirectory() (string, error) {
+
+	userHome, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("Unable to get current user home directory.", err)
+		return "", err
+	}
+
+	tusPath := path.Join(userHome, tusFolderName)
+
+	err = os.Mkdir(tusPath, 0744)
+	if err != nil {
+		log.Println("Unable to create file directory.", err)
+	}
+
+	return tusPath, nil
+
 }
 
 // DetailsHandler - /api/files/{id}

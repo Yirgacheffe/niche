@@ -52,6 +52,8 @@ func main() {
 
 	api := router.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/files/{id:[0-9]+}", fh.DetailsHandler).Methods("HEAD")
+	api.HandleFunc("/files/{id:[0-9]+}", fh.PatchFileHandler).Methods("PATCH")
+
 	api.HandleFunc("/health", HealthHandler).Methods("GET")
 
 	server := &http.Server{

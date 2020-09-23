@@ -24,8 +24,8 @@ func worker(ctx context.Context, seconds int) {
 
 func main() {
 
-	deadline := time.Now().Add(3 * time.Second)
-	ctx, cancel := context.WithDeadline(context.Background(), deadline)
+	timeout := time.Duration(3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	// mannually cancel if main returned before deadline
 	// let's say if return in 1 second
@@ -38,7 +38,6 @@ func main() {
 	go worker(ctx, 8)
 
 	time.Sleep(5 * time.Second)
-
 	fmt.Println("Number of goroutine", runtime.NumGoroutine())
 
 }

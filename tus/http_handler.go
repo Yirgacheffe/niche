@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -37,7 +38,6 @@ func makeFileDirectory() (string, error) {
 	}
 
 	tusPath := path.Join(userHome, tusFolderName)
-
 	err = os.Mkdir(tusPath, 0744)
 	if err != nil {
 		log.Println("Unable to create file directory.", err)
@@ -136,9 +136,40 @@ func (h *FileHandler) PatchFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Write file on the disk, get offset and update the record in database
 	// Fake increment the offset length
-	f.Offset = offset + 2
+
+	dirPath := "/Users/aaron/tus_file_server"
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Receive file partially %s\n", err)
+	}
+
+	fp := fmt.Sprintf("%s/%d", dirPath, f.ID)
+	savedFile, err := os.OpenFile(fp, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("Unable to open file %s\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	defer savedFile.Close()
+
+	n, err := savedFile.WriteAt(body, int64(offset))
+	if err != nil {
+		log.Printf("Unable to write file %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("Number of bytes written", n)
+	f.Offset += n
+
+	uo := strconv.Itoa(f.Offset)
+	w.Header().Set("Upload-Offset", uo)
+
 	if f.Offset == f.UploadLength {
 		f.IsComplete = "Y"
+		log.Println("Uploaded complete successfully!")
 	}
 
 	_, err = h.fileRepo.Update(&f)

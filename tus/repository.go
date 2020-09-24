@@ -45,7 +45,7 @@ func (m *mysqlFileRepo) Create(f *File) (int64, error) {
 
 func (m *mysqlFileRepo) Update(f *File) (int64, error) {
 
-	query := "UPDATE TUS_FILES SET OFFSET=?, IS_COMPLETE=?, UPDATED_AT=? WHERE ID=?"
+	query := "UPDATE TUS_FILES SET OFFSET=?, IS_COMPLETE=?, UPDATED_AT=NOW() WHERE ID=?"
 
 	stmt, err := m.Conn.Prepare(query)
 	if err != nil {
@@ -54,8 +54,7 @@ func (m *mysqlFileRepo) Update(f *File) (int64, error) {
 
 	defer stmt.Close()
 
-	updatedAt := "NOW()"
-	res, err := stmt.Exec(f.Offset, f.IsComplete, updatedAt, f.ID)
+	res, err := stmt.Exec(f.Offset, f.IsComplete, f.ID)
 	if err != nil {
 		return -1, err
 	}

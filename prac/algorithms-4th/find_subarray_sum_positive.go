@@ -9,17 +9,14 @@ func findSubarrayM1(a []int, sum int) {
 	n := len(a)
 
 	for i := 1; i <= n; i++ {
-
 		for (csum > sum) && (s < i-1) {
 			csum -= a[s]
 			s++
 		}
-
 		if csum == sum {
 			fmt.Printf("Found: %d to %d\n", s, i-1)
 			return
 		}
-
 		if i < n {
 			csum += a[i]
 		}
@@ -36,12 +33,10 @@ func findSubarrayM2(a []int, sum int) {
 
 	for i := 0; i < n; i++ {
 		csum += a[i]
-
 		for (csum > sum) && (s <= i) {
 			csum -= a[s]
 			s++
 		}
-
 		if csum == sum {
 			fmt.Printf("Found: %d to %d\n", s, i)
 			return
@@ -60,7 +55,6 @@ func findSubarrayWithHash(a []int, sum int) {
 
 	for i := 0; i < len(a); i++ {
 		csum += a[i]
-
 		// this is the important part... :-(
 		e := csum - sum
 
@@ -77,12 +71,9 @@ func findSubarrayWithHash(a []int, sum int) {
 }
 
 func main() {
-
 	a := []int{1, 4, 20, 3, 10, 5}
 
 	findSubarrayM1(a, 13)
 	findSubarrayM2(a, 33)
-
 	findSubarrayWithHash(a, 33)
-
 }

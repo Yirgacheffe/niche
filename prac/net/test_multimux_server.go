@@ -9,13 +9,11 @@ import (
 func createServer(name string, port int) *http.Server {
 
 	mux := http.NewServeMux()
-
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Hello: "+name)
 	}
 
 	mux.HandleFunc("/", handleFunc)
-
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%v", port),
 		Handler: mux,

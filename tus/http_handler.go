@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -25,26 +25,6 @@ func NewFileHandler(db *DB) *FileHandler {
 // FileHandler ... Http handler
 type FileHandler struct {
 	fileRepo FileRepo
-}
-
-const tusFolderName = "tus_file_server"
-
-func makeFileDirectory() (string, error) {
-
-	userHome, err := os.UserHomeDir()
-	if err != nil {
-		log.Println("Unable to get current user home directory.", err)
-		return "", err
-	}
-
-	tusPath := path.Join(userHome, tusFolderName)
-	err = os.Mkdir(tusPath, 0744)
-	if err != nil {
-		log.Println("Unable to create file directory.", err)
-	}
-
-	return tusPath, nil
-
 }
 
 // DetailsHandler - /api/files/{id}
@@ -136,15 +116,22 @@ func (h *FileHandler) PatchFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Write file on the disk, get offset and update the record in database
 	// Fake increment the offset length
-
-	dirPath := "/Users/aaron/tus_file_server"
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Receive file partially %s\n", err)
 	}
 
-	fp := fmt.Sprintf("%s/%d", dirPath, f.ID)
+	// fp := fmt.Sprintf("%s/%d", dirPath, f.ID)
+
+	tmpDirPath, err := GetFileDir()
+	if err != nil {
+		log.Println("Get tus file folder error", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fp := filepath.Join(tmpDirPath, strconv.FormatInt(f.ID, 64))
+
 	savedFile, err := os.OpenFile(fp, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Printf("Unable to open file %s\n", err)

@@ -11,7 +11,8 @@ type Student struct {
 	LastName  string
 }
 
-func (s Student) fullName() string {
+// FullName is fullname
+func (s Student) FullName() string {
 	return s.FirstName + " " + s.LastName
 }
 
@@ -29,7 +30,7 @@ func (c *College) Add(payload Student, reply *Student) error {
 	}
 
 	c.database[id] = payload
-	reply = &payload
+	*reply = payload
 
 	return nil // Return nil without error
 

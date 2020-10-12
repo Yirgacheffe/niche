@@ -12,9 +12,9 @@ func main() {
 	for _, url := range os.Args[1:] {
 
 		/*
-		if !strings.HasPrefix("http://") {
-			url = append(url, "http://")
-		}
+			if !strings.HasPrefix("http://") {
+				url = append(url, "http://")
+			}
 		*/
 
 		resp, err := http.Get(url)
@@ -36,6 +36,10 @@ func main() {
 		}
 
 		fmt.Printf("%s", b)
+
+		fmt.Println(resp.Header)
+		fmt.Println(resp.Header.Get("Content-Type"))
+
 	}
 
 }

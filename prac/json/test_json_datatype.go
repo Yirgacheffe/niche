@@ -5,18 +5,28 @@ import (
 	"fmt"
 )
 
-type profile struct {
+type Profile struct {
 	UserName  string
 	Followers int
 	Grades    map[string]string
 }
 
-// Profile can be anonymous and promoted to correct struct 'profile'
 type student struct {
 	FirstName, LastName string
 	Age                 int
-	Profile             profile
+	Profile             Profile
 	Languages           []string
+}
+
+// Profile can be anonymous and promoted to correct struct 'profile'
+// In that case
+// The field in profile become field of 'Student'
+type student2 struct {
+	FirstName string
+	LastName  string
+	Age       int
+	Profile
+	Languages []string
 }
 
 func main() {
@@ -25,7 +35,7 @@ func main() {
 		FirstName: "Terasa",
 		LastName:  "May",
 		Age:       63,
-		Profile: profile{
+		Profile: Profile{
 			UserName:  "terasa17994",
 			Followers: 463,
 			Grades:    map[string]string{"Mathemetics": "A", "French": "A+"},
@@ -35,5 +45,21 @@ func main() {
 
 	terasaJSON, _ := json.MarshalIndent(terasa, "", "    ")
 	fmt.Println(string(terasaJSON))
+
+	// Fields in 'Profile' will be promoted into 'student'
+	// 'Grade' will be null as we are not setting value to it
+	john := student2{
+		FirstName: "Boris",
+		LastName:  "Johnson",
+		Age:       56,
+		Profile: Profile{
+			UserName:  "boris8733244",
+			Followers: 500,
+		},
+		Languages: []string{"English", "French"},
+	}
+
+	johnJSON, _ := json.MarshalIndent(john, "", "    ")
+	fmt.Println(string(johnJSON))
 
 }

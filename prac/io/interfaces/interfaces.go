@@ -1,4 +1,4 @@
-package interfaces
+package main
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ func Copy(in io.ReadSeeker, out io.Writer) error {
 
 	w := io.MultiWriter(out, os.Stdout)
 
-	if _, err := io.Copy(w, in); e != nil {
+	if _, err := io.Copy(w, in); err != nil {
 		return err
 	}
 
@@ -21,7 +21,7 @@ func Copy(in io.ReadSeeker, out io.Writer) error {
 
 	// buffer write using 64 byte chunks
 	buf := make([]byte, 64)
-	if _, err = io.CopyBuffer(w, in, buf); err != nil {
+	if _, err := io.CopyBuffer(w, in, buf); err != nil {
 		return err
 	}
 

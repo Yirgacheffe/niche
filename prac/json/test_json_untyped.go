@@ -1,5 +1,10 @@
 package main
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 func main() {
 	b := []byte(`{"Name": "Wednesday", "Age": 6, "Parents": ["Gomez", "Morticia"]}`)
 	var f interface{}
@@ -16,7 +21,7 @@ func main() {
 		case string:
 			fmt.Println(k, "is string", vv)
 		case float64:
-			fmt.Println(k,"is float64",vv)
+			fmt.Println(k, "is float64", vv)
 		case int:
 			fmt.Println(k, "is int", vv)
 		case []interface{}:

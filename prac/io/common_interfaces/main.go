@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+
+	"./utils"
 )
 
 func main() {
@@ -11,14 +13,14 @@ func main() {
 	out := &bytes.Buffer{}
 
 	fmt.Print("Stdout on copy = ")
-	if err := Copy(in, out); err != nil {
+	if err := utils.Copy(in, out); err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Out byte buffer = ", out.String())
 
 	fmt.Print("Stdout on Pipe = ")
-	if err := PipeExample(); err != nil {
+	if err := utils.PipeExample(); err != nil {
 		panic(err)
 	}
 

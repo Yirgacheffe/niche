@@ -57,7 +57,7 @@ func main() {
 	api.HandleFunc("/health", HealthHandler).Methods("GET")
 
 	server := &http.Server{
-		Addr:    ":8083",
+		Addr:    ":8093",
 		Handler: router,
 	}
 

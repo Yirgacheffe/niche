@@ -27,6 +27,55 @@ type FileHandler struct {
 	fileRepo FileRepo
 }
 
+// CreateHandler - /api/files
+func (h *FileHandler) CreateHandler(w http.ResponseWriter, r *http.Request) {
+
+	ul, err := strconv.Atoi(r.Header.Get("Upload-Length"))
+	if err != nil {
+		log.Printf("Improper upload length: %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Wrong! Improper upload length."))
+		return
+	}
+
+	log.Printf("Upload length: %d\n", ul)
+
+	isComplete := "N"
+	offset := 0
+
+	f := &File{Offset: offset, UploadLength: ul, IsComplete: isComplete}
+
+	id, err := h.fileRepo.Create(f)
+	if err != nil {
+		log.Printf("Create file error in DB: %s\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fp, err := GetFileDir()
+	if err != nil {
+		log.Println("Get tus file folder error", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fullPath := fmt.Sprintf("%s/%d", fp, id)
+
+	file, err := os.Create(fullPath)
+	if err != nil {
+		log.Printf("Create file error on filesystem %s\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	defer file.Close()
+
+	w.Header().Set("Location", fmt.Sprintf("localhost:8093/files/%d", id))
+	w.WriteHeader(http.StatusOK)
+
+	return
+}
+
 // DetailsHandler - /api/files/{id}
 func (h *FileHandler) DetailsHandler(w http.ResponseWriter, r *http.Request) {
 

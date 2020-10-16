@@ -71,7 +71,7 @@ func (h *FileHandler) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	w.Header().Set("Location", fmt.Sprintf("localhost:8093/files/%d", id))
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 
 	return
 }

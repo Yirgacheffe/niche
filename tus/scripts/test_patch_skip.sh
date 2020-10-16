@@ -1,0 +1,1 @@
+dd if=/home/naveen/Downloads/mypet.mov skip=1589248 bs=1 | curl --request PATCH --data-binary @- localhost:8080/files/1 --header "Upload-Offset: 1589248" --header "Expect:" -i  

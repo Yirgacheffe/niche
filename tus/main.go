@@ -49,8 +49,9 @@ func main() {
 
 	// Start the server
 	router := mux.NewRouter()
-
 	api := router.PathPrefix("/api").Subrouter()
+
+	api.HandleFunc("/files", fh.CreateHandler).Methods("POST")
 	api.HandleFunc("/files/{id:[0-9]+}", fh.DetailsHandler).Methods("HEAD")
 	api.HandleFunc("/files/{id:[0-9]+}", fh.PatchFileHandler).Methods("PATCH")
 

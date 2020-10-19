@@ -10,6 +10,8 @@ type profile struct {
 	Followers int    `json:"f_count"`
 }
 
+// Field `Language` will show, value is nil
+// omitempty will only affect `empty`
 type student struct {
 	FirstName      string   `json:"f_name"`
 	LastName       string   `json:"-"`

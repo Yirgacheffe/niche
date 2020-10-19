@@ -18,35 +18,37 @@ type student struct {
 	Languages      [2]string
 	Subjects       []string
 	Grades         map[string]string
-	Profile        profile
+	Profile        *profile
 }
 
 func main() {
 
-	data := []byte(`
+	d := []byte(`
 	{
 		"FirstName": "john", 
 		"HeightInMeters": 1.75, 
 		"IsMale": null,
-		"Languages": ["English", "Spanish", "German"],
+		"Languages": ["English"],
 		"Subjects": ["Math", "Science"],
-		"Grades": {"Math": "A"},
+		"Grades": null,
 		"Profile": {
-			"UserName": "jondoe83",
 			"Followers": 1989
 		}
 	}`)
 
-	// Language 'German' will be dropped
-	// Subject 'Art' will be dropped
-	// Slice 'Grades' will be merged
-	var john student = student{
-		IsMale:   true,
-		Subjects: []string{"Art"},
-		Grades:   map[string]string{"Science": "A+"},
+	// Profile will be merged
+	var johnson student = student{
+		IsMale:    true,
+		Languages: [2]string{"Korea", "Chinese"},
+		Subjects:  nil,
+		Grades:    map[string]string{"Science": "A+"},
+		Profile: &profile{
+			UserName: "johnsondoe89",
+		},
 	}
 
-	fmt.Printf("Error: %v\n", json.Unmarshal(data, &john))
-	fmt.Printf("%#v\n", john)
+	fmt.Printf("Error: %v\n", json.Unmarshal(d, &johnson))
+	fmt.Printf("%#v\n", johnson)
+	fmt.Printf("%#v\n", johnson.Profile)
 
 }

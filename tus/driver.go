@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -30,6 +31,9 @@ func ConnectSQL(host, port, uname, passwd, dbname string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	d.SetMaxOpenConns(20)
+	d.SetConnMaxLifetime(5 * time.Minute)
 
 	dbConn.SQL = d
 	return dbConn, nil

@@ -35,9 +35,11 @@ func WorkWithBuffer() error {
 	scanner.Split(bufio.ScanWords)
 
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+		fmt.Print(scanner.Text())
 	}
 
+	// this is no '\n' after scanner, make it looks nice
+	fmt.Println()
 	return nil
 
 }

@@ -1,0 +1,2 @@
+INFO: 2020/10/19 17:16:02 test_log_levels.go:36: this is information message!
+WARNING: 2020/10/19 17:16:02 test_log_levels.go:39: this is warning message!

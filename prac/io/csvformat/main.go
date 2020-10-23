@@ -1,6 +1,10 @@
 package main
 
-import "./utils"
+import (
+	"fmt"
+
+	"./utils"
+)
 
 func main() {
 
@@ -15,5 +19,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = utils.WriteCSVOutput()
+	if err != nil {
+		panic(err)
+	}
+
+	buffer, err := utils.WriteCSVBuffer()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Buffer =", buffer.String())
 
 }

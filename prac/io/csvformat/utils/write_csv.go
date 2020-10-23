@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/csv"
 	"io"
+	"os"
 )
 
 // Book has an Author and Title
@@ -39,7 +41,26 @@ func (books *Books) ToCSV(w io.Writer) error {
 
 // WriteCSVOutput initializes a set of books
 // and writes the to os.Stdout
-func WriteCSVOutput() error {}
+func WriteCSVOutput() error {
+
+	b := Books{
+		Book{Author: "F Scott Fitzgerald", Title: "The Great Gatsby"},
+		Book{Author: "J D Salinger", Title: "The Catcher in the Rye"},
+	}
+
+	return b.ToCSV(os.Stdout)
+
+}
 
 // WriteCSVBuffer returns a buffer csv for a set of books
-func WriteCSVBuffer() error {}
+func WriteCSVBuffer() (*bytes.Buffer, error) {
+
+	b := Books{
+		Book{Author: "F Scott Fitzgerald", Title: "The Great Gatsby"},
+		Book{Author: "J D Salinger", Title: "The Catcher in the Rye"},
+	}
+
+	w := &bytes.Buffer{}
+	return w, b.ToCSV(w)
+
+}

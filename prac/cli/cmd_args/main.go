@@ -23,10 +23,10 @@ func main() {
 			if len(os.Args) < 3 {
 				f.Usage()
 				return
-			} else {
-				f.Parse(os.Args[3:])
-				c.Greet(os.Args[2])
 			}
+
+			f.Parse(os.Args[3:])
+			c.Greet(os.Args[2])
 		default:
 			fmt.Println("Invalid command")
 			menu.Usage()

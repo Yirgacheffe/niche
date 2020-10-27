@@ -11,7 +11,6 @@ func printInfo(fi os.FileInfo) {
 	fmt.Println("File size(bytes):", fi.Size())
 	fmt.Println("File mod. time:", fi.ModTime().Format("Jan 2 2016"))
 	fmt.Println("Is file a dir:", fi.IsDir())
-
 }
 
 func main() {
@@ -36,5 +35,12 @@ func main() {
 	} else {
 		printInfo(fileInfo)
 	}
+
+	fmt.Println("----- new record-----")
+
+	fmode := fileInfo.Mode()
+
+	fmt.Printf("File Permission %o (octal), %b (binary)\n", fmode.Perm(), fmode.Perm())
+	fmt.Println("File mode:", fmode.String())
 
 }

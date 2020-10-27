@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	f, err := os.OpenFile("info.txt", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0744)
+	f, err := os.OpenFile("info.txt", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
@@ -20,6 +20,9 @@ func main() {
 	} else {
 		fmt.Println("Successful! %d bytes has been written.\n", n)
 	}
+
+	fmt.Printf("File description: %v\n", f.Fd())
+	fmt.Printf("File name: %v\n", f.Name())
 
 	f.Close()
 

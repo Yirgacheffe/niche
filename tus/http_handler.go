@@ -179,9 +179,9 @@ func (h *FileHandler) PatchFileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fp := filepath.Join(tmpDirPath, strconv.FormatInt(f.ID, 64))
+	fp := filepath.Join(tmpDirPath, strconv.FormatInt(f.ID, 10))
 
-	savedFile, err := os.OpenFile(fp, os.O_APPEND|os.O_WRONLY, 0644)
+	savedFile, err := os.OpenFile(fp, os.O_WRONLY, 0644)
 	if err != nil {
 		log.Printf("Unable to open file %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -13,15 +13,18 @@ func GetFileDir() (string, error) {
 
 	userHome, err := os.UserHomeDir()
 	if err != nil {
-		log.Println("Unable to get user home directory.", err)
+		log.Println("Unable to get user home dir.", err)
 		return "", err
 	}
 
 	tusPath := path.Join(userHome, tusFolder)
+	_, err = os.Stat(tusPath)
 
-	if _, err := os.Stat(tusPath); os.IsNotExist(err) {
-		log.Println("Tus file folder not exist.", err)
-		return "", err
+	if os.IsNotExist(err) {
+		tusPath, err = MakeFileDir()
+		if err != nil {
+			return "", err
+		}
 	}
 
 	return tusPath, nil
@@ -33,7 +36,7 @@ func MakeFileDir() (string, error) {
 
 	userHome, err := os.UserHomeDir()
 	if err != nil {
-		log.Println("Unable to get user home directory.", err)
+		log.Println("Unable to get user home dir.", err)
 		return "", err
 	}
 
@@ -41,7 +44,7 @@ func MakeFileDir() (string, error) {
 
 	err = os.Mkdir(tusPath, 0744)
 	if err != nil {
-		log.Println("Unable to create file directory.", err)
+		log.Println("Unable to create file dir.", err)
 		return "", err
 	}
 

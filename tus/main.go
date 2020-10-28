@@ -62,7 +62,7 @@ func main() {
 		Handler: router,
 	}
 
-	log.Println("Tus application will start, listening on 8083 ...")
+	log.Println("Tus application will start, listening on 8093 ...")
 	server.ListenAndServe()
 
 }

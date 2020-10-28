@@ -1,1 +1,1 @@
-dd if=/home/naveen/Downloads/mypet.mov skip=1589248 bs=1 | curl --request PATCH --data-binary @- localhost:8080/files/1 --header "Upload-Offset: 1589248" --header "Expect:" -i  
+dd if=/Users/aaron/Downloads/pet-mov.png skip=65536 bs=1 | curl --request PATCH --data-binary @- localhost:8093/api/files/5 --header "Upload-Offset: 65536" --header "Expect:" -i

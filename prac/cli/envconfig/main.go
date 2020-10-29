@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 // Config will hold the config which captured from a json file and env vars
@@ -53,6 +54,9 @@ func main() {
 		panic(err)
 	}
 
+	fullpath, _ := filepath.Abs(f.Name())
+
+	fmt.Println("secrets file fullpath:", fullpath)
 	fmt.Println("secrets file content:", secrets)
 
 	fmt.Println("EXAMPLE_VERSION =", os.Getenv("EXAMPLE_VERSION"))

@@ -50,6 +50,7 @@ func main() {
 
 	// read until a error returned
 	for {
+
 		n, err := text.Read(p)
 		fmt.Printf("%d bytes read, data: %s\n", n, p[:n])
 
@@ -60,6 +61,7 @@ func main() {
 			fmt.Println("Huh!! Some error occured!", err)
 			break
 		}
+
 	}
 
 }

@@ -47,6 +47,7 @@ func main() {
 
 	r.TextColor = Green
 	r.Text = "I'm green!"
+
 	fmt.Println(r.String())
 
 	r.TextColor = ColorNone

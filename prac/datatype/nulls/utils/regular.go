@@ -7,16 +7,18 @@ import (
 
 const (
 	jsonBlob = `{"name": "De Guo"}`
-	fullJson = `{"name": "De Guo", "age": 40}`
+	fullJSON = `{"name": "De Guo", "age": 40}`
 )
 
+// Example is a basic struct with age and name fields
 type Example struct {
 	Name string `json:"name"`
 	Age  int    `json:"age,omitempty"`
 }
 
-// BaseEncoding shows encoding and decoding with normal types
-func BaseEncoding() error {
+// RegularEncoding shows encoding and decoding with
+// normal types
+func RegularEncoding() error {
 
 	e := Example{}
 
@@ -34,7 +36,7 @@ func BaseEncoding() error {
 	fmt.Println("Regular Marshal, no age:", string(value))
 
 	// age = 0 example
-	err = json.Unmarshal([]byte(fullJson), &e)
+	err = json.Unmarshal([]byte(fullJSON), &e)
 	if err != nil {
 		return err
 	}

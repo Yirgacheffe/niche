@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import "./utils"
 
 func main() {
-	fmt.Println("WIP......")
+
+	if err := utils.NullEncoding(); err != nil {
+		panic(err)
+	}
+
+	if err := utils.RegularEncoding(); err != nil {
+		panic(err)
+	}
+
+	if err := utils.PointerEncoding(); err != nil {
+		panic(err)
+	}
+
 }

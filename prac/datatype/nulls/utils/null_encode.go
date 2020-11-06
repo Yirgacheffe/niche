@@ -11,7 +11,7 @@ type nullInt64 sql.NullInt64
 // NullIntExample is the same, but uses a sql.NullInt64
 type NullIntExample struct {
 	Name string     `json:"name"`
-	Age  *nullInt64 `json"age,omitempty"`
+	Age  *nullInt64 `json:"age,omitempty"`
 }
 
 func (v *nullInt64) MarshalJSON() ([]byte, error) {

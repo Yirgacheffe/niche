@@ -15,7 +15,7 @@ type pos struct {
 // GobExample demostrates usting the gob package
 func GobExample() error {
 
-	buffer := bytes.Buffer()
+	buffer := bytes.Buffer{}
 	p := pos{
 		X: 10, Y: 15, Object: "wrench",
 	}

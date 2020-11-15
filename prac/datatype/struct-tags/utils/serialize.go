@@ -40,6 +40,6 @@ func SerializeStructStrings(s interface{}) (string, error) {
 
 	}
 
-	return "", nil
+	return result, nil
 
 }

@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"./utils"
+)
 
 func main() {
-	fmt.Println("WIP......")
+
+	if err := utils.EmptyStruct(); err != nil {
+		panic(err)
+	}
+
+	fmt.Println()
+
+	if err := utils.FullStruct(); err != nil {
+		panic(err)
+	}
+
 }

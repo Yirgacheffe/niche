@@ -36,6 +36,7 @@ func EmptyStruct() error {
 // FullStruct demonstrates serialize and deserialize for an Full struct
 // with tags
 func FullStruct() error {
+
 	p := Person{
 		Name:  "Aaron",
 		City:  "Seattle",

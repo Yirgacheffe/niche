@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -24,9 +25,9 @@ var msgChs = make(map[chan []byte]bool)
 
 func sayHandler(w http.ResponseWriter, r *http.Request) {
 
-	name    := r.FormValue("name")
+	name := r.FormValue("name")
 	message := r.FormValue("message")
-	
+
 	reqMap := map[string]string{"name": name, "message": message}
 	json, _ := json.Marshal(reqMap)
 
@@ -34,10 +35,10 @@ func sayHandler(w http.ResponseWriter, r *http.Request) {
 		for msgCh := range msgChs {
 			msgCh <- []byte(json)
 		}
-	}
+	}()
 
-	w.Write([]byte("ok."))	// write ok to response
-	
+	w.Write([]byte("ok."))
+
 }
 
 func listenHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,11 +49,28 @@ func listenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	msgCh := make(chan []byte)
+	msgChs[msgCh] = true
+
+	for {
+		select {
+		case msg := <-msgCh:
+			w.Write(formatSSE("message", string(msg)))
+			w.(http.Flusher).Flush()
+		case <-r.Context().Done():
+			delete(msgChs, msgCh)
+			fmt.Println("Get Done message from context.")
+			return
+		}
+	}
+
+	// end of this program, nothing to do well this is nouces ......
+
 }
 
 func main() {
 	http.HandleFunc("/say", sayHandler)
-	http.HandleFunc("listen", listenHandler)
+	http.HandleFunc("/listen", listenHandler)
 
 	log.Println("Running at :4000")
 	log.Fatal(http.ListenAndServe(":4000", nil))

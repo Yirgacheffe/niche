@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-// Apex will be
-func Apex() {
+func main() {
 	fmt.Println("WIP......")
 }

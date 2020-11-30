@@ -2,13 +2,14 @@ package main
 
 import "github.com/sirupsen/logrus"
 
+// Hook implement the logurs Hook interface
 type Hook struct {
 	id string
 }
 
 // Fire will trigger whenever you log
 func (h *Hook) Fire(entry *logrus.Entry) error {
-	entry.Data["id"] = hook.id
+	entry.Data["id"] = h.id
 	return nil
 }
 

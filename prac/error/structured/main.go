@@ -3,5 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("WIP......")
+	fmt.Println("Logrus:")
+	Logrus()
+
+	fmt.Println("-------")
 }

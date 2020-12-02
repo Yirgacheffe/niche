@@ -21,6 +21,7 @@ func main() {
 			fmt.Println("received value: ", v)
 			return
 		default:
+			// default make select non-blocking
 			fmt.Println("no value received")
 		}
 	}

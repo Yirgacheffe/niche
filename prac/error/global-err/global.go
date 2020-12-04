@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"os"
 	"sync"
 
 	"github.com/sirupsen/logrus"
@@ -12,17 +14,26 @@ var (
 )
 
 func Init() error {
+	err := errors.New("already initialized")
+	initLog.Do(func() {
+		err = nil
+		log = logrus.New()
+		log.Formatter = &logrus.JSONFormatter{}
+		log.Out = os.Stdout
+		log.Level = logrus.DebugLevel
+	})
 
+	return err
 }
 
 func SetLog(l *logrus.Logger) {
-
-}
-
-func WithField(key string, value interface{}) *logrus.Entry {
-
+	log = l
 }
 
 func Debug(args ...interface{}) {
+	log.Debug(args...)
+}
 
+func WithField(key string, value interface{}) *logrus.Entry {
+	return log.WithField(key, value)
 }

@@ -2,16 +2,25 @@ package main
 
 import "testing"
 
+const (
+	expEmpty  = "Hello dude!"
+	expResult = "Hello Mike!"
+)
+
 func TestHello(t *testing.T) {
 
-	emptyResult := hello("")
-	if emptyResult != "Hello dude!" {
-		t.Errorf("hello(\"\") failed, excepted %v, got %v", "Hello dude!", emptyResult)
+	actEmpty := hello("")
+	if expEmpty != actEmpty {
+		t.Errorf("hello(\"\") failed, excepted %#v, got %#v", expEmpty, actEmpty)
+	} else {
+		t.Logf("hello(\"\") success, excepted %#v, got %#v", expEmpty, actEmpty)
 	}
 
-	result := hello("Mike")
-	if result != "Hello Mike!" {
-		t.Errorf("hello(\"Mike\") failed, excepted %v, got %v", "Hello Mike!", result)
+	actResult := hello("Mike")
+	if actResult != expResult {
+		t.Errorf("hello(\"Mike\") failed, excepted %#v, got %#v", expResult, actResult)
+	} else {
+		t.Logf("hello(\"Mike\") success, excepted %#v, got %#v", expResult, actResult)
 	}
 
 }

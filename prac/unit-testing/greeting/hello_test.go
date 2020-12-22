@@ -24,3 +24,29 @@ func TestHello(t *testing.T) {
 	}
 
 }
+
+func TestHello_With_Empty_Arg(t *testing.T) {
+
+	emptyExp := "Hello dude!"
+	emptyAct := hello("")
+
+	if emptyAct == emptyAct {
+		t.Logf("Succeed!  Exp: %#v, Got %#v", emptyExp, emptyAct)
+	} else {
+		t.Errorf("Failed! Exp: %#v, Got %#v", emptyExp, emptyAct)
+	}
+
+}
+
+func TestHello_With_Valid_Arg(t *testing.T) {
+
+	resultExp := "Hello Mike!"
+	resultAct := hello("Mike")
+
+	if resultAct == resultExp {
+		t.Logf("Succeed!  Exp: %#v, Got %#v", resultExp, resultAct)
+	} else {
+		t.Errorf("Failed! Exp: %#v, Got %#v", resultExp, resultAct)
+	}
+
+}

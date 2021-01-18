@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package service;
+
+option go_package = "bitbucket-repos/internal/grpc/service";
+
+import "bitbucket-repos/internal/proto-files/domain/repository.proto"
+
+message AddRepositoryResponse {
+    Repository addedRepository = 1;
+    Error      error           = 2;
+}
+
+message Error {
+    string code    = 1;
+    string message = 2;
+}
+
+service RepositoryService {
+    rpc add(Repository) return (AddRepositoryResponse);
+}

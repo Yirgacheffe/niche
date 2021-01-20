@@ -4,7 +4,7 @@ package service;
 
 option go_package = "bitbucket-repos/internal/grpc/service";
 
-import "bitbucket-repos/internal/proto-files/domain/repository.proto"
+import "bitbucket-repos/internal/proto-files/domain/repository.proto";
 
 message AddRepositoryResponse {
     Repository addedRepository = 1;
@@ -17,5 +17,5 @@ message Error {
 }
 
 service RepositoryService {
-    rpc add(Repository) return (AddRepositoryResponse);
+    rpc add(Repository) returns (AddRepositoryResponse);
 }

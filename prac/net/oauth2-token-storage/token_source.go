@@ -12,7 +12,7 @@ type storageTokenSource struct {
 }
 
 func (s *storageTokenSource) Token() (*oauth2.Token, error) {
-	if token, err := s.Config.Storage.GetToken(); err == nil && token.Value() {
+	if token, err := s.Config.Storage.GetToken(); err == nil && token.Valid() {
 		return token, err
 	}
 

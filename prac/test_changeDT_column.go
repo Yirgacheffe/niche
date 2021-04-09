@@ -51,4 +51,6 @@ func main() {
 
 	}
 
+	fmt.Println(notAMatch, "lines did not match!")
+
 }

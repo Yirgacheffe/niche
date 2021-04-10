@@ -43,6 +43,26 @@ func hashIt(v, size int) int {
 	return (v % size)
 }
 
+func lookup(hash *HashTable, value int) bool {
+
+	idx := hashIt(value, hash.Size)
+
+	if hash.Table[idx] == nil {
+		return false
+	}
+
+	t := hash.Table[idx]
+	for t != nil {
+		if t.Value == value {
+			return true
+		}
+		t = t.Next
+	}
+
+	return false // Not found finally..... Sadlly
+
+}
+
 func main() {
 
 	/*
@@ -64,5 +84,8 @@ func main() {
 	}
 
 	traverse(hash) // Println element in hashed table
+
+	fmt.Println("94 found:", lookup(hash, 94))
+	fmt.Println("99 found:", lookup(hash, 99))
 
 }

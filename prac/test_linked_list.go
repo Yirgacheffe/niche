@@ -30,6 +30,40 @@ func addNode(t *Node, v int) int {
 	return addNode(t.Next, v)
 }
 
+func addSortedNode(t *Node, v int) int {
+	if t == nil {
+		t = &Node{v, nil}
+		root = t
+		return 0
+	}
+
+	if t.Value == v {
+		fmt.Println("Node already exists:", v)
+		return -1
+	}
+
+	if v < t.Value {
+		t := &Node{v, nil}
+		t.Next = root
+		root = t
+		return -3
+	}
+
+	if t.Next == nil {
+		next := &Node{v, nil}
+		t.Next = next
+		return -2
+	}
+
+	if t.Value < v && v < t.Next.Value {
+		newNode := &Node{v, t.Next}
+		t.Next = newNode
+		return -4
+	}
+
+	return addSortedNode(t.Next, v)
+}
+
 func traverse(t *Node) {
 	if t == nil {
 		fmt.Println("-> Empty list!")

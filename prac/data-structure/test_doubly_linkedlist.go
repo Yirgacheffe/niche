@@ -32,6 +32,7 @@ func addNode(t *Node, v int) int {
 }
 
 func traverse(t *Node) {
+
 	if t == nil {
 		fmt.Println("-> Empty list!")
 		return
@@ -41,13 +42,34 @@ func traverse(t *Node) {
 		fmt.Println("-> ", t.Value)
 		t = t.next
 	}
+
 	fmt.Println()
+
 }
 
 func reverse(t *Node) {
 
+	if t == nil {
+		fmt.Println("-> Empty list!")
+		return
+	}
 
-	
+	var tmp Node
+
+	// Find last node in the link
+	for t != nil {
+		tmp = t
+		t = t.Next
+	}
+
+	for tmp.Previous != nil {
+		fmt.Printf("%d -> ", tmp.Value)
+		tmp = tmp.Previous
+	}
+
+	fmt.Printf("%d -> ", tmp.Value)
+	fmt.Println()
+
 }
 
 func size(t *Node) int {

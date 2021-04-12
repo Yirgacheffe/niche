@@ -8,8 +8,6 @@ type Node struct {
 	Next     *Node
 }
 
-var root = new(Node)
-
 func addNode(t *Node, v int) int {
 
 	if t == nil {
@@ -32,6 +30,24 @@ func addNode(t *Node, v int) int {
 	return addNode(t.Next, v)
 
 }
+
+func traverse(t *Node) {
+
+}
+
+func reverse(t *Node) {
+
+}
+
+func size(t *Node) int {
+
+}
+
+func lookupNode(t *Node, v int) int {
+
+}
+
+var root = new(Node)
 
 func main() {
 	fmt.Println("Hello world!")

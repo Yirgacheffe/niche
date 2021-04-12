@@ -39,8 +39,8 @@ func traverse(t *Node) {
 	}
 
 	for t != nil {
-		fmt.Println("-> ", t.Value)
-		t = t.next
+		fmt.Printf("%d -> ", t.Value)
+		t = t.Next
 	}
 
 	fmt.Println()
@@ -54,7 +54,7 @@ func reverse(t *Node) {
 		return
 	}
 
-	var tmp Node
+	var tmp *Node
 
 	// Find last node in the link
 	for t != nil {
@@ -88,7 +88,7 @@ func size(t *Node) int {
 	return n
 }
 
-func lookupNode(t *Node, v int) int {
+func lookupNode(t *Node, v int) bool {
 	if t == nil {
 		return false
 	}
@@ -107,5 +107,23 @@ func lookupNode(t *Node, v int) int {
 var root = new(Node)
 
 func main() {
-	fmt.Println("Hello world!")
+	fmt.Println(root)
+	root = nil
+	traverse(root)
+
+	addNode(root, 1)
+	addNode(root, 1)
+	traverse(root)
+
+	addNode(root, 10)
+	addNode(root, 5)
+	addNode(root, 0)
+	addNode(root, 0)
+	traverse(root)
+
+	addNode(root, 100)
+	reverse(root)
+	fmt.Println("Size:", size(root))
+
+	traverse(root)
 }

@@ -73,11 +73,35 @@ func reverse(t *Node) {
 }
 
 func size(t *Node) int {
+	if t == nil {
+		fmt.Println("-> Empty list!")
+		return 0
+	}
 
+	n := 0
+
+	for t != nil {
+		n++
+		t = t.Next
+	}
+
+	return n
 }
 
 func lookupNode(t *Node, v int) int {
+	if t == nil {
+		return false
+	}
 
+	if t.Value == v {
+		return true
+	}
+
+	if t.Next == nil {
+		return false
+	}
+
+	return lookupNode(t.Next, v)
 }
 
 var root = new(Node)

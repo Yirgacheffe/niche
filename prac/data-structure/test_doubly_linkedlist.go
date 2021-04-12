@@ -32,11 +32,22 @@ func addNode(t *Node, v int) int {
 }
 
 func traverse(t *Node) {
+	if t == nil {
+		fmt.Println("-> Empty list!")
+		return
+	}
 
+	for t != nil {
+		fmt.Println("-> ", t.Value)
+		t = t.next
+	}
+	fmt.Println()
 }
 
 func reverse(t *Node) {
 
+
+	
 }
 
 func size(t *Node) int {

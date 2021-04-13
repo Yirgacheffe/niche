@@ -12,7 +12,7 @@ var queue = new(Node)
 
 func Push(t *Node, v int) bool {
 
-	if t == nil {
+	if queue == nil {
 		queue = &Node{
 			v,
 			nil,

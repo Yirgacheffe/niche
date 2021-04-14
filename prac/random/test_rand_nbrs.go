@@ -9,7 +9,7 @@ import (
 )
 
 func random(min, max int) int {
-	return rand.Intn(max-min) + max
+	return rand.Intn(max-min) + min
 }
 
 func main() {

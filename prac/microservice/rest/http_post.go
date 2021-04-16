@@ -18,7 +18,7 @@ func (c *Controller) SetValue(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value := r.FormValue("value")
-	c.Storage.Put(value)
+	c.storage.Put(value)
 
 	w.WriteHeader(http.StatusOK)
 	p := Payload{Value: value}

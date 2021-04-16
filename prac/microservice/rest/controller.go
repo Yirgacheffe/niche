@@ -4,7 +4,7 @@ type Controller struct {
 	storage Storage
 }
 
-func New(storage Storage) *Controller {
+func NewController(storage Storage) *Controller {
 	return &Controller{
 		storage: storage,
 	}

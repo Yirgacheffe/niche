@@ -18,7 +18,7 @@ func (c *Controller) GetValue(UseDefault bool) http.HandlerFunc {
 
 		value := "default"
 		if !UseDefault {
-			value = c.Storage.Get()
+			value = c.storage.Get()
 		}
 
 		w.WriteHeader(http.StatusOK)

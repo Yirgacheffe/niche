@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Handler - students api http handler
 type Handler struct {
 	Router *mux.Router
 }

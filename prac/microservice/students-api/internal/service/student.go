@@ -27,3 +27,13 @@ type StudentService interface {
 func NewService(db *gorm.DB) *Service {
 	return &Service{DB: db}
 }
+
+func (s *Service) GetAllStudents() ([]Student, error) {
+	var students []Student
+
+	if result := s.DB.Find(&students); result.Error != nil {
+		return nil, result.Error
+	}
+
+	return students, nil
+}

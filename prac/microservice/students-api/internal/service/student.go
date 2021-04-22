@@ -16,6 +16,12 @@ type Student struct {
 
 type StudentService interface {
 	GetAllStudents() ([]Student, error)
+	GetStudentByID(ID uint) (Student, error)
+	GetStudentBySchool(school string) (Student, error)
+
+	PostStudent(student Student) (Student, error)
+	UpdateStudent(IO uint, newStudent Student) (Student, error)
+	DeleteStudent(ID uint) error
 }
 
 func NewService(db *gorm.DB) *Service {

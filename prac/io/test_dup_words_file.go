@@ -1,10 +1,10 @@
 package main
 
-import "os"
-
-import "bufio"
-
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 func countLines(f *os.File, counts map[string]int) {
 	inputs := bufio.NewScanner(f)

@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
+	"os"
 )
 
 // WorkWithBuffer will make use of the buffer created by the
@@ -41,5 +43,39 @@ func WorkWithBuffer() error {
 	// this is no '\n' after scanner, make it looks nice
 	fmt.Println()
 	return nil
+
+}
+
+func AnotherByteWriteTest() {
+
+	var buffer bytes.Buffer
+
+	buffer.Write([]byte("this is byte buffer"))
+	fmt.Fprintf(&buffer, " ,another strnig!\n")
+
+	buffer.WriteTo(os.Stdout)
+	buffer.WriteTo(os.Stdout)
+
+	buffer.Reset()
+	buffer.Write([]byte("Write go again!"))
+
+	r := bytes.NewReader([]byte(buffer.String()))
+	fmt.Println(buffer.String())
+
+	b := make([]byte, 3)
+
+	for {
+		n, err := r.Read(b)
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		fmt.Printf("Read %s bytes: %d\n", b, n)
+	}
 
 }

@@ -11,4 +11,6 @@ func main() {
 	utils.SearchString()
 	utils.ModifyString()
 	utils.StringReader()
+
+	utils.ReadStringOutToStdErr()
 }

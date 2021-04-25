@@ -34,3 +34,19 @@ func InitDatabase() (*gorm.DB, error) {
 	return db, nil
 
 }
+
+/*
+func InitSqlite3DB() (*gorm.DB, error) {
+
+	fmt.Println("Connect to sqlite3")
+	table := os.Getenv("DB_TABLE")
+
+	db, err := gorm.Open(sqlite.Open(table), &gorm.Config{})
+	if err != nil {
+		return db, err
+	}
+
+	return db, nil
+
+}
+*/

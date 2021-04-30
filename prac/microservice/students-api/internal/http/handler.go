@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"students-api/internal/service/student"
@@ -37,3 +38,16 @@ func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {}
 func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request)     {}
 func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request)      {}
 func (h *Handler) DeleteStudent(w http.ResponseWriter, r *http.Request)      {}
+
+func renderJSON(w http.ResponseWriter, v interface{}) {
+
+	js, err := json.Marshal(v)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "appliction/json")
+	w.Write(js)
+
+}

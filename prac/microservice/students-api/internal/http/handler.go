@@ -3,7 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+
 	"students-api/internal/service/student"
 
 	"github.com/gorilla/mux"
@@ -40,11 +43,29 @@ func (h *Handler) InitRoutes() {
 func (h *Handler) GetAllStudents(w http.ResponseWriter, r *http.Request)     {}
 func (h *Handler) PostStudent(w http.ResponseWriter, r *http.Request)        {}
 func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {}
-func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request)     {}
-func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request)      {}
-func (h *Handler) DeleteStudent(w http.ResponseWriter, r *http.Request)      {}
-func (h *Handler) GetStudentsByTag(w http.ResponseWriter, r *http.Request)   {}
-func (h *Handler) GetStudentsByDate(w http.ResponseWriter, r *http.Request)  {}
+
+func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
+
+	log.Printf("handling get student st %s\n", r.URL.Path)
+
+	// Here and elsewhere, don't checking error of Atoi
+	// because the router only match [0-9]+ regex.
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	student, err := student.GetStudentByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	renderJSON(w, student)
+
+}
+
+func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request)     {}
+func (h *Handler) DeleteStudent(w http.ResponseWriter, r *http.Request)     {}
+func (h *Handler) GetStudentsByTag(w http.ResponseWriter, r *http.Request)  {}
+func (h *Handler) GetStudentsByDate(w http.ResponseWriter, r *http.Request) {}
 
 func renderJSON(w http.ResponseWriter, v interface{}) {
 

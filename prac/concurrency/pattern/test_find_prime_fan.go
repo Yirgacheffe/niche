@@ -8,6 +8,28 @@ import (
 	"time"
 )
 
+func isPrime(n int) bool {
+	if n <= 1 {
+		return false
+	}
+
+	if n == 2 {
+		return true
+	}
+
+	if n%2 == 0 {
+		return false
+	}
+
+	for i := 3; i < n; i += 2 {
+		if n%i == 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Not finished, also need takeN function
 func main() {
 
@@ -46,15 +68,19 @@ func main() {
 
 	primeFinder := func(done <-chan bool, valueStream <-chan int) <-chan int {
 		primeStream := make(chan int)
+
 		go func() {
 			defer close(primeStream)
-			for v := range valueStream {
+			for {
 				select {
 				case <-done:
 					return
-				case primeStream <- v:
-					// find primes algorithem put here ...
+				case v := <-valueStream:
+					if isPrime(v) {
+						primeStream <- v
+					}
 				}
+
 			}
 		}()
 		return primeStream
@@ -75,6 +101,23 @@ func main() {
 		return valueStream
 	}
 
+	take := func(done <-chan bool, valueStream <-chan int, num int) <-chan int {
+		takeStream := make(chan int)
+
+		go func() {
+			defer close(takeStream)
+			for i := 0; i < num; i++ {
+				select {
+				case <-done:
+					return
+				case takeStream <- <-valueStream:
+				}
+			}
+		}()
+
+		return takeStream
+	}
+
 	// #1 General finders
 	randFn := func() int { return rand.Intn(50000000) }
 
@@ -85,7 +128,7 @@ func main() {
 
 	randIntStream := repeatFn(done, randFn) // no 'toInt' function as we already have it
 	fmt.Println("Primes:")
-	for prime := range primeFinder(done, randIntStream) {
+	for prime := range take(done, primeFinder(done, randIntStream), 10) {
 		fmt.Printf("\t%v\n", prime)
 	}
 
@@ -112,7 +155,7 @@ func main() {
 	}
 
 	// take the prime out
-	for prime := range fanIn(done, primeChs...) {
+	for prime := range take(dones, fanIn(done, primeChs...), 10) {
 		fmt.Printf("\t%d\n", prime)
 	}
 

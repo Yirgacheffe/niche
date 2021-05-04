@@ -36,6 +36,7 @@ func getSquareChan(input <-chan int) <-chan int {
 
 }
 
+// fanin
 func merge(sqrChan ...<-chan int) <-chan int {
 
 	var wg sync.WaitGroup

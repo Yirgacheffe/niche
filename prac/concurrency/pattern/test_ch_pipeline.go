@@ -62,7 +62,7 @@ func main() {
 	pipeline := multiply(done, add(done, multiply(done, intStream, 2), 1), 2)
 
 	for v := range pipeline {
-		fmt.Println(v)
+		fmt.Printf("%#v\n", v)
 	}
 
 }

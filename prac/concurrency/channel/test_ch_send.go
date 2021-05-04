@@ -10,6 +10,6 @@ func main() {
 	chnl := make(chan int)
 	go sendData(chnl)
 
-	fmt.Println(<-chnl)
+	fmt.Printf("%#v", <-chnl)
 	// chnl := make(chan<- int)
 }

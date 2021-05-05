@@ -25,6 +25,7 @@ func (ps *PoliteServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome! Thanks for visiting!\n")
 }
 
+// Wrapped by http.Handler
 func anotherLoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -34,9 +35,12 @@ func anotherLoggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+
 	ps := &PoliteServer{}
+	to := http.TimeoutHandler(ps, 2*time.Second, "time out")
 	lm := &LoggingMiddleware{
-		handler: ps,
+		handler: to,
 	}
+
 	log.Fatal(http.ListenAndServe(":9090", lm))
 }

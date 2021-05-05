@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Middleware wrapped by http.HandlerFunc
 type Middleware func(http.HandlerFunc) http.HandlerFunc
 
 func ApplyMiddleware(handler http.HandlerFunc, middlewares ...Middleware) http.HandlerFunc {

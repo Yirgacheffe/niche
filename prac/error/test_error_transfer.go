@@ -61,6 +61,29 @@ func runJob(id string) error {
 	return exec.Command(jobBinPath, "--id="+id).Run()
 }
 
+// Use this when client don't care the low level error
+func runJobAndHideLowlevelError(id string) error {
+	const binPath = "/bab/job/binary"
+	isExecutable, err := isGloballyExec(binPath)
+
+	if err != nil {
+		return IntermediateErr{wrapError(
+			err,
+			"cannot run job %q: requisite binaries not available",
+			id,
+		)}
+	}
+	if !isExecutable {
+		return wrapError(
+			err,
+			"cannot run job %q: requisite binaries not available",
+			id,
+		)
+	}
+
+	return exec.Command(binPath, "--id="+id).Run()
+}
+
 // Func main for demo
 func handleError(key int, err error, message string) {
 	log.SetPrefix(fmt.Sprintf("[logID: %v]:", key))

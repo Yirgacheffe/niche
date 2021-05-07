@@ -52,4 +52,21 @@ func main() {
 
 	fmt.Println(2e3)
 	// fmt.Println(cmp.Diff("Hello world!", "Hello Go!"))
+	fmt.Printf("%q\n", "quit")
+
+	/*
+		// this is for all conversation
+		var timeout = time.After(5 * time.Second)
+
+		for {
+			select {
+			case s := <-c:
+				fmt.Println(s)
+			case <-time.After(1 * time.Second): // only for each message
+				return
+			case <-timeout:
+				return
+			}
+		}
+	*/
 }

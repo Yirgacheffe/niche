@@ -1,0 +1,11 @@
+syntax = "proto3";
+package domain;
+
+option go_package = "bitbucket-repos/internal/grpc/domain";
+
+message Repository {
+    int64  id        = 1;
+    string name      = 2;
+    int64  userId    = 3;
+    bool   isPrivate = 4;
+}

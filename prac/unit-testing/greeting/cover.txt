@@ -1,5 +1,0 @@
-mode: set
-/Users/aaron/proj/golang-exec/niche/prac/unit-testing/greeting/hello.go:5.32,7.20 1 1
-/Users/aaron/proj/golang-exec/niche/prac/unit-testing/greeting/hello.go:11.2,11.39 1 1
-/Users/aaron/proj/golang-exec/niche/prac/unit-testing/greeting/hello.go:7.20,9.3 1 1
-/Users/aaron/proj/golang-exec/niche/prac/unit-testing/greeting/main.go:5.13,12.2 4 0

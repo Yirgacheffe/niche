@@ -32,7 +32,7 @@ func main() {
 		PORT = ":" + os.Args[1]
 	}
 
-	myInterface := new(MyInterface)
+	myInterface := new(MyInterface) // create a new instance
 	rpc.Register(myInterface)
 
 	t, err := net.ResolveTCPAddr("tcp4", PORT)

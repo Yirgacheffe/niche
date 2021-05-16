@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -39,21 +38,12 @@ func NewChain(prefixLen int) *Chain {
 }
 
 func (c *Chain) Write(b []byte) (int, error) {
-	// TODO: Convert []byte to prefix and suffix into chain.
-	br := bufio.NewReader(r)
+	// Convert []byte to prefix and suffix into chain.
+	key := string(b)
+
 	p := make(Prefix, c.prefixLen)
-
-	for {
-		var s string
-		if _, err := fmt.Fscan(br, &s); err != nil {
-			break
-		}
-
-		key := p.String()
-		c.chain[key] = append(c.chain[key], s)
-		p.Shift(s)
-	}
-
+	c.chain[key] = append(c.chain[key], s)
+	p.Shift(s)
 	return len(b), nil
 }
 

@@ -1,13 +1,17 @@
 package main
 
-type Status unit32
+import "fmt"
 
+type Status uint32
+
+/*
 // Bad ...
 const (
 	StatusOpen Status = iota
 	StatusClosed
 	StatusUnknown
 )
+*/
 
 type Request struct {
 	ID        int    `json:"id"`
@@ -30,5 +34,5 @@ const (
 */
 
 func main() {
-	// ... ------ ... -------... ------ ... -------
+	fmt.Printf("%v\n", Request{ID: 1, Timestamp: 23093})
 }

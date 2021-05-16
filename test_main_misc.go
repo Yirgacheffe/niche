@@ -23,15 +23,15 @@ import (
 )
 
 const (
-    _ = iota // ignore first value by assigning to blank identifier
-    KB = 1 << ( 10 * iota )
-    MB
-    GB
-    TB
-    PB
-    EB
-    ZB
-    YB
+	_  = iota // ignore first value by assigning to blank identifier
+	KB = 1 << (10 * iota)
+	MB
+	GB
+	TB
+	PB
+	EB
+	ZB
+	YB
 )
 
 var xx = "Hello, world, xx!"
@@ -851,54 +851,6 @@ func main() {
 
 	fmt.Println("--------------------------")
 	fileSize := 400000
-    fmt.Printf("%.2fGB\n", fileSize / GB)
-
-}
-
-type HomePagetSize struct {
-	URL  string
-	Size int
-}
-
-func testHomePageSizeXYZ() {
-
-	urls := []string{
-		"http://www.apple.com", "http://www.amazon.com", "http://www.google.com", "http://www.microsoft.com",
-	}
-
-	results := make(chan HomePagetSize, 4)
-
-	for _, url := range urls {
-
-		go func(url string) {
-
-			res, err := http.Get(url)
-			if err != nil {
-				panic(err)
-			}
-
-			defer res.Body.Close()
-
-			bs, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				panic(err)
-			}
-
-			results <- HomePagetSize{URL: url, Size: len(bs)}
-
-		}(url)
-
-	}
-
-	var biggest HomePagetSize
-
-	for range urls {
-		result := <-results
-		if result.Size > biggest.Size {
-			biggest = result
-		}
-	}
-
-	fmt.Println("The biggest home page:", biggest.URL)
+	fmt.Printf("%.2fGB\n", fileSize/GB)
 
 }

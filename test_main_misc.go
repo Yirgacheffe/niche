@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"container/list"
 	"crypto/sha1"
-	"encoding/gob"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,8 +12,6 @@ import (
 	"io/ioutil"
 	"math"
 	"math/rand"
-	"net"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -206,70 +203,6 @@ func (m *MultiShape) area() float64 {
 		area += s.area()
 	}
 	return area
-}
-
-func server() {
-
-	ln, err := net.Listen("tcp", ":9999")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	for {
-		c, err := ln.Accept()
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		go handleServerConnection(c)
-	}
-
-}
-
-func handleServerConnection(c net.Conn) {
-
-	var msg string
-	err := gob.NewDecoder(c).Decode(&msg)
-
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Received:", msg)
-	}
-
-	c.Close()
-
-}
-
-func client() {
-
-	c, err := net.Dial("tcp", "127.0.0.1:9999")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	msg := "Hello, this is client"
-	fmt.Println("Sending:", msg)
-
-	err = gob.NewEncoder(c).Encode(msg)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	c.Close()
-
-}
-
-var helloIndexHTML = "<DOCTYPE-TYPE html><html><head><title>Hello World</title></head><body>Hello, World!</body></html>"
-
-func helloHTTPHandler(res http.ResponseWriter, r *http.Request) {
-
-	res.Header().Set("Content-type", "text/html")
-	io.WriteString(res, helloIndexHTML)
-
 }
 
 func routineTestF(n int) {
@@ -768,8 +701,6 @@ func main() {
 	fmt.Println(bsXefsf)
 
 	fmt.Println("--------------------------")
-	go server()
-	go client()
 
 	var inputAgain string
 	fmt.Scanln(&inputAgain)
@@ -843,11 +774,6 @@ func main() {
 
 	var scInput string
 	fmt.Scanln(&scInput)
-
-	fmt.Println("--------------------------")
-	http.HandleFunc("/hello", helloHTTPHandler)
-	http.ListenAndServe(":9000", nil)
-	http.Handle("/assets/", http.FileServer(http.Dir("assets")))
 
 	fmt.Println("--------------------------")
 	fileSize := 400000

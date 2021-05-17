@@ -6,12 +6,26 @@ import (
 	"strconv"
 )
 
-func celsius2fahrenheit(t float64) float64 {
-	return 9.0/5.0*t + 32
-}
+type (
+	Celsius    float64
+	Fahrenheit float64
+)
 
-func fahrenheit2celsius(t float64) float64 {
-	return (t - 32) * 5.0 / 9.0
+const (
+	AbsoluteZero Celsius = -273.15
+	FreezingC    Celsius = 0
+	BoilingC     Celsius = 100
+)
+
+func (f Fahrenheit) String() string { return fmt.Sprintf("%g", f) }
+func (c Celsius) String() string    { return fmt.Sprintf("%g", c) }
+
+//
+func celsius2fahrenheit(t float64) float64 { return 9.0/5.0*t + 32 }
+func fahrenheit2celsius(t float64) float64 { return (t - 32) * 5.0 / 9.0 }
+
+func fToc(f Fahrenheit) Celsius {
+	return Celsius((f - 32) * 5 / 9)
 }
 
 func usage() {
@@ -52,5 +66,12 @@ func main() {
 	}
 
 	fmt.Println(converted)
+
+	var c Celsius
+	var f Fahrenheit
+
+	// fmt.Println(c == f)
+	fmt.Println(c >= 0)
+	fmt.Println(c == fToc(f))
 
 }

@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	src := []byte(`
 		call hello alise
 		hello bob
@@ -22,7 +21,9 @@ func main() {
 
 	fmt.Println(string(res))
 
-	var zslice []byte
-	aslice := []byte{}
+	var aslice []byte
+	zslice := []byte{}
 
+	fmt.Println(aslice)
+	fmt.Println(zslice)
 }

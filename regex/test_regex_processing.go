@@ -39,6 +39,6 @@ func main() {
 	fmt.Println(submatchall)
 
 	submatchallindex := re2.FindSubMatchAllIndex([]byte(a), -1)
-	fmt.Prinntln(submatchallindex)
+	fmt.Println(submatchallindex)
 
 }

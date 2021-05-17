@@ -1,8 +1,14 @@
 package main
 
+import (
+	"fmt"
+	"os"
+	"regexp"
+)
+
 func main() {
 
-	if (len(os.Args) <= 1) {
+	if len(os.Args) <= 1 {
 		fmt.Println("Usage: regexp [string]")
 		os.Exit(1)
 	}

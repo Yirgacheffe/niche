@@ -26,7 +26,6 @@ func sessionid() (string, error) {
 
 	fmt.Println(b)
 	return base64.URLEncoding.EncodeToString(b), nil
-
 }
 
 func main() {

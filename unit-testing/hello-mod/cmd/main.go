@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/Yirgacheffe/hello-mod/calc"
-	"github.com/Yirgacheffe/hello-mod/hello"
+	"hello-mod/calc"
+	"hello-mod/hello"
 )
 
 func main() {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -44,6 +45,9 @@ func main() {
 	})
 
 	mux.HandleFunc("/secret/", func(w http.ResponseWriter, req *http.Request) {
+		v := url.Values{}
+		v.Add("kkk", "1234")
+
 		user, pass, ok := req.BasicAuth()
 		if ok && verifyUserPass(user, pass) {
 			fmt.Fprintf(w, "You get to see the secret\n")

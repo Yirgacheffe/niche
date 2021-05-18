@@ -779,4 +779,12 @@ func main() {
 	fileSize := 400000
 	fmt.Printf("%.2fGB\n", fileSize/GB)
 
+	var x1 uint8 = 1<<1 | 1<<5
+	var y1 uint8 = 1<<1 | 1<<2
+
+	fmt.Printf("x1 = %08b\n", x1)
+	fmt.Printf("y1 = %08b\n", y1)
+
+	time.Sleep(10 * time.Second)
+
 }

@@ -137,12 +137,12 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var response
+	var response Response
 
 	if token.Valid {
-		response = Response{ "Authorized to the system" }
+		response = Response{"Authorized to the system"}
 	} else {
-		response = Response{ "Invalid token" }
+		response = Response{"Invalid token"}
 	}
 
 	jsonResponse(response, w)
@@ -151,11 +151,11 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 
 func authMiddleware(w http.ResponseWriter, r *http.Request, next http.HandleFunc) {
 
-	token, err := jwt.ParseFromRequest(r, func(token *jwt.Token)(interface{}, error) {
+	token, err := jwt.ParseFromRequest(r, func(token *jwt.Token) (interface{}, error) {
 		return verifyKey, nil
 	})
 
-	if ( err == nil && token.Valid ) {
+	if err == nil && token.Valid {
 		next(w, r)
 	} else {
 		w.WriterHeader(http.StatusUnauthorized)
@@ -170,9 +170,8 @@ func main() {
 	r.HandleFunc("/login", loginHandler).Methods("POST")
 	r.HandleFunc("/auth", authHandler).Methods("POST")
 
-	r.Handle("/admin", 
-		negroni.New(negroni.HandleFunc(authMiddleware), negroni.Wrap(http.HandleFunc(adminHandler)),
-	))
+	r.Handle("/admin",
+		negroni.New(negroni.HandleFunc(authMiddleware), negroni.Wrap(http.HandleFunc(adminHandler))))
 
 	server := &http.Server{
 		Addr:    ":8080",

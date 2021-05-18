@@ -1,25 +1,26 @@
 package main
 
 import (
-	"net/http"
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"time"
 )
 
 func helloHandler(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    		var name string
-    		// Execute the query.
-    		row := db.QueryRow("SELECT myname FROM mytable")
-    		if err := row.Scan(&name); err != nil {
-        		http.Error(w, err.Error(), 500)
-        		return
-    		}
-    		// Write it back to the client.
-    		fmt.Fprintf(w, "hi %s!\n", name)
-    	})
+		var name string
+		// Execute the query.
+		row := db.QueryRow("SELECT myname FROM mytable")
+		if err := row.Scan(&name); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		// Write it back to the client.
+		fmt.Fprintf(w, "hi %s!\n", name)
+	})
 }
 
 func withMetrics(l *log.Logger, next http.Handler) http.Handler {

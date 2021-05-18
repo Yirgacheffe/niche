@@ -111,13 +111,13 @@ func preKMP(x string) [PatternSize]int {
 }
 
 func main() {
-	fmt.Println("Search First Position String:\n")
+	fmt.Println("Search First Position String:")
 	fmt.Println(SearchString("cocacola", "co"))
 	fmt.Println(SearchString("Australia", "lia"))
 	fmt.Println(SearchString("cocacola", "cx"))
 	fmt.Println(SearchString("AABAACAADAABAABA", "AABA"))
 
-	fmt.Println("\nSearch Last Position String:\n")
+	fmt.Println("\nSearch Last Position String:")
 	fmt.Println(SearchNext("cocacola", "co"))
 	fmt.Println(SearchNext("Australia", "lia"))
 	fmt.Println(SearchNext("cocacola", "cx"))

@@ -1,8 +1,8 @@
 package myapp
 
-import {
-    database/sql
-}
+import (
+    "database/sql"
+)
 
 type DB struct {
     *sql.DB

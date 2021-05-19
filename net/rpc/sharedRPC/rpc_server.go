@@ -55,6 +55,7 @@ func main() {
 
 		fmt.Printf("%s\n", c.RemoteAddr())
 		rpc.ServeConn(c)
+		// jsonrpc.ServeConn(c)	// jsonrpc style
 	}
 
 }

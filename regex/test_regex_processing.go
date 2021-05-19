@@ -14,31 +14,31 @@ func main() {
 	fmt.Println("Find: ", string(first))
 
 	all := re.FindAll([]byte(a), -1)
-	fmt.Println("FindAll: ", string(all))
+	fmt.Printf("FindAll: %q\n", all)
 
 	index := re.FindIndex([]byte(a))
-	fmt.Println("FindIndex: ", string(index))
+	fmt.Printf("FindIndex: %q\n ", index)
 
-	idxall := re.FindAllInndex([]byte(a), -1)
-	fmt.Println("FindAllIndex: ", string(idxall))
+	idxall := re.FindAllIndex([]byte(a), -1)
+	fmt.Printf("FindAllIndex: %q\n", idxall)
 
 	// case number 2
-	re2, _ := regexp.Comple("am(.*)lang(.*)")
+	re2, _ := regexp.Compile("am(.*)lang(.*)")
 
-	submatch := re2.FindSubMatch([]byte(a))
+	submatch := re2.FindSubmatch([]byte(a))
 	fmt.Println("FindSubMatch: ", submatch)
 
 	for _, v := range submatch {
 		fmt.Println(string(v))
 	}
 
-	submatchindex := re2.FindSubMatchIndex([]byte(a))
+	submatchindex := re2.FindAllSubmatchIndex([]byte(a), -1)
 	fmt.Println(submatchindex)
 
-	submatchall := re2.FindSubMatchAll([]byte(a), -1)
+	submatchall := re2.FindAllSubmatch([]byte(a), -1)
 	fmt.Println(submatchall)
 
-	submatchallindex := re2.FindSubMatchAllIndex([]byte(a), -1)
+	submatchallindex := re2.FindAllSubmatchIndex([]byte(a), -1)
 	fmt.Println(submatchallindex)
 
 }

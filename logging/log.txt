@@ -1,4 +1,5 @@
-2020/03/20 12:36:12 Logging to a file in Go!
-2020/03/20 12:36:35 Logging to a file in Go!
+2021/05/20 11:45:12 test_log_custmize.go:27: KYC login, age:18
+ge:18
+ing to a file in Go!
 {"level":"warning","msg":"The group's number increased tremendously!","number":122,"omg":true,"time":"2020-03-29T19:09:13+08:00"}
 {"level":"fatal","msg":"The ice breaks!","number":100,"omg":true,"time":"2020-03-29T19:09:13+08:00"}

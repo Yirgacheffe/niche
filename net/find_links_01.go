@@ -35,6 +35,37 @@ func outline(stack []string, n *html.Node) {
 	}
 }
 
+// outline2
+var depth int
+
+func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
+	if pre != nil {
+		pre(n)
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		forEachNode(c, pre, post)
+	}
+
+	if post != nil {
+		post(n)
+	}
+}
+
+func startElement(n *html.Node) {
+	if n.Type == html.ElementNode {
+		fmt.Printf("%*s<%s>\n", depth*2, "", n.Data)
+		depth++
+	}
+}
+
+func endElement(n *html.Node) {
+	if n.Type == html.ElementNode {
+		depth--
+		fmt.Printf("%*s</%s>\n", depth*2, "", n.Data)
+	}
+}
+
 func main() {
 	// call with './fetch https://golang.org | ./find_links_01'
 	doc, err := html.Parse(os.Stdin)
@@ -47,13 +78,16 @@ func main() {
 		fmt.Println(link)
 	}
 
+	// outline
 	outline(nil, doc)
-	// call with './fetch https://golang.org | ./find_links_01'
 
+	// call with './fetch https://golang.org | ./find_links_01'
 	add := func(r rune) rune {
 		return r + 1
 	}
 	fmt.Println(strings.Map(add, "HAL-9000"))
 	fmt.Println(strings.Map(add, "VMS"))
 
+	// another outline
+	forEachNode(doc, startElement, endElement)
 }

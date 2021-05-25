@@ -14,7 +14,5 @@ func main() {
 	str = strconv.AppendQuoteRune(str, '包')
 
 	fmt.Println(string(str))
-
-	e := strconv.Itoa(1023)
-	fmt.Println(e)
+	fmt.Println(strconv.Itoa(1023))
 }

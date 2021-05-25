@@ -40,7 +40,7 @@ func main() {
 	a1 := Address{"Akense", "USA"}
 
 	var d2 Describer
-	// d2 = a1
+	// d2 = a1	pointer receiver not accept 'a1'
 	d2 = &a1
 	d2.Describe()
 

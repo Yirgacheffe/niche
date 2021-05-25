@@ -7,7 +7,6 @@ import (
 	"strings"
 	"math"
 
-	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -52,67 +51,64 @@ func main() {
 	}
 
 	// query by statement
-	/*
-		stmt, err := db.Prepare("select id, name from users where id = ?")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer stmt.Close()
-
-		rows, err = stmt.Query(1)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer rows.Close()
-		for rows.Next() {
-			err = rows.Scan(&id, &name)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		if err = rows.Err(); err != nil {
-			log.Fatal(err)
-		}
-	*/
-
-	/*
-		var name string
-		err = db.QueryRow("select name from users where id = ?", 1).Scan(&name)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(name)
-	*/
-
-	/*
-		stmt, err := db.Prepare("select name from users where id = ?")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer stmt.Close()
-
-		var name string
-		err = stmt.QueryRow(1).Scan(&name)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(name)
-	*/
-
-	// insert new record
-	stmt, err := db.Prepare("insert into users(name) values(?)")
+	stmt, err := db.Prepare("select id, name from users where id = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	res, err := stmt.Exec("Dolly")
 	defer stmt.Close()
+
+	rows1, err = stmt.Query(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows1.Close()
+	for rows1.Next() {
+		err = rows1.Scan(&id, &name)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err = rows1.Err(); err != nil {
+		log.Fatal(err)
+	}
+	
+	// Query row
+	var name1 string
+	err = db.QueryRow("select name from users where id = ?", 1).Scan(&name1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(name1)
+	
+
+	// Query by prepared
+	stmt1, err := db.Prepare("select name from users where id = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmt1.Close()
+
+	var name2 string
+	err = stmt.QueryRow(1).Scan(&name2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(name2)
+	
+	// insert new record
+	stmt2, err := db.Prepare("insert into users(name) values(?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := stmt2.Exec("Dolly")
+	defer stmt2.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,14 +132,14 @@ func main() {
 	}
 
 	defer tx.Rollback()
-	stmt, err = tx.Prepare("insert into foo values(?)")
+	stmt3, err = tx.Prepare("insert into foo values(?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer stmt.Close()
+	defer stmt3.Close()
 	for i := 0; i < 10; i++ {
-		_, err = stmt.Exec(i)
+		_, err = stmt3.Exec(i)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -154,7 +150,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// stmt.Close() runs here!
+	stmt3.Close() runs here!
 
 	// handle errors
 	/*
@@ -180,6 +176,7 @@ func main() {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No rows, means no error
+			fmt.Println("No name found")
 		} else {
 			log.Fatal(err)
 		}
@@ -216,15 +213,15 @@ func main() {
 	}
 
 	// Null value
-	rows, err = db.Query(`select name, coalesce(other_field,'') as otherField where id = ?`, 43)
-	for rows.Next() {
-		err = rows.Scan(&name, &otherField)
+	rowss, err = db.Query(`select name, coalesce(other_field,'') as otherField where id = ?`, 43)
+	for rowss.Next() {
+		err = rowss.Scan(&name, &otherField)
 		// ..
 		// If `other_field` was NULL, `otherField` is now an empty string.
 	}
 
 	// don't know the column
-	cols, err := rows.Columns()
+	cols, err := rowss.Columns()
 	if err != nil {
 		// handle the error
 	} else {
@@ -245,7 +242,7 @@ func main() {
 			// handle this case
 		}
 
-		err = rows.Scan(dest...)
+		err = rowss.Scan(dest...)
 	}
 
 	// RAW types
@@ -254,8 +251,8 @@ func main() {
 		vals[i] = new(sql.RawBytes)
 	}
 
-	for rows.Next() {
-		err = rows.Scan(vals...)
+	for rowsd.Next() {
+		err = rowsd.Scan(vals...)
 	}
 
 	// uint64 not support

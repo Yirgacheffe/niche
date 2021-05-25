@@ -20,8 +20,8 @@ func (ms MyString) FindVowels() []rune {
 
 func main() {
 	var name = MyString("Gem DengZiQi")
-	var v VowelsFinder
 
+	var v VowelsFinder
 	v = name
 	fmt.Printf("Vowels are %c", v.FindVowels())
 }

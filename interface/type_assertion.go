@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"os"
+)
 
 type Describer interface {
 	Describe()
@@ -12,7 +17,7 @@ type People struct {
 }
 
 func (p People) Describe() {
-	fmt.Printf("%s is %d years old", p.name, p.age)
+	fmt.Printf("%s is %d years old\n", p.name, p.age)
 }
 
 func assert(i interface{}) {
@@ -49,4 +54,13 @@ func main() {
 	}
 
 	findType(p)
+
+	var w io.Writer = os.Stdout
+	if f, ok := w.(*os.File); ok {
+		fmt.Println(f.Name())
+	}
+
+	if b, ok := w.(*bytes.Buffer); ok {
+		fmt.Println(b.WriteString("{}"))
+	}
 }

@@ -22,6 +22,7 @@ func scanBytes(p []byte, fn scanFunc) (cnt int) {
 	return cnt
 }
 
+// WordCounter
 func (c *WordCounter) Write(p []byte) (int, error) {
 	cnt := scanBytes(p, bufio.ScanWords)
 	*c += WordCounter(cnt)
@@ -32,6 +33,7 @@ func (c WordCounter) String() string {
 	return fmt.Sprintf("contains %d words", c)
 }
 
+// LineCounter
 func (c *LineCounter) Write(p []byte) (int, error) {
 	cnt := scanBytes(p, bufio.ScanLines)
 	*c += LineCounter(cnt)

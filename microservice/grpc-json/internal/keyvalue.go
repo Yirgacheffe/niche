@@ -34,7 +34,7 @@ func (k *KeyValue) Set(ctx context.Context, r *keyvalue.SetKeyValueRequest) (*ke
 	return &keyvalue.KeyValueResponse{Value: r.GetValue()}, nil
 }
 
-func (k *KeyValue) Get(ctx context.Context, r *keyvalue.GetKeyValueResquest) (*keyvalue.KeyValueResponse, error) {
+func (k *KeyValue) Get(ctx context.Context, r *keyvalue.GetKeyValueRequest) (*keyvalue.KeyValueResponse, error) {
 	k.mutex.Lock()
 	defer k.mutex.RUnlock()
 

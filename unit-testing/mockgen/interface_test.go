@@ -4,7 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"./internal"
+	"mockgen/internal"
+
 	"github.com/golang/mock/gomock"
 )
 

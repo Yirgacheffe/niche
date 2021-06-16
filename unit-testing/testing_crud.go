@@ -1,3 +1,12 @@
+package main
+
+import (
+	"bytes"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
 func TestGetEntries(t *testing.T) {
 	req, err := http.NewRequest("GET", "/entries", nil)
 	if err != nil {
@@ -128,4 +137,3 @@ func TestDeleteEntry(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 }
-

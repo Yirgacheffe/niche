@@ -85,6 +85,8 @@ func (ps *Pubsub) SubscribeV2(topic string) <-chan string {
 func main() {
 	pubsub := NewPubSub()
 
+	// TODO: add listener and send function
+
 	ch1 := pubsub.SubscribeV2("topic1")
 	ch2 := pubsub.SubscribeV2("topic2")
 	ch3 := pubsub.SubscribeV2("topic1")
@@ -95,6 +97,8 @@ func main() {
 	fmt.Println(<-ch1)
 	fmt.Println(<-ch2)
 	fmt.Println(<-ch3)
+
+	// sleep here if ch1, ch2 and ch3 in goroutine
 
 	pubsub.Close()
 

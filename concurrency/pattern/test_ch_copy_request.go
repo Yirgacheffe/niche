@@ -14,14 +14,16 @@ func main() {
 		defer wg.Done()
 
 		// simulate the work load
-		loadedTime := time.Duration(1+rand.Intn(5)) * time.Second
+		loadedTime := time.Duration(1+rand.Intn(10)) * time.Second
 
 		select {
 		case <-done:
+			return
 		case <-time.After(loadedTime): // simulate work
 		}
 		select {
 		case <-done:
+			return
 		case result <- id:
 		}
 

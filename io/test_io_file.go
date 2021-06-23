@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -21,12 +22,13 @@ func main() {
 
 	defer file.Close()
 
-	// the file size
+	// #1 the file size
 	stat, err := file.Stat()
 	if err != nil {
 		return
 	}
 
+	// #2
 	bs := make([]byte, stat.Size())
 	_, err = file.Read(bs)
 	if err != nil {
@@ -35,7 +37,7 @@ func main() {
 
 	fmt.Println(string(bs))
 
-	// Another way to read file
+	// #3 Another way to read file
 	bss, err := ioutil.ReadFile("build.sh")
 	if err != nil {
 		return
@@ -43,9 +45,14 @@ func main() {
 
 	fmt.Println(string(bss))
 
-	// another way is define a small size of []byte read file when encounter io.EOF
+	// #4 another way is define a small size of []byte read file when encounter io.EOF
 
-	// Create a file
+	// #5
+	w := bufio.NewWriter(os.Stdout)
+	w.ReadFrom(file)
+	w.Flush()
+
+	//#6 Create a file
 	fileS, err := os.Create("test.txt")
 	if err != nil {
 		return

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"container/list"
 	"crypto/sha1"
 	"errors"
@@ -9,11 +8,9 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -556,7 +553,7 @@ func main() {
 
 	fmt.Println(multiShapeXs.area())
 
-	fmt.Println("--------------------------")
+	fmt.Println("--------- strings ----------")
 	fmt.Println(strings.Contains("test", "es"))
 	fmt.Println(strings.Count("test", "t"))
 	fmt.Println(strings.HasPrefix("test", "te"))
@@ -574,72 +571,6 @@ func main() {
 
 	fmt.Println(sArr)
 	fmt.Println(sStr)
-
-	fmt.Println("--------------------------")
-	var buf bytes.Buffer
-	buf.Write([]byte("test"))
-
-	// file testing
-	file, err := os.Open("build.sh")
-	if err != nil {
-		return
-	}
-
-	defer file.Close()
-
-	// the file size
-	stat, err := file.Stat()
-	if err != nil {
-		return
-	}
-
-	bs := make([]byte, stat.Size())
-	_, err = file.Read(bs)
-	if err != nil {
-		return
-	}
-
-	fmt.Println(string(bs))
-
-	// Another way to read file
-	bss, err := ioutil.ReadFile("build.sh")
-	if err != nil {
-		return
-	}
-
-	fmt.Println(string(bss))
-
-	// Create a file
-	fileS, err := os.Create("test.txt")
-	if err != nil {
-		return
-	}
-
-	defer fileS.Close()
-	fileS.WriteString("test it with create")
-
-	// Directory operation
-	dir, err := os.Open(".")
-	if err != nil {
-		return
-	}
-
-	defer dir.Close()
-
-	fileInfos, err := dir.Readdir(-1)
-	if err != nil {
-		return
-	}
-
-	for _, fi := range fileInfos {
-		fmt.Println(fi.Name())
-	}
-
-	// file path walk
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		fmt.Println(path)
-		return nil
-	})
 
 	fmt.Println("--------------------------")
 	errss := errors.New("error message we defined")

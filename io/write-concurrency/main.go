@@ -16,7 +16,7 @@ func produce(data chan int, wg *sync.WaitGroup) {
 
 func consume(data chan int, done chan bool) {
 
-	f, err := os.Create("test_concurrency_write.txt")
+	f, err := os.Create("rand_nbr.txt")
 	if err != nil {
 		fmt.Println(err)
 		return

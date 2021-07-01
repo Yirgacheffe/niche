@@ -52,18 +52,6 @@ func main() {
 		i++
 	}
 
-	/*
-		for {
-			select {
-			case v, ok := <-results:
-				if !ok {
-					return
-				}
-				fmt.Printf("%v\n", v)
-			case <-heartbeat:
-				fmt.Println("pulse!")
-			}
-		}
-	*/
+	fmt.Println("No output means correct!")
 
 }

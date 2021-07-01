@@ -7,7 +7,7 @@ func fib(length int) <-chan int {
 	ch := make(chan int, length)
 
 	go func() {
-		for i, j := 0, 1; i < 10; i, j = i+j, i {
+		for i, j := 0, 1; i < length; i, j = i+j, i {
 			ch <- i
 		}
 		close(ch)

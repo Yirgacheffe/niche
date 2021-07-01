@@ -12,8 +12,9 @@ func main() {
 		results := make(chan time.Time)
 
 		go func() {
-			// defer close(heartbeat)
-			// defer close(results)
+			defer close(heartbeat)
+			defer close(results)
+
 			workGen, pluse := time.Tick(2*pluseInterval), time.Tick(pluseInterval)
 			sendPluse := func() {
 				select {

@@ -8,7 +8,7 @@ func encryptWithIdx(s string) string {
 
 	n := len(s)
 	if n > 128 {
-		fmt.Errorf("Max size is 128, return back.")
+		fmt.Println("Max size is 128, return back.")
 		return s
 	}
 

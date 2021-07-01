@@ -2,15 +2,11 @@ package main
 
 import (
 	"container/list"
-	"crypto/sha1"
 	"errors"
 	"flag"
 	"fmt"
-	"hash/crc32"
-	"io"
 	"math"
 	"math/rand"
-	"os"
 	"sort"
 	"strings"
 	"time"
@@ -601,38 +597,6 @@ func main() {
 	sort.Sort(ByName(kids))
 	fmt.Println(kids)
 
-	fmt.Println("--------------------------")
-	cryh := crc32.NewIEEE()
-	cryh.Write([]byte("test123"))
-
-	cryv := cryh.Sum32()
-	fmt.Println(cryv)
-
-	// Hash a file
-	xsff, err := os.Open("test.txt")
-	if err != nil {
-		return
-	}
-
-	defer xsff.Close()
-
-	xsffhr := crc32.NewIEEE()
-	_, err = io.Copy(xsffhr, xsff)
-	if err != nil {
-		return
-	}
-
-	fmt.Println(xsffhr.Sum32)
-
-	// sha1
-	xsssha := sha1.New()
-	xsssha.Write([]byte("test123"))
-
-	bsXefsf := xsssha.Sum([]byte{})
-	fmt.Println(bsXefsf)
-
-	fmt.Println("--------------------------")
-
 	var inputAgain string
 	fmt.Scanln(&inputAgain)
 
@@ -662,8 +626,17 @@ func main() {
 	go ponger(ct)
 	go printer(ct)
 
+	fmt.Println("--------------------------")
 	var pInput string
 	fmt.Scanln(&pInput)
+
+	var (
+		name111 string
+		age111  int
+	)
+
+	n, _ := fmt.Sscanf("xyz 8", "%s%d", &name111, age111)
+	fmt.Println(n, name111, age111)
 
 	fmt.Println("--------------------------")
 

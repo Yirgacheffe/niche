@@ -14,7 +14,7 @@ func findItinerary(tickets map[string]string) {
 	var starting string
 
 	// Find started point
-	for k, _ := range tickets {
+	for k := range tickets {
 		if _, ok := toFrom[k]; !ok {
 			starting = k
 			break
@@ -40,13 +40,12 @@ func printIt(m map[string]string) {
 }
 
 func main() {
-
 	tickets := map[string]string{
 		"Goa":     "Chennai",
 		"Delhi":   "Goa",
 		"Bombay":  "Delhi",
 		"Chennai": "Banglore",
 	}
-	findItinerary(tickets)
 
+	findItinerary(tickets)
 }

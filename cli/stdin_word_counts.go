@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-
-	media "./models"
 )
+
+type Movie struct {
+	Title string
+}
 
 // WordCount takes a file and returns a map
 // with each word
@@ -35,13 +37,14 @@ func main() {
 	// test package, seems failed ...
 	fmt.Println("WIP......")
 
-	m := media.Movie{}
+	m := Movie{}
 	m.Title = "Last Scene"
 
 	fmt.Println(m.Title)
 
 	// test word counter from input
 	fmt.Printf("string: #nbr_of_occurrence\n")
+	fmt.Printf("Ctrl + D: => Stop!!!\n")
 	wordcount := WordCount(os.Stdin)
 
 	for k, v := range wordcount {

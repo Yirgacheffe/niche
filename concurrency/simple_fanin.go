@@ -51,7 +51,6 @@ func main() {
 	}
 
 	fmt.Println(2e3)
-	// fmt.Println(cmp.Diff("Hello world!", "Hello Go!"))
 	fmt.Printf("%q\n", "quit")
 
 	/*

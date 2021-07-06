@@ -8,7 +8,7 @@ type author struct {
 	bio       string
 }
 
-func (a author) fullName() string {
+func (a *author) fullName() string {
 	return fmt.Sprintf("%s %s", a.firstName, a.lastName)
 }
 
@@ -18,19 +18,16 @@ type post struct {
 	author
 }
 
-func (p post) details() {
-	fmt.Println("Title: ", p.title)
-	fmt.Println("Content: ", p.content)
-	fmt.Println("Author:", p.fullName())
-	fmt.Println("Bio: ", p.bio)
+func (p *post) details() {
+	fmt.Printf("Title: %s, Content: %s, Author: %s, Bio: %s\n", p.title, p.content, p.fullName(), p.bio)
 }
 
 type website struct {
 	posts []post
 }
 
-func (w website) contents() {
-	fmt.Println("Content of Website\n")
+func (w *website) contents() {
+	fmt.Println("Content of Website")
 	for _, v := range w.posts {
 		v.details()
 		fmt.Println()

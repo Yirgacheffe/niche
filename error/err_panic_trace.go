@@ -2,10 +2,26 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"runtime/debug"
 
 	"golang.org/x/net/html"
 )
+
+func forEachNode(n *html.Node, pre, post func(*html.Node)) {
+	if pre != nil {
+		pre(n)
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		forEachNode(c, pre, post)
+	}
+
+	if post != nil {
+		post(n)
+	}
+}
 
 func soleTitle(doc *html.Node) (title string, err error) {
 	type bailout struct{}
@@ -21,14 +37,16 @@ func soleTitle(doc *html.Node) (title string, err error) {
 		}
 	}()
 
-	forEachNode(doc, func(n *html.Node) {
+	visitTitle := func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "title" && n.FirstChild != nil {
 			if title != "" {
 				panic(bailout{}) // multiple title
 			}
 			title = n.FirstChild.Data
 		}
-	}, nil)
+	}
+
+	forEachNode(doc, visitTitle, nil)
 
 	if title == "" {
 		return "", fmt.Errorf("no title element")
@@ -46,6 +64,7 @@ func recoverFullName() {
 
 func fullName(firstName *string, lastName *string) {
 	defer recoverFullName()
+
 	if firstName == nil {
 		panic("runtime error: first name cannot be nil")
 	}
@@ -58,7 +77,21 @@ func fullName(firstName *string, lastName *string) {
 
 func main() {
 	defer fmt.Println("deferred call in main")
+
 	firstName := "Elon"
 	fullName(&firstName, nil)
 	fmt.Println("returned normally from main")
+
+	doc, err := html.Parse(os.Stdin)
+	if err != nil {
+		log.Printf("find link: %v\n", err)
+		os.Exit(1)
+	}
+
+	t, err := soleTitle(doc)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Got title element:", t) // ........
 }

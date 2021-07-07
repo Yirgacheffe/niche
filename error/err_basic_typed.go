@@ -40,3 +40,14 @@ func BasicErrors() {
 	fmt.Println("typed error: ", err)
 
 }
+
+func someDemoFunc() error {
+	return ErrorTyped
+}
+
+func main() {
+	BasicErrors()
+	err := someDemoFunc(）
+
+	fmt.Println("custom demo error: ", err)
+}

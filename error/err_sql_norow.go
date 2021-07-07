@@ -1,13 +1,12 @@
 package main
 
 import (
-    "database/sql"
-    "fmt"
+	"database/sql"
+	"fmt"
 )
 
 func foo() error {
-	// return sql.ErrNoRows
-	return fmt.Errorf("foo err, %v", sql.ErrNoRows)
+	return fmt.Errorf("foo err, %v", sql.ErrNoRows) // != sql.ErrNoRows
 }
 
 func bar() error {
@@ -19,10 +18,7 @@ func main() {
 
 	if err == sql.ErrNoRows {
 		fmt.Printf("Data not found, %+v\n", err)
-		return
 	} else {
 		fmt.Printf("Not found with no type, %+v\n", err)
-		return
 	}
-
 }

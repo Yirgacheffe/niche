@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	f, err := os.Open("~/test_file.txt")
 
 	if err != nil {

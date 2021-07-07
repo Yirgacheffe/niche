@@ -16,15 +16,12 @@ func bar() error {
 }
 
 func main() {
-
 	err := bar()
+
 	if errors.Cause(err) == sql.ErrNoRows {
 		fmt.Printf("data not found, %v\n", err)
 		fmt.Printf("%+v\n", err)
-		return
 	} else {
 		fmt.Println("Unknown error happened......")
-		return
 	}
-
 }

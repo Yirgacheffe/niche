@@ -8,6 +8,11 @@ import (
 	"runtime/debug"
 )
 
+const (
+	jobBinPath = "/bad/job/binary"
+	binPath    = "/bab/job/binary"
+)
+
 // Define a new type of MyError ...... demo for error handle
 type MyError struct {
 	Inner      error
@@ -48,9 +53,7 @@ type IntermediateErr struct {
 }
 
 func runJob(id string) error {
-	const jobBinPath = "/bad/job/binary"
 	isExecutable, err := isGloballyExec(jobBinPath)
-
 	if err != nil {
 		return err
 	}
@@ -63,9 +66,7 @@ func runJob(id string) error {
 
 // Use this when client don't care the low level error
 func runJobAndHideLowlevelError(id string) error {
-	const binPath = "/bab/job/binary"
 	isExecutable, err := isGloballyExec(binPath)
-
 	if err != nil {
 		return IntermediateErr{wrapError(
 			err,

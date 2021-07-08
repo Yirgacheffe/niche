@@ -14,7 +14,7 @@ import (
 const (
 	healthJson = `{"alive": true}`
 	bgColor    = "#483D8B"
-	timeout    = 15 * time.Second
+	timeout    = 5 * time.Second
 )
 
 type Config struct {

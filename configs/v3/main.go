@@ -14,6 +14,7 @@ import (
 const (
 	healthJson = `{"alive": true}`
 	bgColor    = "#483D8B"
+	timeout    = 15 * time.Second
 )
 
 type Config struct {
@@ -38,21 +39,20 @@ func newConfig() *Config {
 	}
 }
 
-func configHandler(w http.ResponseWriter, r *http.Request) {
+func timeoutSimulateHandler(w http.ResponseWriter, r *http.Request) {
 	rand.Seed(time.Now().UnixNano())
-	rdn := rand.Intn(30)
 
-	if rdn <= 20 {
-		time.Sleep(15 * time.Second)
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		config := newConfig()
-
-		if err := json.NewEncoder(w).Encode(config); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		w.WriteHeader(http.StatusOK)
+	t := rand.Intn(30)
+	if t <= 20 {
+		time.Sleep(timeout) // slow worker
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	config := newConfig()
+	if err := json.NewEncoder(w).Encode(config); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func main() {
 	router := mux.NewRouter()
 
 	api := router.PathPrefix("/api").Subrouter()
-	api.HandleFunc("/configs", configHandler).Methods("GET")
+	api.HandleFunc("/configs", timeoutSimulateHandler).Methods("GET")
 	api.HandleFunc("/health", healthCheckHandler).Methods("GET")
 
 	router.Use(loggingMiddleware)

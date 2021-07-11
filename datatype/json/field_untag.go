@@ -17,7 +17,7 @@ type student struct {
 	LastName       string   `json:"-"`
 	HeightInMeters float64  `json:"height"`
 	IsMale         bool     `json:"male"`
-	Languages      []string `json:,lang,omitempty`
+	Languages      []string `json:"lang,omitempty"`
 	Profile        profile  `json:"profile"`
 }
 

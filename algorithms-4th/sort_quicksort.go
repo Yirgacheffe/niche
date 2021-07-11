@@ -18,7 +18,7 @@ func partition(a []int, low, high int) int {
 	pi := a[high]
 	i := low - 1
 
-	for j := low; j < high; j++ {
+	for j := low; j <= high-1; j++ {
 		if a[j] < pi {
 			i++
 			swap(a, i, j)

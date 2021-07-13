@@ -560,6 +560,7 @@ func main() {
 	fmt.Println(strings.Replace("aaaaaaa", "a", "b", 5))
 	fmt.Println(strings.Split("138-0983-3275", "-"))
 	fmt.Println(strings.ToLower("EjsdfTJAJDFAENdkei"))
+	fmt.Println(strings.EqualFold("go", "GO"))
 
 	// byte[] <-> string
 	sArr := []byte("testdfs")

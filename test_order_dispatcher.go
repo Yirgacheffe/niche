@@ -56,7 +56,6 @@ func main() {
 	defer close(done)
 
 	k := make(map[int]chan string)
-
 	k[1] = make(chan string)
 	k[2] = make(chan string)
 
@@ -73,14 +72,24 @@ func main() {
 		fmt.Println(<-v)
 	}
 
+	//
 	xyz := cookingSplit(done, orders)
 
 	for k, v := range xyz {
-		fmt.Println(k)
-		fmt.Println(<-v)
+
+		print := func(k int, orders <-chan Order) {
+			fmt.Println(k)
+
+			for o := range orders {
+				fmt.Println(o)
+			}
+		}
+
+		go print(k, v)
+
 	}
 
-	time.Sleep(20 * time.Second)
+	time.Sleep(200 * time.Second)
 }
 
 /*
@@ -96,21 +105,21 @@ func main() {
 func cookingSplit(done <-chan bool, orders []Order) map[int]chan Order {
 	readyChs := make(map[int](chan Order))
 
+	for i := 1; i <= 3; i++ {
+		readyChs[i] = make(chan Order)
+	}
+
 	go func() {
-		/*
-			for _, v := range readyChs {
-				defer close(v)
-			}
-		*/
+		for _, v := range readyChs {
+			defer close(v)
+		}
+
 		for _, o := range orders {
 			cookTime := time.Duration(o.time) * time.Second
 			select {
 			case <-done:
 				return
 			case <-time.After(cookTime):
-				if _, ok := readyChs[o.courierId]; !ok {
-					readyChs[o.courierId] = make(chan Order)
-				}
 				readyChs[o.courierId] <- o
 			}
 		}

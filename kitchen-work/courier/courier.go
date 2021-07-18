@@ -59,7 +59,7 @@ func (c *Courier) NotifyToPickup(done <-chan bool, orders <-chan order.Order) {
 				return
 			case o, ok := <-orders:
 				if ok {
-					fmt.Printf("Courier [%d]: pickup order [%s] \n", c.Id, o.Id)
+					fmt.Printf("Courier [%d]: pickup order [%s] - origin assigned to [%d]\n", c.Id, o.Id, o.CourierId)
 				} else {
 					return
 				}

@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	courierNum  = 3
+	courierNum  = 5
 	rawDataFile = "./data/input.json"
 )
 
 func DispatchFIFO() {
-	fmt.Println("------------------------- START..... --------------------------")
+	fmt.Println("----------------------- FIFO START ..... ----------------------------")
 	cMgr, err := courier.NewCourierManager(courierNum)
 	if err != nil {
 		fmt.Println("Init error: ", err)
@@ -32,9 +32,6 @@ func DispatchFIFO() {
 	// Setup all goroutine context, close all after complete
 	done := make(chan bool)
 	defer close(done)
-
-	readyOrder := make(chan order.Order)
-	defer close(readyOrder)
 
 	rawOrders, err := loadOrders(rawDataFile)
 	if err != nil {
@@ -50,6 +47,9 @@ func DispatchFIFO() {
 		needCooked = append(needCooked, o)
 	}
 
+	readyOrder := make(chan order.Order)
+	defer close(readyOrder)
+
 	// Get couriers ready, arrival to kitchen...
 	for _, v := range cMgr.Couriers {
 		go v.NotifyToPickup(done, readyOrder)
@@ -59,12 +59,11 @@ func DispatchFIFO() {
 	for o := range oMgr.Cooking(done, needCooked) {
 		readyOrder <- o
 	}
-	fmt.Println("------------------------ FINISH..... --------------------------")
+	fmt.Println("----------------------- FIFO FINISH ..... ---------------------------")
 }
 
 func DispatchMatched() {
-	fmt.Println("------------------------- START..... --------------------------")
-
+	fmt.Println("----------------------- MATCHED START .... --------------------------")
 	cMgr, err := courier.NewCourierManager(courierNum)
 	if err != nil {
 		fmt.Println("Init error: ", err)
@@ -80,9 +79,6 @@ func DispatchMatched() {
 	done := make(chan bool)
 	defer close(done)
 
-	readyOrder := make(chan order.Order)
-	defer close(readyOrder)
-
 	rawOrders, err := loadOrders(rawDataFile)
 	if err != nil {
 		fmt.Println("Load data error: ", err)
@@ -92,22 +88,26 @@ func DispatchMatched() {
 	// Received orders, assign to couriers
 	received := oMgr.Receive(done, generate(done, rawOrders))
 	var needCooked []order.Order
-
 	for o := range received {
-		needCooked = append(needCooked, o) // TODO: Split the order and send to courier
+		needCooked = append(needCooked, o)
 	}
 
-	// Get couriers ready, arrival to kitchen...
+	// initial splited match order
+	splited := make(map[int]chan order.Order)
 	for _, v := range cMgr.Couriers {
-		go v.NotifyToPickup(done, readyOrder)
+		ready := make(chan order.Order)
+		splited[v.Id] = ready
+
+		go func(c *courier.Courier) {
+			c.NotifyToPickup(done, ready)
+		}(v)
 	}
 
 	// Preparing orders, couriers waitting for picking up the order
 	for o := range oMgr.Cooking(done, needCooked) {
-		readyOrder <- o
+		splited[o.CourierId] <- o
 	}
-
-	fmt.Println("------------------------ FINISH..... --------------------------")
+	fmt.Println("----------------------- MATCHED FINISH ... --------------------------")
 }
 
 // loadOrders

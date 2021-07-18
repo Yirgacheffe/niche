@@ -47,60 +47,28 @@ func doWork(orders []Order) {
 }
 
 func main() {
-	/*
-		for _, v := range split(orders) {
-			go doWork(v)
-		}
-	*/
+
+	for _, v := range split(orders) {
+		go doWork(v)
+	}
+
 	done := make(chan bool)
 	defer close(done)
-
-	k := make(map[int]chan string)
-	k[1] = make(chan string)
-	k[2] = make(chan string)
-
-	go func() {
-		k[1] <- "a"
-	}()
-
-	go func() {
-		k[2] <- "b"
-	}()
-
-	for i, v := range k {
-		fmt.Println(i)
-		fmt.Println(<-v)
-	}
 
 	//
 	xyz := cookingSplit(done, orders)
 
 	for k, v := range xyz {
-
 		print := func(k int, orders <-chan Order) {
-			fmt.Println(k)
-
 			for o := range orders {
-				fmt.Println(o)
+				fmt.Println(k, ":", o)
 			}
 		}
-
 		go print(k, v)
-
 	}
 
-	time.Sleep(200 * time.Second)
+	time.Sleep(100 * time.Second)
 }
-
-/*
-
-	key := o.courierId
-	if v, ok := courierOrder[key]; !ok {
-		courierOrder[key] = []Order{o}
-	} else {
-		courierOrder[key] = append(v, o)
-	}
-*/
 
 func cookingSplit(done <-chan bool, orders []Order) map[int]chan Order {
 	readyChs := make(map[int](chan Order))

@@ -51,20 +51,17 @@ func (c *Courier) NotifyToPickup(done <-chan bool, orders <-chan order.Order) {
 		fmt.Printf("Courier [%d]: arrived\n", c.Id)
 	}
 
-	// Pickup orders
-	go func() {
-		for {
-			select {
-			case <-done:
+	for {
+		select {
+		case <-done:
+			return
+		case o, ok := <-orders:
+			if ok {
+				fmt.Printf("Courier [%d]: pickup order [%s] - origin assigned to [%d]\n", c.Id, o.Id, o.CourierId)
+			} else {
 				return
-			case o, ok := <-orders:
-				if ok {
-					fmt.Printf("Courier [%d]: pickup order [%s] - origin assigned to [%d]\n", c.Id, o.Id, o.CourierId)
-				} else {
-					return
-				}
 			}
 		}
-	}()
+	}
 
 }

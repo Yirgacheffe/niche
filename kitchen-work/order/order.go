@@ -33,7 +33,7 @@ func (m *OrderManager) Cooking(done <-chan bool, orders []Order) <-chan Order {
 		defer close(readyOrders)
 		for _, o := range orders {
 			fmt.Printf("Order [%s]: Preparing in %d seconds...\n", o.Id, o.Time)
-			cookTime := time.Duration(o.Time) * time.Second
+			cookTime := time.Duration(o.Time) * time.Millisecond
 
 			select {
 			case <-done:

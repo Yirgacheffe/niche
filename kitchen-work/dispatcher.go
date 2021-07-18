@@ -47,10 +47,10 @@ func DispatchFIFO() {
 		needCooked = append(needCooked, o)
 	}
 
+	// Get couriers ready, arrival to kitchen...
 	readyOrder := make(chan order.Order)
 	defer close(readyOrder)
 
-	// Get couriers ready, arrival to kitchen...
 	for _, v := range cMgr.Couriers {
 		go v.NotifyToPickup(done, readyOrder)
 	}
@@ -59,6 +59,7 @@ func DispatchFIFO() {
 	for o := range oMgr.Cooking(done, needCooked) {
 		readyOrder <- o
 	}
+
 	fmt.Println("----------------------- FIFO FINISH ..... ---------------------------")
 }
 
@@ -107,6 +108,7 @@ func DispatchMatched() {
 	for o := range oMgr.Cooking(done, needCooked) {
 		splited[o.CourierId] <- o
 	}
+
 	fmt.Println("----------------------- MATCHED FINISH ... --------------------------")
 }
 
@@ -134,7 +136,7 @@ func generate(done <-chan bool, orders []order.Order) <-chan order.Order {
 	genOrders := make(chan order.Order)
 	go func() {
 		defer close(genOrders)
-		workGen := time.Tick(500 * time.Millisecond)
+		workGen := time.Tick(10 * time.Millisecond)
 
 		for _, o := range orders {
 			select {

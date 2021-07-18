@@ -57,7 +57,10 @@ func (c *Courier) NotifyToPickup(done <-chan bool, orders <-chan order.Order) {
 			return
 		case o, ok := <-orders:
 			if ok {
-				fmt.Printf("Courier [%d]: pickup order [%s] - origin assigned to [%d]\n", c.Id, o.Id, o.CourierId)
+				pickTime := time.Now().UnixNano() / int64(time.Millisecond)
+				timeCost := pickTime - o.StartTime
+
+				fmt.Printf("Courier [%d]: pickup order [%s] - origin assigned to [%d], picked in %d ms\n", c.Id, o.Id, o.CourierId, timeCost)
 			} else {
 				return
 			}

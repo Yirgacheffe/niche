@@ -12,6 +12,7 @@ type Order struct {
 	Name      string `json:"name"`
 	Time      int    `json:"prepTime"`
 	CourierId int
+	StartTime int64
 }
 
 type OrderManager struct {
@@ -34,6 +35,7 @@ func (m *OrderManager) Cooking(done <-chan bool, orders []Order) <-chan Order {
 		for _, o := range orders {
 			fmt.Printf("Order [%s]: Preparing in %d seconds...\n", o.Id, o.Time)
 			cookTime := time.Duration(o.Time) * time.Millisecond
+			o.StartTime = time.Now().UnixNano() / int64(time.Millisecond)
 
 			select {
 			case <-done:

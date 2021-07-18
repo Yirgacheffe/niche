@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// TODO: these 2 parameters should be get from command line for improvement
 const (
 	courierNum  = 5
 	rawDataFile = "./data/input.json"
@@ -60,6 +61,8 @@ func DispatchFIFO() {
 		readyOrder <- o
 	}
 
+	// TODO: the statistic requirement should goes here
+
 	fmt.Println("----------------------- FIFO FINISH ..... ---------------------------")
 }
 
@@ -108,6 +111,8 @@ func DispatchMatched() {
 	for o := range oMgr.Cooking(done, needCooked) {
 		splited[o.CourierId] <- o
 	}
+
+	// TODO: the statistic requirement should goes here
 
 	fmt.Println("----------------------- MATCHED FINISH ... --------------------------")
 }

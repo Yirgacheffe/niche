@@ -1,8 +1,13 @@
 package main
 
+import (
+	"database/sql"
+	"errors"
+)
+
 type product struct {
-	ID int `json:"id"`
-	Name string `json:"name"`
+	ID    int     `json:"id"`
+	Name  string  `json:"name"`
 	Price float64 `json:"price"`
 }
 
@@ -25,4 +30,3 @@ func (p *product) createProduct(db *sql.DB) error {
 func getProducts(db *sql.DB, start, count int) ([]product, error) {
 	return nil, errors.New("Not implemented.")
 }
-

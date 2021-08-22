@@ -55,6 +55,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 	}
 }
 
+// Fixture
 func TestMain(m *testing.M) {
 	a.Initialize(
 		os.Getenv("APP_DB_USERNAME"),

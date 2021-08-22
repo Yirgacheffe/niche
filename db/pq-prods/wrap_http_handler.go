@@ -37,10 +37,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	// Create our logger
 	logger := log.New(os.Stdout, "", 0)
+
 	// Register our handler.
 	http.Handle("/hello", helloHandler(db))
+
 	// Register our handler with metrics logging
 	http.Handle("/hello_again", withMetrics(logger, helloHandler(db)))
 	http.ListenAndServe(":8080", nil)

@@ -1,4 +1,4 @@
-package myapp
+package main
 
 import (
     "database/sql"
@@ -43,15 +43,30 @@ func (tx *Tx) CreateUser(u *User) error {
     return tx.Exec(`INSERT INTO users (...) VALUES`, ...)
 }
 
-// Add user
-tx, _ := db.Begin()
-tx.CreateUser(&User{Name:"susy"})
-tx.Commit()
+func main() {
 
-// Add users
-tx, _ := db.Begin()
-for _, u := range users {
-    tx.CreateUser(u)
+    var (
+        user   string
+        passwd string
+        dbname string
+    )
+
+    conn := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", user, passwd, dbname)
+
+    db, err := Open(conn)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Add user
+    tx, _ := db.Begin()
+    tx.CreateUser(&User{Name:"susy"})
+    tx.Commit()
+
+    // Add users
+    tx, _ := db.Begin()
+    for _, u := range users {
+        tx.CreateUser(u)
+    }
+    tx.Commit()
 }
-tx.Commit()
-

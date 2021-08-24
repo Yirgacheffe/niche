@@ -18,9 +18,9 @@ const (
 )
 
 type Config struct {
-	BackColor   string `json:"BackColor"`
-	AppVersion  string `json:"AppVersion"`
-	KubePodName string `json:"KubePodName"`
+	BgColor string `json:"bg_color,omitempty"`
+	Version string `json:"version,omitempty"`
+	PodName string `json:"pod_name,omitempty"`
 }
 
 // HomeHandler handle Index page, just say hello
@@ -111,7 +111,7 @@ func createTableCell(r *http.Request, ch chan<- string) {
 		apiPort = "8081"
 	}
 
-	url := "http://" + apiService + ":" + apiPort + "/configs"
+	url := "http://" + apiService + ":" + apiPort + "/api/configs"
 
 	client := &http.Client{Timeout: time.Second * 5}
 	request, err := http.NewRequest("GET", url, nil)
@@ -154,9 +154,9 @@ func createTableCell(r *http.Request, ch chan<- string) {
 		return
 	}
 
-	backColor := configObj.BackColor
-	apiVersion := configObj.AppVersion
-	podName := configObj.KubePodName
+	backColor := configObj.BgColor
+	apiVersion := configObj.Version
+	podName := configObj.PodName
 
 	ch <- "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
 	return

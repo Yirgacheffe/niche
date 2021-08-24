@@ -4,7 +4,6 @@
 #
 
 # --
-
 ./build_web.sh
 ./docker_it.sh
 

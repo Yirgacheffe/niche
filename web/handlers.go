@@ -25,7 +25,6 @@ type Config struct {
 
 // HomeHandler handle Index page, just say hello
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-
 	tmpl := template.Must(template.ParseFiles("./tmpls/index.html"))
 
 	// Just practice the template
@@ -34,7 +33,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		fmt.Fprintf(w, "Hi, Seems an error happened to render Index Page.")
 	}
-
 }
 
 // HealthCheckHandler is necessary for container to check liveness

@@ -15,7 +15,7 @@ import (
 
 const (
 	DBName = "todox-app"
-	URI    = "mongodb://root:DsoN4DVgY5@localhost:27017"
+	URI    = "mongodb://root:password@localhost:27017"
 
 	notesColl = "notes"
 )

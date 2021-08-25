@@ -1,13 +1,14 @@
 package db
 
 import (
-	"fmt"
+	"log"
 	"os"
 
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
+/*
 func InitDatabase() (*gorm.DB, error) {
 
 	fmt.Println("Connection to DB")
@@ -36,12 +37,16 @@ func InitDatabase() (*gorm.DB, error) {
 	return db, nil
 
 }
+*/
 
-/*
-func InitSqlite3DB() (*gorm.DB, error) {
+func InitDatabase() (*gorm.DB, error) {
 
-	fmt.Println("Connect to sqlite3")
+	log.Println("Connect to sqlite3")
 	table := os.Getenv("DB_TABLE")
+
+	if len(table) == 0 {
+		table = "students.db"
+	}
 
 	db, err := gorm.Open(sqlite.Open(table), &gorm.Config{})
 	if err != nil {
@@ -49,6 +54,4 @@ func InitSqlite3DB() (*gorm.DB, error) {
 	}
 
 	return db, nil
-
 }
-*/

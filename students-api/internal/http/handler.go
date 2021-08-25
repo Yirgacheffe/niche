@@ -26,7 +26,7 @@ func NewHandler(service *student.Service) *Handler {
 func (h *Handler) InitRoutes() {
 	h.Router = mux.NewRouter()
 
-	h.Router.HandleFunc("/api/students/{school}", h.GetStudentBySchool).Methods("GET")
+	// h.Router.HandleFunc("/api/students/{school}", h.GetStudentBySchool).Methods("GET")
 	h.Router.HandleFunc("/api/students", h.GetAllStudents).Methods("GET")
 	h.Router.HandleFunc("/api/students", h.PostStudent).Methods("POST")
 	h.Router.HandleFunc("/api/students/{id}", h.GetStudentByID).Methods("GET")
@@ -43,28 +43,34 @@ func (h *Handler) InitRoutes() {
 
 func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
 	id := mux.Vars(r)["id"]
 	studentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
+
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(
 			w,
 			"Error Parsing ID to UINT.",
 		)
+		return
 	}
 
 	student, err := h.Service.GetStudentByID(uint(studentID))
 	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(
 			w,
 			"Error Retrieving Student by ID.",
 		)
+		return
 	}
 
-	if err := json.NewEncoder(w).Encode(student); err != nil {
-		panic(err)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(student)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 }

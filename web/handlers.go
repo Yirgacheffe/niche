@@ -13,8 +13,14 @@ import (
 )
 
 const (
-	htmlHeader = "<!DOCTYPE html><html><head><style>table, th, td {border: 1px solid black;font-family: 'Courier New';font-size: 20px;color: white}th, td {padding: 10px;}</style></head><font color=black><h1>Istio Canary Demo Homepage - 2019</h1><body style=background-color:white>"
-	htmlTitle  = "<p>Repo Git: %s <br>Web image build date: %s <br>Running on: (%s / %s)</p><br><table>"
+	htmlHeader    = "<!DOCTYPE html><html><head><style>table, th, td {border: 1px solid black;font-family: 'Courier New';font-size: 20px;color: white}th, td {padding: 10px;}</style></head><font color=black><h1>Istio Canary Demo Homepage - 2021</h1><body style=background-color:white>"
+	htmlTitle     = "<p>Repo Git: %s <br>Web image build date: %s <br>Running on: (%s / %s)</p><br><table>"
+	htmlTableCell = "<td bgcolor=%s align=center>%s</td>"
+)
+
+var (
+	respUnavailable = fmt.Sprintf(htmlTableCell, "#A9A9A9", "Service Unavailable!")
+	respIncorrect   = fmt.Sprintf(htmlTableCell, "#A9A9A9", "Incorrect Response!")
 )
 
 type Config struct {
@@ -46,117 +52,119 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // SearchHandler handle search endpoint from the client
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
-	var gitSHA = os.Getenv("GIT_SHA")
-	if len(gitSHA) == 0 {
-		gitSHA = "Not set"
+	makeTitleHtml := func() string {
+		var (
+			gitSHA         = os.Getenv("GIT_SHA")
+			imageBuildDate = os.Getenv("IMAGE_BUILD_DATE")
+			kubePodName    = os.Getenv("KUBE_POD_NAME")
+			kubePodIP      = os.Getenv("KUBE_POD_IP")
+		)
+
+		if len(gitSHA) == 0 {
+			gitSHA = "Not set"
+		}
+		if len(imageBuildDate) == 0 {
+			imageBuildDate = "8/25/2021 22:41:31"
+		}
+		if len(kubePodName) == 0 {
+			kubePodName = "niche-web-1659604661-zh6rp"
+		}
+		if len(kubePodIP) == 0 {
+			kubePodIP = "192.168.1.100"
+		}
+
+		return fmt.Sprintf(htmlTitle, gitSHA, imageBuildDate, kubePodName, kubePodIP)
 	}
 
-	var imageBuildDate = os.Getenv("IMAGE_BUILD_DATE")
-	if len(imageBuildDate) == 0 {
-		imageBuildDate = "9/23/2019 22:41:31"
-	}
+	configAPIUrl := func() string {
+		var (
+			service = os.Getenv("API_SERVICE")
+			port    = os.Getenv("API_PORT")
+		)
 
-	var kubePodName = os.Getenv("KUBE_POD_NAME")
-	if len(kubePodName) == 0 {
-		kubePodName = "niche-web-1659604661-zh6rp"
-	}
+		if len(service) == 0 {
+			service = "localhost"
+		}
+		if len(port) == 0 {
+			port = "8081"
+		}
 
-	var kubePodIP = os.Getenv("KUBE_POD_IP")
-	if len(kubePodIP) == 0 {
-		kubePodIP = "192.168.1.100"
+		return fmt.Sprintf("http://%s:%s/api/configs", service, port)
 	}
 
 	fmt.Fprintf(w, htmlHeader)
-	fmt.Fprintf(w, htmlTitle, gitSHA, imageBuildDate, kubePodName, kubePodIP)
+	fmt.Fprintf(w, makeTitleHtml())
+
+	// Get Url param 'City', set to Header, ignore others
+	apiUrl := configAPIUrl()
+	paramCity := r.URL.Query().Get("city")
 
 	// Make channel to call api in go routine
-	ch := make(chan string)
-	i := 1
-	for i <= 25 {
-		go createTableCell(r, ch)
-		i = i + 1
+	done := make(chan bool)
+	defer close(done)
+
+	maxRoutines := 25
+	resultGen := func(done <-chan bool) <-chan string {
+		result := make(chan string)
+
+		go func() {
+			defer close(result)
+			for i := 0; i < maxRoutines; i++ {
+				select {
+				case <-done:
+					return
+				case result <- createTableCell(paramCity, apiUrl):
+				}
+			}
+		}()
+
+		return result
 	}
 
 	// loop throught the api to build table
-	i = 1
-
-	for i <= 5 {
+	for row := 0; row < 5; row++ {
 		fmt.Fprintf(w, "<tr>")
-
-		j := 1
-		for j <= 5 {
-			fmt.Fprintf(w, <-ch)
-			j = j + 1
+		for col := 0; col < 5; col++ {
+			fmt.Fprintf(w, <-resultGen(done))
 		}
-
 		fmt.Fprintf(w, "</tr>")
-		i = i + 1
 	}
 
 	fmt.Fprintf(w, "</table></body></html>")
-
 }
 
-func createTableCell(r *http.Request, ch chan<- string) {
+func createTableCell(paramCity, apiUrl string) string {
 
-	var apiService = os.Getenv("API_SERVICE")
-	if len(apiService) == 0 {
-		apiService = "localhost"
-	}
-
-	var apiPort = os.Getenv("API_PORT")
-	if len(apiPort) == 0 {
-		apiPort = "8081"
-	}
-
-	url := "http://" + apiService + ":" + apiPort + "/api/configs"
-
-	client := &http.Client{Timeout: time.Second * 5}
-	request, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", apiUrl, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Get Url param 'City', set to Header, ignore others
-	params := r.URL.Query()
-	city := params.Get("city")
-
-	if len(city) != 0 {
-		request.Header.Add("city", city)
+	if len(paramCity) != 0 {
+		req.Header.Add("city", paramCity)
 	}
-	// end of the headers
 
-	response, err := client.Do(request)
+	client := &http.Client{Timeout: time.Second * 5}
+	resp, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
-		ch <- "<td bgcolor=#A9A9A9 align=center>Service Unavailable!</td>"
-		return
+		return respUnavailable
 	}
 
-	defer response.Body.Close()
+	defer resp.Body.Close()
 
-	responseData, err := ioutil.ReadAll(response.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
-		ch <- "<td bgcolor=#A9A9A9 align=center>Service Unavailable!</td>"
-		return
+		return respUnavailable
 	}
 
-	log.Printf(string(responseData))
+	log.Printf(string(respData))
 
-	var configObj Config
-	err = json.Unmarshal(responseData, &configObj)
+	var conf Config
+	err = json.Unmarshal(respData, &conf)
 	if err != nil {
-		log.Println(err)
-		ch <- "<td bgcolor=#A9A9A9 align=center>Incorrect Response!</td>"
-		return
+		return respIncorrect
 	}
 
-	backColor := configObj.BgColor
-	apiVersion := configObj.Version
-	podName := configObj.PodName
-
-	ch <- "<td bgcolor=" + backColor + " align=center>" + apiVersion + ":" + podName + "</td>"
-	return
-
+	respCorrect := fmt.Sprintf(htmlTableCell, conf.BgColor, conf.Version+":"+conf.PodName)
+	return respCorrect
 }

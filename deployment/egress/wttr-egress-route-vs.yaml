@@ -1,31 +1,32 @@
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: wttr-egress-route
 spec:
   hosts:
-    - wttr.in
+  - wttr.in
   gateways:
-    - istio-system/egressgateway
-    - mesh
+  - istio-system/egressgateway
+  - mesh
   http:
   - match:
     - gateways:
       - mesh
       port: 80
     route:
-      - destination:
-          host: istio-egressgateway.istio-system.svc.cluster.local
-          port:
-            number: 80
-        weight: 100
+    - destination:
+        host: istio-egressgateway.istio-system.svc.cluster.local
+        subset: wttr
+        port:
+          number: 80
+      weight: 100
   - match:
     - gateways:
       - istio-system/egressgateway
       port: 80
     route:
-      - destination:
-          host: wttr.in
-          port:
-            number: 80
-        weight: 100
+    - destination:
+        host: wttr.in
+        port:
+          number: 80
+      weight: 100

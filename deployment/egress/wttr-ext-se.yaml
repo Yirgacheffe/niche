@@ -1,16 +1,16 @@
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: wttr-ext-mesh
 spec:
   hosts:
-    - wttr.in
+  - wttr.in
   ports:
-    - number: 80
-      name: http-port
-      protocol: HTTP
-    - number: 443
-      name: https
-      protocol: HTTPS
+  - number: 80
+    name: http-port
+    protocol: HTTP
+  - number: 443
+    name: https
+    protocol: HTTPS
   location: MESH_EXTERNAL
   resolution: DNS

@@ -4,12 +4,11 @@ metadata:
   name: niche-configs
 spec:
   hosts:
-    - niche-configs
+  - niche-configs
   gateways:
-    - mesh
+  - mesh
   http:
-    - route:
-        - destination:
-            host: niche-configs
-            subset: v4
-
+  - route:
+    - destination:
+        host: niche-configs
+        subset: v4

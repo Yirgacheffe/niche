@@ -2,14 +2,28 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 
 	"students-api/internal/service/student"
 
 	"github.com/gorilla/mux"
 )
+
+var (
+	ErrIdParamParsing  = errors.New("Error parsing parameter ID.")
+	ErrRetrieveStudent = errors.New("Error retrieve student by ID.")
+)
+
+type ErrResponse struct {
+	Code        string `json:"code,omitempty"`
+	Msg         string `json:"msg,omitempty"`
+	ErrorDetail string `json:"error_detail,omitempty`
+}
 
 // Handler - students api http handler
 type Handler struct {
@@ -43,29 +57,33 @@ func (h *Handler) InitRoutes() {
 
 func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Content-Type", "application/json")
+
 	id := mux.Vars(r)["id"]
 	studentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
+		errResp := ErrResponse{
+			"STD775",
+			ErrIdParamParsing.Error(),
+			err.Error(),
+		}
 
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(
-			w,
-			"Error Parsing ID to UINT.",
-		)
+		renderJSON(w, errResp, http.StatusBadRequest)
 		return
 	}
 
 	student, err := h.Service.GetStudentByID(uint(studentID))
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(
-			w,
+		errResp := ErrResponse{
+			"STD790",
 			"Error Retrieving Student by ID.",
-		)
+			err.Error(),
+		}
+
+		renderJSON(w, errResp, http.StatusNotFound)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(student)
 
 	if err != nil {
@@ -183,14 +201,15 @@ func (h *Handler) GetAllStudents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func renderJSON(w http.ResponseWriter, v interface{}) {
-	js, err := json.Marshal(v)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+func renderJSON(w http.ResponseWriter, v interface{}, status int) {
 
 	w.Header().Set("Content-Type", "appliction/json")
-	w.Write(js)
+	w.WriteHeader(status)
+
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
+		log.WithFields(log.Fields{"module": "Student", "error": err}).Error("Error encountered during writing the Content-Type header using status")
+	}
+
 	// -------------------------------------------------------------------------------
 }

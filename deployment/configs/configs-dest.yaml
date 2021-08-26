@@ -4,6 +4,9 @@ metadata:
   name: niche-configs
 spec:
   host: niche-configs
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
   subsets:
     - name: v1
       labels:
@@ -11,6 +14,9 @@ spec:
     - name: v2
       labels:
         version: v2
+      trafficPolicy:
+        loadBalancer:
+          simple: ROUND_ROBIN
     - name: v3
       labels:
         version: v3

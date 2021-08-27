@@ -31,12 +31,12 @@ type Response struct {
 
 var (
 	ErrDefault        = errors.New("API Error")
-	ErrIdParamParsing = errors.New("Error parsing parameter ID.")
-	ErrFetchStudent   = errors.New("Error retrieve student.")
+	ErrIdParamParsing = errors.New("error parsing parameter ID")
+	ErrFetchStudent   = errors.New("error retrieve student")
 )
 
 var respErrFormatter = map[error]Info{
-	ErrDefault:        {500, "STD000", "Bytom API Error"},
+	ErrDefault:        {500, "STD000", "API Error"},
 	ErrIdParamParsing: {400, "STD100", "Error parsing parameter ID."},
 	ErrFetchStudent:   {404, "STD110", "Error retrieve student."},
 }
@@ -118,7 +118,7 @@ func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	student, err := h.Service.GetStudentByID(uint(studentID))
+	s, err := h.Service.GetStudentByID(uint(studentID))
 	if err != nil {
 		errResp := NewErrorResponse(
 			"STD790",
@@ -129,7 +129,7 @@ func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderJSON(w, http.StatusOK, NewSuccessResponse(student))
+	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
 
 }
 
@@ -249,7 +249,7 @@ func array(v interface{}) interface{} {
 }
 
 func renderJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "appliction/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
 	err := json.NewEncoder(w).Encode(array(v))

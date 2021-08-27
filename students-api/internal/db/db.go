@@ -1,15 +1,18 @@
 package db
 
 import (
+	"fmt"
+	"gorm.io/driver/postgres"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-/*
-func InitDatabase() (*gorm.DB, error) {
+
+func InitPostgresDB() (*gorm.DB, error) {
 
 	fmt.Println("Connection to DB")
 
@@ -37,7 +40,6 @@ func InitDatabase() (*gorm.DB, error) {
 	return db, nil
 
 }
-*/
 
 func InitDatabase() (*gorm.DB, error) {
 
@@ -52,6 +54,15 @@ func InitDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return db, err
 	}
+
+	sql, err := db.DB()
+	if err != nil {
+		return db, err
+	}
+
+	sql.SetMaxIdleConns(5)
+	sql.SetMaxOpenConns(5)
+	sql.SetConnMaxIdleTime(time.Minute * 30)
 
 	return db, nil
 }

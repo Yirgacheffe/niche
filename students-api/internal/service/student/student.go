@@ -8,13 +8,13 @@ type Service struct {
 
 type Student struct {
 	gorm.Model
-	FirstName string
-	LastName  string
-	Age       int
-	School    string
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Age       int    `json:"age,omitempty"`
+	School    string `json:"school,omitempty"`
 }
 
-type StudentService interface {
+type StdService interface {
 	PostStudent(student Student) (Student, error)
 	GetStudentByID(ID uint) (Student, error)
 	UpdateStudent(IO uint, newStudent Student) (Student, error)

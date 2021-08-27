@@ -128,7 +128,7 @@ func (manager *Manager) GC() {
     time.AfterFunc(time.Duration(manager.maxLifeTime), func() { manager.GC() })
 }
 
-ackage memory
+package memory
 
 import (
     "container/list"

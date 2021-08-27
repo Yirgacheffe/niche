@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"net"
 	"net/http"
 	"sync"
 	"time"
 )
+
+type Info struct {
+	HttpStatus string `json:"-"`
+	Message    string `json:"msg"`
+}
 
 type Response struct {
 	Status       string      `json:"status,omitempty"`
@@ -205,48 +211,6 @@ func (a *API) buildHandler() {
 		m.Handle("/list-accounts", jsonHandler(a.listAccounts))
 		m.Handle("/delete-account", jsonHandler(a.deleteAccount))
 
-		m.Handle("/create-account-receiver", jsonHandler(a.createAccountReceiver))
-		m.Handle("/list-addresses", jsonHandler(a.listAddresses))
-		m.Handle("/validate-address", jsonHandler(a.validateAddress))
-		m.Handle("/list-pubkeys", jsonHandler(a.listPubKeys))
-
-		m.Handle("/get-mining-address", jsonHandler(a.getMiningAddress))
-		m.Handle("/set-mining-address", jsonHandler(a.setMiningAddress))
-
-		m.Handle("/get-coinbase-arbitrary", jsonHandler(a.getCoinbaseArbitrary))
-		m.Handle("/set-coinbase-arbitrary", jsonHandler(a.setCoinbaseArbitrary))
-
-		m.Handle("/create-asset", jsonHandler(a.createAsset))
-		m.Handle("/update-asset-alias", jsonHandler(a.updateAssetAlias))
-		m.Handle("/get-asset", jsonHandler(a.getAsset))
-		m.Handle("/list-assets", jsonHandler(a.listAssets))
-
-		m.Handle("/create-key", jsonHandler(a.pseudohsmCreateKey))
-		m.Handle("/update-key-alias", jsonHandler(a.pseudohsmUpdateKeyAlias))
-		m.Handle("/list-keys", jsonHandler(a.pseudohsmListKeys))
-		m.Handle("/delete-key", jsonHandler(a.pseudohsmDeleteKey))
-		m.Handle("/reset-key-password", jsonHandler(a.pseudohsmResetPassword))
-		m.Handle("/check-key-password", jsonHandler(a.pseudohsmCheckPassword))
-		m.Handle("/sign-message", jsonHandler(a.signMessage))
-
-		m.Handle("/build-transaction", jsonHandler(a.build))
-		m.Handle("/build-chain-transactions", jsonHandler(a.buildChainTxs))
-		m.Handle("/sign-transaction", jsonHandler(a.signTemplate))
-		m.Handle("/sign-transactions", jsonHandler(a.signTemplates))
-
-		m.Handle("/get-transaction", jsonHandler(a.getTransaction))
-		m.Handle("/list-transactions", jsonHandler(a.listTransactions))
-
-		m.Handle("/list-balances", jsonHandler(a.listBalances))
-		m.Handle("/list-unspent-outputs", jsonHandler(a.listUnspentOutputs))
-
-		m.Handle("/decode-program", jsonHandler(a.decodeProgram))
-
-		m.Handle("/backup-wallet", jsonHandler(a.backupWalletImage))
-		m.Handle("/restore-wallet", jsonHandler(a.restoreWalletImage))
-		m.Handle("/rescan-wallet", jsonHandler(a.rescanWallet))
-		m.Handle("/wallet-info", jsonHandler(a.getWalletInfo))
-		m.Handle("/recovery-wallet", jsonHandler(a.recoveryFromRootXPubs))
 	} else {
 		log.Warn("Please enable wallet")
 	}
@@ -258,52 +222,6 @@ func (a *API) buildHandler() {
 	m.Handle("/list-access-tokens", jsonHandler(a.listAccessTokens))
 	m.Handle("/delete-access-token", jsonHandler(a.deleteAccessToken))
 	m.Handle("/check-access-token", jsonHandler(a.checkAccessToken))
-
-	m.Handle("/create-transaction-feed", jsonHandler(a.createTxFeed))
-	m.Handle("/get-transaction-feed", jsonHandler(a.getTxFeed))
-	m.Handle("/update-transaction-feed", jsonHandler(a.updateTxFeed))
-	m.Handle("/delete-transaction-feed", jsonHandler(a.deleteTxFeed))
-	m.Handle("/list-transaction-feeds", jsonHandler(a.listTxFeeds))
-
-	m.Handle("/submit-transaction", jsonHandler(a.submit))
-	m.Handle("/submit-transactions", jsonHandler(a.submitTxs))
-	m.Handle("/estimate-transaction-gas", jsonHandler(a.estimateTxGas))
-	m.Handle("/estimate-chain-transaction-gas", jsonHandler(a.estimateChainTxGas))
-
-	m.Handle("/get-unconfirmed-transaction", jsonHandler(a.getUnconfirmedTx))
-	m.Handle("/list-unconfirmed-transactions", jsonHandler(a.listUnconfirmedTxs))
-	m.Handle("/decode-raw-transaction", jsonHandler(a.decodeRawTransaction))
-
-	m.Handle("/get-block", jsonHandler(a.getBlock))
-	m.Handle("/get-raw-block", jsonHandler(a.getRawBlock))
-	m.Handle("/get-block-hash", jsonHandler(a.getBestBlockHash))
-	m.Handle("/get-block-header", jsonHandler(a.getBlockHeader))
-	m.Handle("/get-block-count", jsonHandler(a.getBlockCount))
-	m.Handle("/get-difficulty", jsonHandler(a.getDifficulty))
-	m.Handle("/get-hash-rate", jsonHandler(a.getHashRate))
-
-	m.Handle("/is-mining", jsonHandler(a.isMining))
-	m.Handle("/set-mining", jsonHandler(a.setMining))
-
-	m.Handle("/get-work", jsonHandler(a.getWork))
-	m.Handle("/get-work-json", jsonHandler(a.getWorkJSON))
-	m.Handle("/submit-block", jsonHandler(a.submitBlock))
-	m.Handle("/submit-work", jsonHandler(a.submitWork))
-	m.Handle("/submit-work-json", jsonHandler(a.submitWorkJSON))
-
-	m.Handle("/verify-message", jsonHandler(a.verifyMessage))
-	m.Handle("/compile", jsonHandler(a.compileEquity))
-
-	m.Handle("/gas-rate", jsonHandler(a.gasRate))
-	m.Handle("/net-info", jsonHandler(a.getNetInfo))
-
-	m.Handle("/list-peers", jsonHandler(a.listPeers))
-	m.Handle("/disconnect-peer", jsonHandler(a.disconnectPeer))
-	m.Handle("/connect-peer", jsonHandler(a.connectPeer))
-
-	m.Handle("/get-merkle-proof", jsonHandler(a.getMerkleProof))
-
-	m.HandleFunc("/websocket-subscribe", a.websocketHandler)
 
 	handler := walletHandler(m, walletEnable)
 	handler = webAssetsHandler(handler)
@@ -386,4 +304,14 @@ func walletHandler(m *http.ServeMux, walletEnable bool) http.Handler {
 func walletRedirectHandler(w http.ResponseWriter, req *http.Request) {
 	h := http.RedirectHandler(req.URL.String(), http.StatusMovedPermanently)
 	h.ServeHTTP(w, req)
+}
+
+func (a *API) setMiningAddress(ctx context.Context, in struct {
+	MiningAddress string `json:"mining_address"`
+}) Response {
+	miningAddress, err := a.wallet.AccountMgr.SetMiningAddress(in.MiningAddress)
+	if err != nil {
+		return NewErrorResponse(err)
+	}
+	return NewSuccessResponse(minigAddressResp{MiningAddress: miningAddres})
 }

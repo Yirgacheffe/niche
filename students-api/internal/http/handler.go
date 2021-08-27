@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
@@ -14,15 +15,30 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Info struct {
+	HTTPStatus int    `json:"-"`
+	MainCode   string `json:"code"`
+	Message    string `json:"msg"`
+}
+
+type Response struct {
+	Status      string      `json:"status,omitempty"`
+	Code        string      `json:"code,omitempty"`
+	Msg         string      `json:"msg,omitempty"`
+	ErrorDetail string      `json:"error_detail,omitempty"`
+	Data        interface{} `json:"data,omitempty"`
+}
+
 var (
-	ErrIdParamParsing  = errors.New("Error parsing parameter ID.")
-	ErrRetrieveStudent = errors.New("Error retrieve student by ID.")
+	ErrDefault        = errors.New("API Error")
+	ErrIdParamParsing = errors.New("Error parsing parameter ID.")
+	ErrFetchStudent   = errors.New("Error retrieve student.")
 )
 
-type ErrResponse struct {
-	Code        string `json:"code,omitempty"`
-	Msg         string `json:"msg,omitempty"`
-	ErrorDetail string `json:"error_detail,omitempty`
+var respErrFormatter = map[error]Info{
+	ErrDefault:        {500, "STD000", "Bytom API Error"},
+	ErrIdParamParsing: {400, "STD100", "Error parsing parameter ID."},
+	ErrFetchStudent:   {404, "STD110", "Error retrieve student."},
 }
 
 // Handler - students api http handler
@@ -55,41 +71,65 @@ func (h *Handler) InitRoutes() {
 	})
 }
 
-func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
+const (
+	SUCCESS = "success"
+	FAIL    = "fail"
+)
 
-	w.Header().Set("Content-Type", "application/json")
+func NewErrorResponse(code string, msg string, err error) Response {
+	return Response{
+		Status: FAIL,
+		Code:   code,
+		Msg:    msg, ErrorDetail: err.Error()}
+}
+
+func formatErrResp(err error) (response Response) {
+	response = Response{Status: FAIL}
+	defer func() {
+		if err := recover(); err != nil {
+			response.ErrorDetail = ""
+		}
+	}()
+
+	if info, ok := respErrFormatter[err]; ok {
+		response.Code = info.MainCode
+		response.Msg = info.Message
+		response.ErrorDetail = err.Error()
+	}
+
+	return response
+}
+
+func NewSuccessResponse(data interface{}) Response {
+	return Response{Status: SUCCESS, Data: data}
+}
+
+func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 
 	id := mux.Vars(r)["id"]
 	studentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		errResp := ErrResponse{
+		errResp := NewErrorResponse(
 			"STD775",
 			ErrIdParamParsing.Error(),
-			err.Error(),
-		}
-
-		renderJSON(w, errResp, http.StatusBadRequest)
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
 		return
 	}
 
 	student, err := h.Service.GetStudentByID(uint(studentID))
 	if err != nil {
-		errResp := ErrResponse{
+		errResp := NewErrorResponse(
 			"STD790",
-			"Error Retrieving Student by ID.",
-			err.Error(),
-		}
-
-		renderJSON(w, errResp, http.StatusNotFound)
+			ErrFetchStudent.Error(),
+			err,
+		)
+		renderJSON(w, http.StatusNotFound, errResp)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(student)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	renderJSON(w, http.StatusOK, NewSuccessResponse(student))
 
 }
 
@@ -201,15 +241,24 @@ func (h *Handler) GetAllStudents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func renderJSON(w http.ResponseWriter, v interface{}, status int) {
+func array(v interface{}) interface{} {
+	if rv := reflect.ValueOf(v); rv.Kind() == reflect.Slice && rv.IsNil() {
+		v = []struct{}{}
+	}
+	return v // render "[]" rather than "nil" if value is slice
+}
 
+func renderJSON(w http.ResponseWriter, status int, v interface{}) {
 	w.Header().Set("Content-Type", "appliction/json")
 	w.WriteHeader(status)
 
-	err := json.NewEncoder(w).Encode(v)
+	err := json.NewEncoder(w).Encode(array(v))
 	if err != nil {
-		log.WithFields(log.Fields{"module": "Student", "error": err}).Error("Error encountered during writing the Content-Type header using status")
+		log.WithFields(
+			log.Fields{
+				"module": "Student",
+				"error":  err,
+			}).Error("Error happened while writing Content-Type header using status")
 	}
-
 	// -------------------------------------------------------------------------------
 }

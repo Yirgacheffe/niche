@@ -102,3 +102,20 @@ func Test_GetStudentByID(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v", actual, expect)
 	}
 }
+
+func Test_GetStudentByIDAnotherWay(t *testing.T) {
+	router.HandleFunc("/api/students/{id}", h.GetStudentByID)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	t.Run("not found", func(t *testing.T) {
+		res, err := http.Get(ts.URL + "/api/students/100")
+		if err != nil {
+			t.Errorf("expected nil, received %s", err.Error())
+		}
+
+		if res.StatusCode != http.StatusNotFound {
+			t.Errorf("expected %d, received %d", http.StatusNotFound, res.StatusCode)
+		}
+	})
+}

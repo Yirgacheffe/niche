@@ -33,6 +33,7 @@ var (
 	ErrDefault        = errors.New("API Error")
 	ErrIdParamParsing = errors.New("error parsing parameter ID")
 	ErrFetchStudent   = errors.New("error retrieve student")
+	ErrDelStudent     = errors.New("error delete student")
 )
 
 var respErrFormatter = map[error]Info{
@@ -58,10 +59,11 @@ func (h *Handler) InitRoutes() {
 
 	// h.Router.HandleFunc("/api/students/{school}", h.GetStudentBySchool).Methods("GET")
 	h.Router.HandleFunc("/api/students", h.GetAllStudents).Methods("GET")
+
 	h.Router.HandleFunc("/api/students", h.PostStudent).Methods("POST")
 	h.Router.HandleFunc("/api/students/{id}", h.GetStudentByID).Methods("GET")
-	h.Router.HandleFunc("/api/students/{id}", h.DeleteStudent).Methods("DELETE")
 	h.Router.HandleFunc("/api/students/{id}", h.UpdateStudent).Methods("PUT")
+	h.Router.HandleFunc("/api/students/{id}", h.DeleteStudent).Methods("DELETE")
 
 	// h.Router.HandleFunc("/api/tag/{tag}/", h.GetStudentsByTag).Methods("GET")
 	// h.Router.HandleFunc("/api/due/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}", h.GetStudentsByDate).Methods("GET")
@@ -104,8 +106,33 @@ func NewSuccessResponse(data interface{}) Response {
 	return Response{Status: SUCCESS, Data: data}
 }
 
-func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostStudent(w http.ResponseWriter, r *http.Request) {
+	var s student.Student
+	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
+		errResp := NewErrorResponse(
+			"STD891",
+			"Incorrect request body",
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
+	}
 
+	s, err := h.Service.PostStudent(s)
+	if err != nil {
+		errResp := NewErrorResponse(
+			"STD991",
+			"Failed to create student",
+			err,
+		)
+		renderJSON(w, http.StatusInternalServerError, errResp)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
+}
+
+func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	studentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -130,55 +157,74 @@ func (h *Handler) GetStudentByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
-
 }
 
 func (h *Handler) DeleteStudent(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
 	id := mux.Vars(r)["id"]
 	studentID, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		fmt.Fprintf(w, "Error Parsing ID to UINT.")
+		errResp := NewErrorResponse(
+			"STD775",
+			ErrIdParamParsing.Error(),
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
 	}
 
 	err = h.Service.DeleteStudent(uint(studentID))
 	if err != nil {
-		fmt.Fprintf(w, "Failed to delete student by ID.")
+		errResp := NewErrorResponse(
+			"STD776",
+			ErrDelStudent.Error(),
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
 	}
 
-	message := `{Message: "Student deleted succeed!"}`
-	if err := json.NewEncoder(w).Encode(message); err != nil {
-		panic(err)
-	}
-
+	renderJSON(w, http.StatusNoContent, NewSuccessResponse("{}"))
 }
 
-func (h *Handler) PostStudent(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	studentID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		errResp := NewErrorResponse(
+			"STD775",
+			ErrIdParamParsing.Error(),
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
+	}
 
 	var s student.Student
 	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
-		fmt.Fprintf(w, "Json body decode failed.")
+		errResp := NewErrorResponse(
+			"STD891",
+			"Incorrect request body",
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
 	}
 
-	s, err := h.Service.PostStudent(s)
+	s, err = h.Service.UpdateStudent(uint(studentID), s)
 	if err != nil {
-		fmt.Fprintf(w, "Failed to create new student.")
+		errResp := NewErrorResponse(
+			"STD892",
+			"Failed to update student",
+			err,
+		)
+		renderJSON(w, http.StatusBadRequest, errResp)
+		return
 	}
 
-	if err = json.NewEncoder(w).Encode(s); err != nil {
-		panic(err)
-	}
-
+	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
 }
 
 func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
@@ -194,35 +240,6 @@ func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(students); err != nil {
-		panic(err)
-	}
-
-}
-
-func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	id := mux.Vars(r)["id"]
-	studentID, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		fmt.Fprint(w, "Error Parsing ID to UINT.")
-	}
-
-	var s student.Student
-	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
-		fmt.Fprintf(
-			w,
-			"Decode Json body failed.",
-		)
-	}
-
-	s, err = h.Service.UpdateStudent(uint(studentID), s)
-	if err != nil {
-		fmt.Fprintf(w, "Failed to update student.")
-	}
-
-	if err = json.NewEncoder(w).Encode(s); err != nil {
 		panic(err)
 	}
 }
@@ -260,5 +277,6 @@ func renderJSON(w http.ResponseWriter, status int, v interface{}) {
 				"error":  err,
 			}).Error("Error happened while writing Content-Type header using status")
 	}
-	// -------------------------------------------------------------------------------
+
+	// ------------------------------------------------------------
 }

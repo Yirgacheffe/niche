@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGetNotes(t *testing.T) {
+func Test_ListNoteHandler(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "/api/notes", nil)
 	if err != nil {

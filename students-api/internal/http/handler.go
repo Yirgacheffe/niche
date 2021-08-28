@@ -5,10 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strconv"
-
-	log "github.com/sirupsen/logrus"
 
 	"students-api/internal/service/student"
 
@@ -64,9 +61,6 @@ func (h *Handler) InitRoutes() {
 	h.Router.HandleFunc("/api/students/{id}", h.GetStudentByID).Methods("GET")
 	h.Router.HandleFunc("/api/students/{id}", h.UpdateStudent).Methods("PUT")
 	h.Router.HandleFunc("/api/students/{id}", h.DeleteStudent).Methods("DELETE")
-
-	// h.Router.HandleFunc("/api/tag/{tag}/", h.GetStudentsByTag).Methods("GET")
-	// h.Router.HandleFunc("/api/due/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}", h.GetStudentsByDate).Methods("GET")
 
 	h.Router.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Status Up!")
@@ -183,7 +177,7 @@ func (h *Handler) DeleteStudent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderJSON(w, http.StatusNoContent, NewSuccessResponse("{}"))
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request) {
@@ -224,6 +218,21 @@ func (h *Handler) UpdateStudent(w http.ResponseWriter, r *http.Request) {
 	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
 }
 
+func (h *Handler) GetAllStudents(w http.ResponseWriter, r *http.Request) {
+	s, err := h.Service.GetAllStudents()
+	if err != nil {
+		errResp := NewErrorResponse(
+			"STD100",
+			"Failed retrieve students.",
+			err,
+		)
+		renderJSON(w, http.StatusInternalServerError, errResp)
+		return
+	}
+
+	renderJSON(w, http.StatusOK, NewSuccessResponse(s))
+}
+
 func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -242,41 +251,4 @@ func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(students); err != nil {
 		panic(err)
 	}
-}
-
-func (h *Handler) GetAllStudents(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	students, err := h.Service.GetAllStudents()
-	if err != nil {
-		fmt.Fprintf(w, "Failed to retrieve students.")
-	}
-
-	if err := json.NewEncoder(w).Encode(students); err != nil {
-		panic(err)
-	}
-}
-
-func array(v interface{}) interface{} {
-	if rv := reflect.ValueOf(v); rv.Kind() == reflect.Slice && rv.IsNil() {
-		v = []struct{}{}
-	}
-	return v // render "[]" rather than "nil" if value is slice
-}
-
-func renderJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-
-	err := json.NewEncoder(w).Encode(array(v))
-	if err != nil {
-		log.WithFields(
-			log.Fields{
-				"module": "Student",
-				"error":  err,
-			}).Error("Error happened while writing Content-Type header using status")
-	}
-
-	// ------------------------------------------------------------
 }

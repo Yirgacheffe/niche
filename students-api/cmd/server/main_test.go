@@ -1,4 +1,4 @@
-package handler
+package main
 
 import (
 	"encoding/json"
@@ -93,7 +93,10 @@ func Test_GetStudentByID(t *testing.T) {
 	}
 
 	var s rawData
-	json.Unmarshal(rr.Body.Bytes(), &s)
+	err = json.Unmarshal(rr.Body.Bytes(), &s)
+	if err != nil {
+		t.Error("failed to read response", err)
+	}
 
 	actual := s.Data.ID
 	expect := 1

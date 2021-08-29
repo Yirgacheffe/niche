@@ -62,8 +62,8 @@ func (h *Handler) InitRoutes() {
 	h.Router.HandleFunc("/api/students/{id}", h.UpdateStudent).Methods("PUT")
 	h.Router.HandleFunc("/api/students/{id}", h.DeleteStudent).Methods("DELETE")
 
-	h.Router.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Status Up!")
+	h.Router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
 }
 

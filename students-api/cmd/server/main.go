@@ -50,13 +50,15 @@ func Run(wait time.Duration) error {
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
 	signal.Notify(c, os.Interrupt)
 
-	// Well, block untile receive the signal
+	// Well, block until receive signal
 	<-c
 
 	ctx, cancel := context.WithTimeout(context.Background(), wait)
 	defer cancel()
 
-	srv.Shutdown(ctx)
+	if err = srv.Shutdown(ctx); err != nil {
+		log.Println(err)
+	}
 	log.Println("shutting down...")
 	os.Exit(0)
 

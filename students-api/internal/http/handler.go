@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"students-api/internal/service/student"
 
@@ -65,6 +67,8 @@ func (h *Handler) InitRoutes() {
 	h.Router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
+
+	h.Router.Use(withMetrics) // apply a middleware...
 }
 
 const (
@@ -251,4 +255,12 @@ func (h *Handler) GetStudentBySchool(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(students); err != nil {
 		panic(err)
 	}
+}
+
+func withMetrics(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		began := time.Now()
+		next.ServeHTTP(w, r)
+		log.Printf("%s %s took %s", r.Method, r.URL, time.Since(began))
+	})
 }

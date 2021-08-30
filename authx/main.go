@@ -19,13 +19,13 @@ func main() {
 	router := mux.NewRouter()
 	handler := c.Handler(router)
 
-	router.HandleFunc("/oauth/auth", LoginHandler).Methods("POST")
+	router.HandleFunc("/oauth/auth", AuthHandler).Methods("POST")
 	router.HandleFunc("/health", HealthCheckHandler).Methods("GET", "OPTIONS")
 
 	// Jwks
 	f := http.FileServer(http.Dir(".well-known"))
 	router.PathPrefix("/.well-known/").Handler(http.StripPrefix("/.well-known/", f))
 
-	log.Info(http.ListenAndServe(":8081", handler))
+	log.Info(http.ListenAndServe(":9010", handler))
 
 }

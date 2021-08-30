@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -14,39 +15,43 @@ type JwtResponse struct {
 	Token string `json:"token"`
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+type User struct {
+	ID       int
+	UserName string
+	Email    string
+}
 
+func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	// Invoke parset form before get the form value
 	r.ParseForm()
 
 	u := r.FormValue("username")
 	p := r.FormValue("password")
 
-	if u != def_password || p != def_password {
-		renderJson(
-			w,
-			http.StatusUnauthorized,
-			ErrResponse{Code: "AUT001", Msg: "Authentication failed."},
-		)
+	user, err := getUserFromDB(u, p)
+	if err != nil {
+		renderJson(w, 403, ErrResponse{"AUT001", "Authentication failed.", err.Error()})
 		return
 	}
 
-	/*
-		//
-		jwt, err := GenerateJWT("")
-		if err != nil {
-			renderJson(
-				w,
-				http.StatusUnauthorized,
-				ErrResponse{Code: "AUT002", Msg: "Authentication failed.", ErrDetail: err.Error()},
-			)
-			return
-		}
+	tokenString, err := GenerateJWT(user.ID, user.UserName, user.Email)
+	if err != nil {
+		renderJson(w, 500, ErrResponse{"AUT003", "Authentication failed.", err.Error()})
+		return
+	}
 
-		renderJson(w, http.StatusOK, JwtResponse{Token: jwt})
-	*/
+	w.Header().Set("Content-Type", "application/jwt")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, tokenString)
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+}
+
+func getUserFromDB(user, pass string) (*User, error) {
+	if user != def_username || pass != def_password {
+		return nil, fmt.Errorf("Incorrect parameter.")
+	}
+	return &User{ID: 1, UserName: user, Email: "test@abc.com"}, nil
 }

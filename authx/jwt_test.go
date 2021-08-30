@@ -16,9 +16,10 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 
 func Test_GenerateJWT(t *testing.T) {
 
+	id := 1
 	userName := "wang xiao"
-	roles := []string{}
-	tokenString, err := GenerateJWT(userName, roles)
+	email := "wei@abcc.com"
+	tokenString, err := GenerateJWT(id, userName, email)
 
 	if err != nil {
 		t.Errorf("expected nil error, received %s", err.Error())
@@ -38,11 +39,9 @@ func Test_GenerateJWT(t *testing.T) {
 		t.Errorf("claims invalid, not map claims: %v", claims)
 	}
 
-	actual := claims["sub"]
-	expect := "wang xiao"
-
-	if actual != expect {
-		t.Errorf("wrong claim 'sub' value: got %v want %v", actual, expect)
+	actual := claims["email"]
+	if actual != email {
+		t.Errorf("wrong claim 'sub' value: got %v want %v", actual, email)
 	}
 
 }

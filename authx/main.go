@@ -10,15 +10,16 @@ import (
 )
 
 func main() {
-
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, AllowCredentials: true, AllowedMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
 	})
 
 	router := mux.NewRouter()
-
 	handler := c.Handler(router)
-	router.HandleFunc("/login", LoginHandler).Methods("POST")
+
+	router.HandleFunc("/oauth/auth", LoginHandler).Methods("POST")
 	router.HandleFunc("/health", HealthCheckHandler).Methods("GET", "OPTIONS")
 
 	// Jwks

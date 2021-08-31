@@ -27,10 +27,10 @@ func Test_AuthHandler_NotCorrectUser(t *testing.T) {
 	rr := httptest.NewRecorder()
 	AuthHandler(rr, req)
 
-	resp := rr.Result()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	res := rr.Result()
+	respBody, _ := ioutil.ReadAll(res.Body)
 
-	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 
 	var v map[string]string
 	if err = json.Unmarshal(respBody, &v); err != nil {

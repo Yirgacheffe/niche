@@ -35,7 +35,8 @@ func ConnectSQL(host, port, uname, passwd, dbname string) (*DB, error) {
 	}
 
 	// Connnection Options
-	d.SetMaxOpenConns(20)
+	d.SetMaxOpenConns(25)
+	d.SetMaxIdleConns(25)
 	d.SetConnMaxLifetime(5 * time.Minute)
 
 	// Ping database

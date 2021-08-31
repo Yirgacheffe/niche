@@ -22,5 +22,5 @@ WORKDIR /app
 COPY --from=builder /go/bin/niche-auth /app/niche-auth
 COPY ./keys /app
 
-EXPOSE 8081
+EXPOSE 9010
 ENTRYPOINT ["/app/niche-auth"]

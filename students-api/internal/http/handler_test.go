@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"students-api/internal/db"
-	internalHttp "students-api/internal/http"
 	"students-api/internal/service/student"
 
 	"github.com/gorilla/mux"
@@ -26,7 +25,7 @@ var (
 	router *mux.Router
 	rr     *httptest.ResponseRecorder
 	s      *student.Service
-	h      *internalHttp.Handler
+	h      *Handler
 )
 
 func setUpTableEnv() {
@@ -45,7 +44,7 @@ func setUp() {
 		log.Fatal(err)
 	}
 	s = student.NewService(conn)
-	h = internalHttp.NewHandler(s)
+	h = NewHandler(s)
 
 	router = mux.NewRouter()
 	rr = httptest.NewRecorder()

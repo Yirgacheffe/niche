@@ -11,10 +11,6 @@ var (
 	def_password = "1234"
 )
 
-type JwtResponse struct {
-	Token string `json:"token"`
-}
-
 type User struct {
 	ID       int
 	UserName string
@@ -24,13 +20,12 @@ type User struct {
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	// Invoke parset form before get the form value
 	r.ParseForm()
-
 	u := r.FormValue("username")
 	p := r.FormValue("password")
 
 	user, err := getUserFromDB(u, p)
 	if err != nil {
-		renderJson(w, 403, ErrResponse{"AUT001", "Authentication failed.", err.Error()})
+		renderJson(w, 401, ErrResponse{"AUT001", "Authentication failed.", err.Error()})
 		return
 	}
 

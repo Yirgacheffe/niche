@@ -19,7 +19,7 @@ func main() {
 	router := mux.NewRouter()
 	handler := c.Handler(router)
 
-	router.HandleFunc("/oauth/auth", AuthHandler).Methods("POST")
+	router.HandleFunc("/oauth/auth", withMetrics(AuthHandler)).Methods("POST")
 	router.HandleFunc("/health", HealthCheckHandler).Methods("GET", "OPTIONS")
 
 	// Jwks
@@ -27,5 +27,4 @@ func main() {
 	router.PathPrefix("/.well-known/").Handler(http.StripPrefix("/.well-known/", f))
 
 	log.Info(http.ListenAndServe(":9010", handler))
-
 }

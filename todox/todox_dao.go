@@ -45,6 +45,12 @@ func init() {
 		log.Fatal(err)
 	}
 
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
 	db = client.Database(DBName)
 }
 
@@ -78,10 +84,32 @@ func InsertMongoDB(note Notex) string {
 		log.Fatal(err)
 	}
 
+	/*
+		notes := []interface{}{ note1, note2}
+		res, err := db.Collection(notesColl).InsertMany(ctx, notes)
+	*/
+
 	id := result.InsertedID.(primitive.ObjectID)
 
 	log.Println("Insert() with ID: ", id)
 	return id.Hex()
+}
+
+func UpateNote(note Notex) {
+	filter := bson.D{{"_id", note.ID}}
+	update := bson.D{
+		{
+			"$set", bson.D{
+				{"Title", note.Title}, {"Body", note.Body},
+			}},
+	}
+
+	n, err := db.Collection(notesColl).UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("%d documents updated", n.ModifiedCount)
 }
 
 // FindByID - Grab note by ID

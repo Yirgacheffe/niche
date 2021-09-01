@@ -96,20 +96,20 @@ func InsertMongoDB(note Notex) string {
 }
 
 func UpateNote(note Notex) {
-	filter := bson.D{{"_id", note.ID}}
-	update := bson.D{
-		{
-			"$set", bson.D{
-				{"Title", note.Title}, {"Body", note.Body},
-			}},
+
+	filter := bson.M{"_id": note.ID}
+	update := bson.M{
+		"$set": bson.M{
+			"title": note.Title, "body": note.Body,
+		},
 	}
 
-	n, err := db.Collection(notesColl).UpdateOne(ctx, filter, update)
+	r, err := db.Collection(notesColl).UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("%d documents updated", n.ModifiedCount)
+	log.Println("%d documents updated", r.ModifiedCount)
 }
 
 // FindByID - Grab note by ID

@@ -1,12 +1,12 @@
 { 
   "keys":[ 
     {
-      "use": "nichesoft.io",
-      "alg": "RS256",
-      "kty":"RSA",
-      "kid":"DHFbpoIUqrY8t2zpA2qXfCmr5VO5ZEr4RzHU_-envvQ",
-      "e":"AQAB",
-      "n":"xAE7eB6qugXyCAG3yhh7pkDkT65pHymX-P7KfIupjf59vsdo91bSP9C8H07pSAGQO1MV_xFj9VswgsCg4R6otmg5PV2He95lZdHtOcU5DXIg_pbhLdKXbi66GlVeK6ABZOUW3WYtnNHD-91gVuoeJT_DwtGGcp4ignkgXfkiEm4sw-4sfb4qdt5oLbyVpmW6x9cfa7vs2WTfURiCrBoUqgBo_-4WTiULmmHSGZHOjzwa8WtrtOQGsAFjIbno85jp6MnGGGZPYZbDAa_b3y5u-YpW7ypZrvD8BgtKVjgtQgZhLAGezMt0ua3DRrWnKqTZ0BJ_EyxOGuHJrLsn00fnMQ"
+        "kty": "RSA",
+        "e": "AQAB",
+        "use": "sig",
+        "kid": "-HVXLi1zsLoESUVjWWJwPayM0p0TRhgBm0nBotvBm6s",
+        "alg": "RS256",
+        "n": "rNm1tCIjGuPPG_4yPaoNefxoTWnlKfvjJLrPPhXf9OkUSXNdHuroXPiJuXT9GbcXqgqdlYXKcP65eyTWjRuttKVJDQcz1AiN6HSV7aTpCFOwRsY-6KQQEMCpB2lQE9auvGyRL76hLqewbwXimTeOUCyVPlhhxzQKagU8FY5183v4w-4__B_0msd2OrX_NXoqtTGrKYSxQcknLBtsiJPB1EDNWqIKvlO_ouT-R7WGBkFyBbxyKSRRNkvg0TO2T_d-AdWWdytw-_d7UqTFS6RpBQiT7igTgvVBOp6zGfy-SN1AqGqf9GWD7kZLC_kcg58sRiD9JJf0B1BXvvZd_CvTUQ"
     }
   ]
 }

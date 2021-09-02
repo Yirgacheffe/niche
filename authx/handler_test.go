@@ -72,7 +72,7 @@ func Test_AuthHandler_Login200(t *testing.T) {
 	h.Login(rr, req)
 
 	res := rr.Result()
-	respBody, _ := ioutil.ReadAll(res.Body)
+	// respBody, _ := ioutil.ReadAll(res.Body)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 
 }

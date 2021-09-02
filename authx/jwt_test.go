@@ -2,16 +2,33 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"testing"
 
 	"github.com/golang-jwt/jwt"
 )
 
+var publicSecret []byte
+
+func init() {
+	if keyData, err := ioutil.ReadFile("keys/id_rsa.pub"); err != nil {
+		log.Fatal(err)
+	} else {
+		publicSecret = keyData
+	}
+}
+
 func keyFunc(token *jwt.Token) (interface{}, error) {
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 		return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 	}
-	return []byte("sdkfjsdkksdfjafiemr3434jk"), nil
+
+	if key, err := jwt.ParseRSAPublicKeyFromPEM(publicSecret); err == nil {
+		return key, nil
+	} else {
+		return nil, fmt.Errorf("KeyFunc: parse public key: %w", err)
+	}
 }
 
 func Test_GenerateJWT(t *testing.T) {

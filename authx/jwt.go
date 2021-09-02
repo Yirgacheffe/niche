@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"time"
@@ -12,21 +13,26 @@ const (
 	appId  = "1873974"
 	jwtIss = "nichesoft.io"
 	jwtAud = appId
-	jwtKid = "DHFbpoIUqrY8t2zpA2qXfCmr5VO5ZEr4RzHU_-envvQ"
+	jwtKid = "-HVXLi1zsLoESUVjWWJwPayM0p0TRhgBm0nBotvBm6s"
 )
 
-var hmacSecret []byte
+var privSecret []byte
 
 func init() {
-	if keyData, e := ioutil.ReadFile("keys/hmac"); e != nil {
-		log.Fatal(e)
+	if keyData, err := ioutil.ReadFile("keys/id_rsa"); err != nil {
+		log.Fatal(err)
 	} else {
-		hmacSecret = keyData
+		privSecret = keyData
 	}
 }
 
 // GenerateJWT - Generate jwt token
 func GenerateJWT(id int, name, email string) (string, error) {
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(privSecret)
+	if err != nil {
+		return "", fmt.Errorf("create: sign token: %w", err)
+	}
+
 	claims := jwt.MapClaims{
 		"iss":   jwtIss,
 		"aud":   jwtAud,
@@ -38,8 +44,8 @@ func GenerateJWT(id int, name, email string) (string, error) {
 	}
 
 	// create a signer for rsa 256
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := t.SignedString(hmacSecret)
+	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	tokenString, err := t.SignedString(key)
 	if err != nil {
 		return "", err
 	}

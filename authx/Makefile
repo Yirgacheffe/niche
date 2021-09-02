@@ -22,3 +22,6 @@ test:
 
 deps:
 	@printf "go get github.com/gorilla/mux"
+
+image:
+	docker build -t 'soline74/niche-auth:dev-4fd7739' .

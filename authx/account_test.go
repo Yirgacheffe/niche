@@ -2,9 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"testing"
 
@@ -20,7 +18,7 @@ const tableCreationQuery = `CREATE TABLE IF NOT EXISTS account
 )
 `
 
-var db *sql.DB
+const insertStmt = `INSERT INTO account(username, password, email) VALUES($1, $2, $3)`
 
 func ensureTableExists() {
 	if _, err := db.Exec(tableCreationQuery); err != nil {
@@ -40,11 +38,14 @@ func addItems(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		db.Exec("INSERT INTO account(username, password, email) VALUES($1, $2, $3)", "user"+strconv.Itoa(i), "pwd", "email")
+		idx := strconv.Itoa(i)
+		db.Exec(insertStmt, "user"+idx, "pwd"+idx, "email"+idx)
 	}
 }
 
-func TestMain(m *testing.M) {
+var db *sql.DB
+
+func setup() {
 	conn, err := sql.Open("sqlite3", "./account.db")
 	if err != nil {
 		panic(err)
@@ -52,17 +53,28 @@ func TestMain(m *testing.M) {
 
 	db = conn
 	ensureTableExists()
-	exitCode := m.Run()
-
 	clearTable()
-	os.Exit(exitCode)
 }
 
-func Test_AddItem(t *testing.T) {
-
-	clearTable()
+func Test_GetAccount(t *testing.T) {
+	setup()
 	addItems(1)
 
+	repo := NewAccountRepo(db)
+	account, err := repo.GetAccount("user0", "pwd0")
+	if err != nil {
+		t.Error("Get account failed", err)
+	}
+
+	actual := account.Email
+	expect := "email0"
+
+	if actual != expect {
+		t.Errorf("GetAccount failed: got %v, want %v", actual, expect)
+	}
+}
+
+/*
 	rows, err := db.Query("select * from account")
 	if err != nil {
 		panic(err)
@@ -80,4 +92,4 @@ func Test_AddItem(t *testing.T) {
 		rows.Scan(&id, &u, &p, &e)
 		fmt.Printf("%d - %s - %s - %s", id, u, p, e)
 	}
-}
+*/

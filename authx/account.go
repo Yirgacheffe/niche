@@ -9,28 +9,26 @@ var (
 	ErrInvalidParam = errors.New("Invalid parameter")
 )
 
-type AccountService struct {
+type AccountRepo interface {
+	GetAccount(user, pass string) (Account, error)
+}
+
+// NewAccountRepo ... create implementation of AccountRepo
+func NewAccountRepo(db *sql.DB) AccountRepo {
+	return &pgRepo{db}
+}
+
+type pgRepo struct {
 	*sql.DB
 }
 
-type Account struct {
-	ID       int
-	UserName string
-	Password string
-	Email    string
-}
-
-func NewAccountService(db *sql.DB) *AccountService {
-	return &AccountService{db}
-}
-
-func (a *AccountService) Login(userName, password string) (Account, error) {
-	if len(userName) == 0 || len(password) == 0 {
+func (p *pgRepo) GetAccount(user, pass string) (Account, error) {
+	if len(user) == 0 || len(pass) == 0 {
 		return Account{}, ErrInvalidParam
 	}
 
 	query := "SELECT id, email FROM account WHERE username=? and password=?"
-	stmt, err := a.DB.Prepare(query)
+	stmt, err := p.DB.Prepare(query)
 	if err != nil {
 		return Account{}, err
 	}
@@ -38,7 +36,7 @@ func (a *AccountService) Login(userName, password string) (Account, error) {
 	defer stmt.Close()
 	f := Account{}
 
-	row := stmt.QueryRow(userName, password)
+	row := stmt.QueryRow(user, pass)
 	if err = row.Scan(&f.ID, &f.Email); err != nil {
 		return Account{}, err
 	}

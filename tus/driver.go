@@ -19,7 +19,6 @@ var dbConn = &DB{}
 
 // ConnectSQL ... MySQL connection
 func ConnectSQL(host, port, uname, passwd, dbname string) (*DB, error) {
-
 	dbSource := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
 		uname,
@@ -28,6 +27,8 @@ func ConnectSQL(host, port, uname, passwd, dbname string) (*DB, error) {
 		port,
 		dbname,
 	)
+	// config := mysql.Config{}
+	// sql.Open("mysql", config.FormatDSN())
 
 	d, err := sql.Open("mysql", dbSource)
 	if err != nil {
@@ -51,5 +52,4 @@ func ConnectSQL(host, port, uname, passwd, dbname string) (*DB, error) {
 
 	dbConn.SQL = d
 	return dbConn, nil
-
 }

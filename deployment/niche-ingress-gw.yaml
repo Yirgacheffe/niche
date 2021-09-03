@@ -6,12 +6,12 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "*"
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -23,31 +23,42 @@ spec:
   gateways:
     - niche-gateway
   http:
-#    - match:
-#        - uri:
-#            prefix: "/api"
-#      route:
-#        - destination:
-#            host: niche-greetings-a
-#            port:
-#              number: 8080
-#          weight: 100
-  - match:
+    - match:
+      - uri:
+          prefix: "/oauth"
+      route:
+      - destination:
+          host: niche-auth
+          subset: v1
+          port:
+            number: 9010
+        weight: 100
+    - match:
       - uri:
           prefix: "/api/notes"
-    route:
+      route:
       - destination:
           host: niche-todox
+          subset: v1
           port:
             number: 8081
         weight: 100
-  - match:
+    - match:
       - uri:
           prefix: "/search"
-    route:
+      route:
       - destination:
           host: niche-web
           subset: v1
           port:
             number: 8082
         weight: 100
+    #    - match:
+    #        - uri:
+    #            prefix: "/api"
+    #      route:
+    #        - destination:
+    #            host: niche-greetings-a
+    #            port:
+    #              number: 8080
+    #          weight: 100

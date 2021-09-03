@@ -1,1 +1,1 @@
-curl -X POST http://localhost:9010/oauth/auth
+curl -X POST http://localhost/oauth/auth

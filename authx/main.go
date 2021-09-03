@@ -23,9 +23,9 @@ func main() {
 
 	dbHost := getEnv("DB_HOST", "127.0.0.1")
 	dbPort := getEnv("DB_PORT", "5432")
-	dbUser := getEnv("DB_USER", "<user>")
-	dbPazz := getEnv("DB_PAZZ", "<password>")
-	dbName := getEnv("DB_NAME", "<taelb>")
+	dbUser := getEnv("DB_USER", "postgres")
+	dbPazz := getEnv("DB_PAZZ", "postgres")
+	dbName := getEnv("DB_NAME", "niche_auth")
 
 	db, err := ConnectSQL(dbHost, dbPort, dbUser, dbPazz, dbName)
 	if err != nil {

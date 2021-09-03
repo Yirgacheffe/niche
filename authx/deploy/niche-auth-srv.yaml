@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: niche-auth
+  labels:
+    app: niche-auth
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: niche-auth
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: niche-auth
+        version: v1
+    spec:
+      containers:
+        - name: niche-auth
+          image: soline74/niche-auth:dev-4fd7739
+          volumeMounts:
+            - name: secret-keys
+              mountPath: "/etc/secret-keys"
+              readOnly: true
+          env:
+            - name: DB_HOST
+              value: "10.108.221.96"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PAZZ
+              valueFrom:
+                secretKeyRef:
+                  name: niche-srv-config
+                  key: pgsql.password
+            - name: DB_NAME
+              value: "niche_auth"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9010
+      volumes:
+        - name: secret-keys
+          secret:
+            secretName: niche-srv-keys
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: niche-auth
+  labels:
+    app: niche-auth
+    service: niche-auth
+spec:
+  ports:
+    - name: http
+      port: 9010
+  selector:
+    app: niche-auth
+---
+

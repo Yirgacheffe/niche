@@ -27,7 +27,7 @@ func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenString, err := GenerateJWT(user.ID, user.UserName, user.Email)
+	tokenString, err := GenerateJWT(user.ID, u, user.Email)
 	if err != nil {
 		renderJson(w, 500, ErrResponse{"AUT003", "Authentication failed.", err.Error()})
 		return

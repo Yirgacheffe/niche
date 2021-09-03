@@ -14,12 +14,14 @@ const (
 	jwtIss = "nichesoft.io"
 	jwtAud = appId
 	jwtKid = "-HVXLi1zsLoESUVjWWJwPayM0p0TRhgBm0nBotvBm6s"
+
+	privPath = "/etc/secret-keys/ssh-privatekey"
 )
 
 var privSecret []byte
 
 func init() {
-	if keyData, err := ioutil.ReadFile("keys/id_rsa"); err != nil {
+	if keyData, err := ioutil.ReadFile(privPath); err != nil {
 		log.Fatal(err)
 	} else {
 		privSecret = keyData

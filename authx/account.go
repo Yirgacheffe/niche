@@ -27,7 +27,7 @@ func (p *pgRepo) GetAccount(user, pass string) (Account, error) {
 		return Account{}, ErrInvalidParam
 	}
 
-	query := "SELECT id, email FROM account WHERE username=? and password=?"
+	query := "SELECT id, email FROM account WHERE username=$1 and password=$2"
 	stmt, err := p.DB.Prepare(query)
 	if err != nil {
 		return Account{}, err

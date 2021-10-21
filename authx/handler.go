@@ -37,3 +37,20 @@ func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, tokenString)
 }
+
+/*
+func (a *AuthHandler) Auth(w http.ResponseWriter, r *http.Request) {
+
+	token, err := jwt.ParseFromRequest(r, func(token *jwt.Token)(interface{}, error)) {
+		return []byte, nil
+	})
+
+	if err != nil {
+		switch err.(type) {
+		default:
+			log.Printf("token parse error: %v\n", err)
+			return
+		}
+	}
+}
+*/

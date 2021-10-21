@@ -7,12 +7,15 @@
 package service
 
 import (
+	context "context"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	domain "internal/grpc/domain"
+	domain "order/internal/grpc/domain"
 	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -26,171 +29,6 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-type AddProductResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ProductId *domain.ProductID `protobuf:"bytes,1,opt,name=productId,proto3" json:"productId,omitempty"`
-	Error     *Error            `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-}
-
-func (x *AddProductResponse) Reset() {
-	*x = AddProductResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_files_service_product_service_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *AddProductResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AddProductResponse) ProtoMessage() {}
-
-func (x *AddProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_files_service_product_service_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use AddProductResponse.ProtoReflect.Descriptor instead.
-func (*AddProductResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_files_service_product_service_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *AddProductResponse) GetProductId() *domain.ProductID {
-	if x != nil {
-		return x.ProductId
-	}
-	return nil
-}
-
-func (x *AddProductResponse) GetError() *Error {
-	if x != nil {
-		return x.Error
-	}
-	return nil
-}
-
-type GetProductResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Product *domain.Product `protobuf:"bytes,1,opt,name=product,proto3" json:"product,omitempty"`
-	Error   *Error          `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-}
-
-func (x *GetProductResponse) Reset() {
-	*x = GetProductResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_files_service_product_service_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetProductResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetProductResponse) ProtoMessage() {}
-
-func (x *GetProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_files_service_product_service_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetProductResponse.ProtoReflect.Descriptor instead.
-func (*GetProductResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_files_service_product_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *GetProductResponse) GetProduct() *domain.Product {
-	if x != nil {
-		return x.Product
-	}
-	return nil
-}
-
-func (x *GetProductResponse) GetError() *Error {
-	if x != nil {
-		return x.Error
-	}
-	return nil
-}
-
-type Error struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Code    string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-}
-
-func (x *Error) Reset() {
-	*x = Error{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_files_service_product_service_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Error) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Error) ProtoMessage() {}
-
-func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_files_service_product_service_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Error.ProtoReflect.Descriptor instead.
-func (*Error) Descriptor() ([]byte, []int) {
-	return file_internal_proto_files_service_product_service_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Error) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
-func (x *Error) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 var File_internal_proto_files_service_product_service_proto protoreflect.FileDescriptor
 
 var file_internal_proto_files_service_product_service_proto_rawDesc = []byte{
@@ -200,71 +38,33 @@ var file_internal_proto_files_service_product_service_proto_rawDesc = []byte{
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x1a, 0x29, 0x69,
 	0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2d, 0x66, 0x69,
 	0x6c, 0x65, 0x73, 0x2f, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2f, 0x70, 0x72, 0x6f, 0x64, 0x75,
-	0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x6b, 0x0a, 0x12, 0x41, 0x64, 0x64, 0x50,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2f,
-	0x0a, 0x09, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x11, 0x2e, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75,
-	0x63, 0x74, 0x49, 0x44, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12,
-	0x24, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e,
-	0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x52, 0x05,
-	0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x65, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x29, 0x0a, 0x07, 0x70,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x64,
-	0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x07, 0x70,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x24, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
-	0x45, 0x72, 0x72, 0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x35, 0x0a, 0x05,
-	0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73,
-	0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x32, 0x8a, 0x01, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3a, 0x0a, 0x0a, 0x61, 0x64, 0x64, 0x50, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x12, 0x0f, 0x2e, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72,
-	0x6f, 0x64, 0x75, 0x63, 0x74, 0x1a, 0x1b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
-	0x41, 0x64, 0x64, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x3c, 0x0a, 0x0a, 0x67, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
-	0x12, 0x11, 0x2e, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x49, 0x44, 0x1a, 0x1b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65,
-	0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x42, 0x17, 0x5a, 0x15, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70,
-	0x63, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x74, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x30, 0x0a, 0x0a, 0x41, 0x64,
+	0x64, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x0f, 0x2e, 0x64, 0x6f, 0x6d, 0x61, 0x69,
+	0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x1a, 0x11, 0x2e, 0x64, 0x6f, 0x6d, 0x61,
+	0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x44, 0x12, 0x30, 0x0a, 0x0a,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x11, 0x2e, 0x64, 0x6f, 0x6d,
+	0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x44, 0x1a, 0x0f, 0x2e,
+	0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x1d,
+	0x5a, 0x1b, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
+	0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
-var (
-	file_internal_proto_files_service_product_service_proto_rawDescOnce sync.Once
-	file_internal_proto_files_service_product_service_proto_rawDescData = file_internal_proto_files_service_product_service_proto_rawDesc
-)
-
-func file_internal_proto_files_service_product_service_proto_rawDescGZIP() []byte {
-	file_internal_proto_files_service_product_service_proto_rawDescOnce.Do(func() {
-		file_internal_proto_files_service_product_service_proto_rawDescData = protoimpl.X.CompressGZIP(file_internal_proto_files_service_product_service_proto_rawDescData)
-	})
-	return file_internal_proto_files_service_product_service_proto_rawDescData
-}
-
-var file_internal_proto_files_service_product_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_internal_proto_files_service_product_service_proto_goTypes = []interface{}{
-	(*AddProductResponse)(nil), // 0: service.AddProductResponse
-	(*GetProductResponse)(nil), // 1: service.GetProductResponse
-	(*Error)(nil),              // 2: service.Error
-	(*domain.ProductID)(nil),   // 3: domain.ProductID
-	(*domain.Product)(nil),     // 4: domain.Product
+	(*domain.Product)(nil),   // 0: domain.Product
+	(*domain.ProductID)(nil), // 1: domain.ProductID
 }
 var file_internal_proto_files_service_product_service_proto_depIdxs = []int32{
-	3, // 0: service.AddProductResponse.productId:type_name -> domain.ProductID
-	2, // 1: service.AddProductResponse.error:type_name -> service.Error
-	4, // 2: service.GetProductResponse.product:type_name -> domain.Product
-	2, // 3: service.GetProductResponse.error:type_name -> service.Error
-	4, // 4: service.ProductService.addProduct:input_type -> domain.Product
-	3, // 5: service.ProductService.getProduct:input_type -> domain.ProductID
-	0, // 6: service.ProductService.addProduct:output_type -> service.AddProductResponse
-	1, // 7: service.ProductService.getProduct:output_type -> service.GetProductResponse
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 0: service.ProductService.AddProduct:input_type -> domain.Product
+	1, // 1: service.ProductService.GetProduct:input_type -> domain.ProductID
+	1, // 2: service.ProductService.AddProduct:output_type -> domain.ProductID
+	0, // 3: service.ProductService.GetProduct:output_type -> domain.Product
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_internal_proto_files_service_product_service_proto_init() }
@@ -272,60 +72,137 @@ func file_internal_proto_files_service_product_service_proto_init() {
 	if File_internal_proto_files_service_product_service_proto != nil {
 		return
 	}
-	if !protoimpl.UnsafeEnabled {
-		file_internal_proto_files_service_product_service_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddProductResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_internal_proto_files_service_product_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetProductResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_internal_proto_files_service_product_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Error); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_proto_files_service_product_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_internal_proto_files_service_product_service_proto_goTypes,
 		DependencyIndexes: file_internal_proto_files_service_product_service_proto_depIdxs,
-		MessageInfos:      file_internal_proto_files_service_product_service_proto_msgTypes,
 	}.Build()
 	File_internal_proto_files_service_product_service_proto = out.File
 	file_internal_proto_files_service_product_service_proto_rawDesc = nil
 	file_internal_proto_files_service_product_service_proto_goTypes = nil
 	file_internal_proto_files_service_product_service_proto_depIdxs = nil
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// ProductServiceClient is the client API for ProductService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type ProductServiceClient interface {
+	AddProduct(ctx context.Context, in *domain.Product, opts ...grpc.CallOption) (*domain.ProductID, error)
+	GetProduct(ctx context.Context, in *domain.ProductID, opts ...grpc.CallOption) (*domain.Product, error)
+}
+
+type productServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
+	return &productServiceClient{cc}
+}
+
+func (c *productServiceClient) AddProduct(ctx context.Context, in *domain.Product, opts ...grpc.CallOption) (*domain.ProductID, error) {
+	out := new(domain.ProductID)
+	err := c.cc.Invoke(ctx, "/service.ProductService/AddProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetProduct(ctx context.Context, in *domain.ProductID, opts ...grpc.CallOption) (*domain.Product, error) {
+	out := new(domain.Product)
+	err := c.cc.Invoke(ctx, "/service.ProductService/GetProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ProductServiceServer is the server API for ProductService service.
+type ProductServiceServer interface {
+	AddProduct(context.Context, *domain.Product) (*domain.ProductID, error)
+	GetProduct(context.Context, *domain.ProductID) (*domain.Product, error)
+}
+
+// UnimplementedProductServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedProductServiceServer struct {
+}
+
+func (*UnimplementedProductServiceServer) AddProduct(context.Context, *domain.Product) (*domain.ProductID, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
+}
+func (*UnimplementedProductServiceServer) GetProduct(context.Context, *domain.ProductID) (*domain.Product, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+}
+
+func RegisterProductServiceServer(s *grpc.Server, srv ProductServiceServer) {
+	s.RegisterService(&_ProductService_serviceDesc, srv)
+}
+
+func _ProductService_AddProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(domain.Product)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).AddProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.ProductService/AddProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).AddProduct(ctx, req.(*domain.Product))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(domain.ProductID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.ProductService/GetProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetProduct(ctx, req.(*domain.ProductID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _ProductService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "service.ProductService",
+	HandlerType: (*ProductServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddProduct",
+			Handler:    _ProductService_AddProduct_Handler,
+		},
+		{
+			MethodName: "GetProduct",
+			Handler:    _ProductService_GetProduct_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "internal/proto-files/service/product_service.proto",
 }

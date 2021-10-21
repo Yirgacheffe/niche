@@ -1,16 +1,15 @@
 syntax = "proto3";
 package domain;
 
-option go_package = "internal/grpc/domain";
+option go_package = "order/internal/grpc/domain";
 
 message ProductID {
-    string value = 1;
+    string value       = 1;
 }
 
 message Product {
-    string id = 1;
-    string name = 2;
+    string id          = 1;
+    string name        = 2;
     string description = 3;
-    float price = 4;
+    float price        = 4;
 }
-

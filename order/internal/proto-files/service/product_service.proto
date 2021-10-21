@@ -1,26 +1,11 @@
 syntax = "proto3";
 package service;
 
-option go_package = "internal/grpc/service";
+option go_package = "order/internal/grpc/service";
 
 import "internal/proto-files/domain/product.proto";
 
-message AddProductResponse {
-    domain.ProductID productId = 1;
-    Error            error     = 2;
-}
-
-message GetProductResponse {
-    domain.Product product = 1;
-    Error          error   = 2;
-}
-
-message Error {
-    string code    = 1;
-    string message = 2;
-}
-
 service ProductService {
-    rpc addProduct(domain.Product)   returns (AddProductResponse);
-    rpc getProduct(domain.ProductID) returns (GetProductResponse);
+    rpc AddProduct(domain.Product) returns (domain.ProductID);
+    rpc GetProduct(domain.ProductID) returns (domain.Product);
 }

@@ -7,7 +7,19 @@ clean:
 	@echo 'run clean tasks'
 
 run:
-	go run ./main -port 50051
+	@echo 'run gRPC server...'
+	./server -port 50051
 
 build:
-	go build ./cmd/grpc/server/main.go
+	@echo 'build server...'
+	go build -o server ./cmd/grpc/server/main.go
+
+client:
+	go build -o client ./cmd/grpc/client/main.go
+
+test:
+	@echo 'run client for test...'
+	./client
+
+purge:
+	rm -rf ./client

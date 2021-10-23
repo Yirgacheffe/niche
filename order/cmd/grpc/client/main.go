@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 
 	pb "order/internal/grpc/domain"
+	ec "order/internal/grpc/ecommerce"
 	sv "order/internal/grpc/service"
 )
 
@@ -39,6 +41,13 @@ func main() {
 
 		prodJSON, _ := json.Marshal(prod)
 		log.Printf("Get product model in details: %#v", string(prodJSON))
+	}
+
+	cli := ec.NewOrderManagementClient(conn)
+	if order, err := cli.GetOrder(context.Background(), &wrappers.StringValue{Value: "1"}); err != nil {
+		log.Fatalf("not able to get order: %v", err)
+	} else {
+		log.Printf("Get order with id: %s, %v", "1", order)
 	}
 
 }

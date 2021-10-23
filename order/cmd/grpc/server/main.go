@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 
+	ec "order/internal/grpc/ecommerce"
 	pb "order/internal/grpc/impl"
 	sv "order/internal/grpc/service"
 )
@@ -26,6 +27,7 @@ func main() {
 
 	srv := grpc.NewServer()
 	sv.RegisterProductServiceServer(srv, pb.NewProductServer())
+	ec.RegisterOrderManagementServer(srv, pb.NewOrderServer())
 
 	log.Printf("gRPC listener on: %d", port)
 	if err := srv.Serve(listener); err != nil {

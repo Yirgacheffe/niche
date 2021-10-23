@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -31,6 +32,8 @@ func main() {
 		Price:       7899.00,
 	}
 
+	log.Println("Testing product service ... [General calling]")
+
 	if id, err := client.AddProduct(context.Background(), &iphone13); err != nil {
 		log.Fatalf("not able to add product: %v", err)
 	} else {
@@ -43,11 +46,23 @@ func main() {
 		log.Printf("Get product model in details: %#v", string(prodJSON))
 	}
 
+	log.Println("Testing order service ... [Client-Server communication pattern]")
+
 	cli := ec.NewOrderManagementClient(conn)
 	if order, err := cli.GetOrder(context.Background(), &wrappers.StringValue{Value: "1"}); err != nil {
 		log.Fatalf("not able to get order: %v", err)
 	} else {
 		log.Printf("Get order with id: %s, %v", "1", order)
+	}
+
+	searchStream, _ := cli.SearchOrders(context.Background(), &wrappers.StringValue{Value: "iphone"})
+	for {
+		order, err := searchStream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		log.Println("Search result: ", order)
 	}
 
 }

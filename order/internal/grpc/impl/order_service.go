@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	ec "order/internal/grpc/ecommerce"
 	"strings"
@@ -14,26 +15,18 @@ import (
 
 // Unary communication from client to server, demostrate type of connection
 // ...
-type OrderServer struct {
+type OrderManagementServer struct {
 	orders map[string]ec.Order
+	ec.UnimplementedOrderManagementServer
 }
 
-func NewOrderServer() *OrderServer {
-	o1, _ := genOrder("1")
-	o2, _ := genOrder("2")
-	o3, _ := genOrder("3")
-
-	orders := make(map[string]ec.Order)
-	orders[o1.Id] = o1
-	orders[o2.Id] = o2
-	orders[o3.Id] = o3
-
-	return &OrderServer{orders: orders}
+func NewOrderManagementServer(orders map[string]ec.Order) *OrderManagementServer {
+	return &OrderManagementServer{orders: orders}
 }
 
 // Client unary pattern
-func (o *OrderServer) GetOrder(ctx context.Context, orderId *wrappers.StringValue) (*ec.Order, error) {
-	order, exist := o.orders[orderId.Value]
+func (s *OrderManagementServer) GetOrder(ctx context.Context, orderId *wrappers.StringValue) (*ec.Order, error) {
+	order, exist := s.orders[orderId.Value]
 	if exist {
 		return &order, status.New(codes.OK, "").Err()
 	}
@@ -42,9 +35,9 @@ func (o *OrderServer) GetOrder(ctx context.Context, orderId *wrappers.StringValu
 }
 
 // Server stream pattern
-func (o *OrderServer) SearchOrders(q *wrappers.StringValue, stream ec.OrderManagement_SearchOrdersServer) error {
+func (s *OrderManagementServer) SearchOrders(q *wrappers.StringValue, stream ec.OrderManagement_SearchOrdersServer) error {
 
-	for key, order := range o.orders {
+	for key, order := range s.orders {
 		log.Print(key, order)
 
 		for _, itemStr := range order.Items {
@@ -64,19 +57,21 @@ func (o *OrderServer) SearchOrders(q *wrappers.StringValue, stream ec.OrderManag
 	return nil
 }
 
-func genOrder(id string) (ec.Order, error) {
-	/*
-		id, err := uuid.NewV4()
-		if err != nil {
-			return nil, err
+func (s *OrderManagementServer) UpdateOrders(stream ec.OrderManagement_UpdateOrdersServer) error {
+
+	ordersStr := "Updated Order IDs : "
+
+	for {
+		order, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(
+				&wrappers.StringValue{Value: "Orders processed " + ordersStr},
+			)
 		}
-	*/
-	order := ec.Order{
-		Id:          id,
-		Items:       []string{"iphone13", "distributed system design", "Yamazki"},
-		Description: "Multi-books, mobild phone",
-		Price:       255.60,
-		Destination: "Hua Yuan Chan Ye Yuan No.350",
+
+		s.orders[order.Id] = *order
+		log.Printf("Order ID : %s - %s", order.Id, "Updated")
+		ordersStr += order.Id + ", "
 	}
-	return order, nil
+
 }

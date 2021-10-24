@@ -1,14 +1,14 @@
 syntax = "proto3";
+package ecommerce;
 
 import "google/protobuf/wrappers.proto";
-
-package ecommerce;
 
 option go_package = "order/internal/grpc/ecommerce";
 
 service OrderManagement {
-    rpc GetOrder(google.protobuf.StringValue) returns (Order);
+    rpc GetOrder(google.protobuf.StringValue)     returns (Order);
     rpc SearchOrders(google.protobuf.StringValue) returns (stream Order);
+    rpc UpdateOrders(stream Order)                returns (google.protobuf.StringValue);
 }
 
 message Order {

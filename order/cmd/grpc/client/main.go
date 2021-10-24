@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	pb "order/internal/grpc/domain"
 	ec "order/internal/grpc/ecommerce"
@@ -25,6 +27,9 @@ func main() {
 
 	defer conn.Close()
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
 	client := sv.NewProductServiceClient(conn)
 	iphone13 := pb.Product{
 		Name:        "iPhone 13",
@@ -32,12 +37,12 @@ func main() {
 		Price:       7899.00,
 	}
 
-	log.Println("Testing product service ... [General calling]")
+	log.Println("Simple test: ")
 
-	if id, err := client.AddProduct(context.Background(), &iphone13); err != nil {
+	if id, err := client.AddProduct(ctx, &iphone13); err != nil {
 		log.Fatalf("not able to add product: %v", err)
 	} else {
-		prod, err := client.GetProduct(context.Background(), id)
+		prod, err := client.GetProduct(ctx, id)
 		if err != nil {
 			log.Fatalf("retrieve product failed: %v", err)
 		}
@@ -46,16 +51,21 @@ func main() {
 		log.Printf("Get product model in details: %#v", string(prodJSON))
 	}
 
-	log.Println("Testing order service ... [Client-Server communication pattern]")
+	log.Println("--------------------------------------------------------------------")
+	log.Println("Communication test: ")
 
 	cli := ec.NewOrderManagementClient(conn)
-	if order, err := cli.GetOrder(context.Background(), &wrappers.StringValue{Value: "1"}); err != nil {
+	if order, err := cli.GetOrder(ctx, &wrappers.StringValue{Value: "102"}); err != nil {
+		errStat := status.Convert(err)
+
+		log.Printf("%d: %s\n", errStat.Code(), errStat.Message())
 		log.Fatalf("not able to get order: %v", err)
 	} else {
 		log.Printf("Get order with id: %s, %v", "1", order)
 	}
 
-	searchStream, _ := cli.SearchOrders(context.Background(), &wrappers.StringValue{Value: "iphone"})
+	// Search: server stream
+	searchStream, _ := cli.SearchOrders(ctx, &wrappers.StringValue{Value: "iPhone"})
 	for {
 		order, err := searchStream.Recv()
 		if err == io.EOF {
@@ -64,5 +74,34 @@ func main() {
 
 		log.Println("Search result: ", order)
 	}
+
+	// Update: client stream
+	updOrder1 := ec.Order{Id: "102", Items: []string{"Google Pixel 3A", "Google Pixel Book"}, Destination: "San Jose, UK", Price: 2800.00}
+	updOrder2 := ec.Order{Id: "104", Items: []string{"Google Home Mini", "Google Nest Hub", "iPad Mini"}, Destination: "Zhi hui shan No.3", Price: 3102.39}
+	updOrder3 := ec.Order{Id: "105", Items: []string{"Apple Watch S4"}, Destination: "Wood View TX", Price: 1100.00}
+
+	updStream, err := cli.UpdateOrders(ctx)
+	if err != nil {
+		log.Fatalf("%v.UpdateOrder(_) = _, %v", cli, err)
+	}
+
+	if err := updStream.Send(&updOrder1); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updStream, updOrder1, err)
+	}
+
+	if err := updStream.Send(&updOrder2); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updStream, updOrder2, err)
+	}
+
+	if err := updStream.Send(&updOrder3); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updStream, updOrder3, err)
+	}
+
+	updateRes, err := updStream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", updStream, err, nil)
+	}
+
+	log.Printf("Update Order Res: %s", updateRes)
 
 }

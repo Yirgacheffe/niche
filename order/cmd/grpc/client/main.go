@@ -64,6 +64,8 @@ func main() {
 		log.Printf("Get order with id: %s, %v", "1", order)
 	}
 
+	log.Println("--------------------------------------------------------------------")
+	log.Println("Server stream: ")
 	// Search: server stream
 	searchStream, _ := cli.SearchOrders(ctx, &wrappers.StringValue{Value: "iPhone"})
 	for {
@@ -75,6 +77,8 @@ func main() {
 		log.Println("Search result: ", order)
 	}
 
+	log.Println("--------------------------------------------------------------------")
+	log.Println("Client stream: ")
 	// Update: client stream
 	updOrder1 := ec.Order{Id: "102", Items: []string{"Google Pixel 3A", "Google Pixel Book"}, Destination: "San Jose, UK", Price: 2800.00}
 	updOrder2 := ec.Order{Id: "104", Items: []string{"Google Home Mini", "Google Nest Hub", "iPad Mini"}, Destination: "Zhi hui shan No.3", Price: 3102.39}
@@ -104,4 +108,51 @@ func main() {
 
 	log.Printf("Update Order Res: %s", updateRes)
 
+	log.Println("--------------------------------------------------------------------")
+	log.Println("Bi-directional stream: ")
+
+	procOrder, err := cli.ProcessOrders(ctx)
+	if err != nil {
+		log.Fatalf("%v.ProcessOrders(_) = _, %v", cli, err)
+	}
+
+	if err := procOrder.Send(&wrappers.StringValue{Value: "102"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", cli, "102", err)
+	}
+
+	if err := procOrder.Send(&wrappers.StringValue{Value: "104"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", cli, "104", err)
+	}
+
+	if err := procOrder.Send(&wrappers.StringValue{Value: "105"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", cli, "105", err)
+	}
+
+	//....
+	ch := make(chan struct{})
+	go asyncClientBidirectionalRPC(procOrder, ch)
+	time.Sleep(time.Millisecond * 1000)
+
+	if err := procOrder.Send(&wrappers.StringValue{Value: "101"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", cli, "101", err)
+	}
+
+	if err := procOrder.CloseSend(); err != nil {
+		log.Fatal(err)
+	}
+
+	ch <- struct{}{}
+
+}
+
+func asyncClientBidirectionalRPC(streamProcOrder ec.OrderManagement_ProcessOrdersClient, c chan struct{}) {
+	for {
+		combinedShipmet, err := streamProcOrder.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		log.Println("Combined shipment: ", combinedShipmet.OrdersList)
+	}
+	<-c
 }

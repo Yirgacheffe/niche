@@ -6,9 +6,10 @@ import "google/protobuf/wrappers.proto";
 option go_package = "order/internal/grpc/ecommerce";
 
 service OrderManagement {
-    rpc GetOrder(google.protobuf.StringValue)     returns (Order);
-    rpc SearchOrders(google.protobuf.StringValue) returns (stream Order);
-    rpc UpdateOrders(stream Order)                returns (google.protobuf.StringValue);
+    rpc GetOrder(google.protobuf.StringValue)             returns (Order);
+    rpc SearchOrders(google.protobuf.StringValue)         returns (stream Order);
+    rpc UpdateOrders(stream Order)                        returns (google.protobuf.StringValue);
+    rpc ProcessOrders(stream google.protobuf.StringValue) returns (stream CombinedShipment);
 }
 
 message Order {
@@ -17,4 +18,10 @@ message Order {
     string          description = 3;
     float           price       = 4;
     string          destination = 5;
+}
+
+message CombinedShipment {
+    string         id         = 1;
+    string         status     = 2;
+    repeated Order ordersList = 3;
 }

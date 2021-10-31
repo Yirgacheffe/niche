@@ -13,6 +13,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	orderBatchSize = 3
+)
+
 // Unary communication from client to server, demostrate type of connection
 // ...
 type OrderManagementServer struct {
@@ -57,6 +61,7 @@ func (s *OrderManagementServer) SearchOrders(q *wrappers.StringValue, stream ec.
 	return nil
 }
 
+// Client stream pattern
 func (s *OrderManagementServer) UpdateOrders(stream ec.OrderManagement_UpdateOrdersServer) error {
 
 	ordersStr := "Updated Order IDs : "
@@ -74,4 +79,57 @@ func (s *OrderManagementServer) UpdateOrders(stream ec.OrderManagement_UpdateOrd
 		ordersStr += order.Id + ", "
 	}
 
+}
+
+// Bi-direction stream pattern
+func (s *OrderManagementServer) ProcessOrders(stream ec.OrderManagement_ProcessOrdersServer) error {
+	batchMarker := 1
+	var combinedShipmentMap = make(map[string]ec.CombinedShipment)
+
+	for {
+		orderId, err := stream.Recv()
+		log.Printf("Reading Proc order: %s", orderId)
+
+		if err == io.EOF {
+			log.Printf("EOF: %s", orderId)
+			for _, shipment := range combinedShipmentMap {
+				if err := stream.Send(&shipment); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		ord := s.orders[orderId.GetValue()]
+		dest := ord.Destination
+
+		shipment, found := combinedShipmentMap[dest]
+		if found {
+			shipment.OrdersList = append(shipment.OrdersList, &ord)
+			combinedShipmentMap[dest] = shipment
+		} else {
+			comShip := ec.CombinedShipment{Id: "cmb - " + (dest), Status: "Processed!"}
+			comShip.OrdersList = append(shipment.OrdersList, &ord) // append(comShip.OrderList, &ord)
+			combinedShipmentMap[dest] = comShip
+			log.Print(len(comShip.OrdersList), comShip.GetId())
+		}
+
+		if batchMarker == orderBatchSize {
+			for _, comb := range combinedShipmentMap {
+				log.Printf("Shipping: %v -> %v", comb.Id, len(comb.OrdersList))
+				if err := stream.Send(&comb); err != nil {
+					return err
+				}
+			}
+			batchMarker = 0
+			combinedShipmentMap = make(map[string]ec.CombinedShipment)
+		} else {
+			batchMarker++
+		}
+	}
 }

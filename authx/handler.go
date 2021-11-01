@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	db "niche-auth/db"
 )
 
-func NewAuthHandler(db *DB) *AuthHandler {
+func NewAuthHandler(db *db.DB) *AuthHandler {
 	return &AuthHandler{
 		repo: NewAccountRepo(db.DB),
 	}

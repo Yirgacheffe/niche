@@ -9,6 +9,8 @@ import (
 	"github.com/rs/cors"
 
 	log "github.com/sirupsen/logrus"
+
+	sql "niche-auth/db"
 )
 
 func main() {
@@ -27,7 +29,7 @@ func main() {
 	dbPazz := getEnv("DB_PAZZ", "postgres")
 	dbName := getEnv("DB_NAME", "niche_auth")
 
-	db, err := ConnectSQL(dbHost, dbPort, dbUser, dbPazz, dbName)
+	db, err := sql.ConnectSQL(dbHost, dbPort, dbUser, dbPazz, dbName)
 	if err != nil {
 		log.Println(err)
 		os.Exit(-1)

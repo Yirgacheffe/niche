@@ -25,3 +25,9 @@ deps:
 
 image:
 	docker build -t 'soline74/niche-auth:dev-4fd7739' .
+
+# migrateup:
+# migrate -path db/migration -database "postgresql://<user>:<pwd>@localhost:5432/authx?sslmode=disable" -verbose up
+
+# migratedown:
+# migrate -path db/migration -database "postgresql://<user>@<pwd>:5432/authx?sslmode=disable"           -verbose down

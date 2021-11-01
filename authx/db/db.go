@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
@@ -60,6 +59,5 @@ func ConnectSQL(host, port, user, password, dbname string) (*DB, error) {
 		return nil, errors.Wrap(err, "ping db failed")
 	}
 
-	// dbConn.SQL = db
-	return &DB{db}, nil
+	return &DB{db}, nil // dbConn.SQL = db
 }

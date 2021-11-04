@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -18,6 +19,11 @@ func NewProductServer() *ProductServer {
 }
 
 func (s *ProductServer) AddProduct(ctx context.Context, in *pb.Product) (*pb.ProductID, error) {
+
+	if dryRun(ctx) {
+		return "123e4567-e89b-12d3-a456-426655440000", nil
+	}
+
 	id, err := uuid.NewV4()
 	if err != nil {
 		return nil, status.Errorf(
@@ -40,4 +46,22 @@ func (s *ProductServer) GetProduct(ctx context.Context, in *pb.ProductID) (*pb.P
 	}
 
 	return nil, status.Errorf(codes.NotFound, "Product does not exist.", in.Value)
+}
+
+func dryRun(ctx context.Context) bool {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return false
+	}
+
+	val, ok := md["dry-run"]
+	if !ok {
+		return false
+	}
+
+	if len(val) < 1 {
+		return false
+	}
+
+	return val[0] == "1" // dry-run 1: true others: false
 }

@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	pb "order/internal/grpc/domain"
@@ -142,6 +144,15 @@ func main() {
 	}
 
 	ch <- struct{}{}
+
+	// dry-run command test
+	ctxx := metadata.NewOutgoingContext(ctx, metadata.Pairs("dry-run", "1"))
+	did, err := client.AddProduct(ctxx, &iphone13)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	fmt.Println(did)
 
 }
 

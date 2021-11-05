@@ -32,6 +32,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
+	log.Println("--------------------------------------------------------------------")
 	client := sv.NewProductServiceClient(conn)
 	iphone13 := pb.Product{
 		Name:        "iPhone 13",
@@ -39,9 +40,10 @@ func main() {
 		Price:       7899.00,
 	}
 
+	var header, trailer metadata.MD
 	log.Println("Simple test: ")
 
-	if id, err := client.AddProduct(ctx, &iphone13); err != nil {
+	if id, err := client.AddProduct(ctx, &iphone13, grpc.Header(&header), grpc.Trailer(&trailer)); err != nil {
 		log.Fatalf("not able to add product: %v", err)
 	} else {
 		prod, err := client.GetProduct(ctx, id)
@@ -145,6 +147,8 @@ func main() {
 
 	ch <- struct{}{}
 
+	log.Println("--------------------------------------------------------------------")
+	log.Println("Bi-directional stream: ")
 	// dry-run command test
 	ctxx := metadata.NewOutgoingContext(ctx, metadata.Pairs("dry-run", "1"))
 	did, err := client.AddProduct(ctxx, &iphone13)
@@ -152,7 +156,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	fmt.Println(did)
+	fmt.Println("dry-run: get id: " + did)
+	log.Println("--------------------------------------------------------------------")
 
 }
 

@@ -1,12 +1,17 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 
+	"golang.org/x/net/netutil"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	ec "order/internal/grpc/ecommerce"
 	pb "order/internal/grpc/impl"
@@ -49,4 +54,41 @@ func initSampleData() {
 	orderMap["103"] = ec.Order{Id: "103", Items: []string{"Google Home Mini", "Google Nest Hub"}, Destination: "HeXi District", Price: 2000.00}
 	orderMap["104"] = ec.Order{Id: "104", Items: []string{"Amazon Kindle"}, Destination: "San Jose, UK", Price: 199.00}
 	orderMap["105"] = ec.Order{Id: "105", Items: []string{"Apple Mac Mini", "Apple iPhone 12"}, Destination: "Mountain View, CA", Price: 300.00}
+}
+
+func anotherRun() {
+
+	certs, err := tls.LoadX509KeyPair("out/example.com.crt", "out/example.com.key")
+	if err != nil {
+		log.Fatalf("failed to read client ca cert: %v", err)
+	}
+
+	certPool := x509.NewCertPool()
+	bs, err := ioutil.ReadFile("out/my_root_ca.crt")
+	if err != nil {
+		log.Fatalf("failed to read client ca cert: %v", err)
+	}
+
+	ok := certPool.AppendCertsFromPEM(bs)
+	if !ok {
+		log.Fatalf("failed to append client certs")
+	}
+
+	tlsConfig := &tls.Config{
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		Certificates: []tls.Certificate{certs},
+		ClientCAs:    certPool,
+	}
+
+	tlsCreds := credentials.NewTLS(tlsConfig)
+	srv := grpc.NewServer(grpc.Creds(tlsCreds), grpc.MaxConcurrentStreams(64), grpc.InTapHandle(NewTap().Handler))
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 28702))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	if err := srv.Serve(netutil.LimitListener(listener, 1024)); err != nil {
+		log.Fatalf("failed to serve gRPC: %v", err) // ....
+	}
 }

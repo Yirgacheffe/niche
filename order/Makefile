@@ -10,14 +10,14 @@ clean:
 
 run:
 	@echo 'run gRPC server...'
-	./server -port 50051
+	./server -p 50051
 
 build:
 	@echo 'build server...'
-	go build -o server ./cmd/grpc/server/main.go
+	go build -o server ./cmd/grpc/server/*.go
 
 client:
-	go build -o client ./cmd/grpc/client/main.go
+	go build -o client ./cmd/grpc/client/*.go
 
 test:
 	@echo 'run client for test...'

@@ -156,7 +156,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	fmt.Println("dry-run: get id: " + did)
+	fmt.Printf("dry-run: get id: %v\n", did)
 	log.Println("--------------------------------------------------------------------")
 
 }

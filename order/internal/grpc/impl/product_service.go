@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	pb "order/internal/grpc/domain"
+	sv "order/internal/grpc/service"
 
 	"github.com/gofrs/uuid"
 	"google.golang.org/grpc/codes"
@@ -12,6 +13,7 @@ import (
 
 type ProductServer struct {
 	productMap map[string]*pb.Product
+	sv.UnimplementedProductServiceServer
 }
 
 func NewProductServer() *ProductServer {
@@ -21,7 +23,8 @@ func NewProductServer() *ProductServer {
 func (s *ProductServer) AddProduct(ctx context.Context, in *pb.Product) (*pb.ProductID, error) {
 
 	if dryRun(ctx) {
-		return "123e4567-e89b-12d3-a456-426655440000", nil
+		return &pb.ProductID{
+			Value: "123e4567-e89b-12d3-a456-426655440000"}, nil
 	}
 
 	id, err := uuid.NewV4()

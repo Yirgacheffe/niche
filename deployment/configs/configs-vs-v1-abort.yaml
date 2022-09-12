@@ -13,6 +13,10 @@ spec:
         httpStatus: 503
         percentage: 
           value: 50
+    match:
+    - headers:
+        city:
+          exact: TJ
     route:
     - destination:
         host: niche-configs

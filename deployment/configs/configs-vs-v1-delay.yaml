@@ -10,13 +10,17 @@ spec:
   http:
   - fault:
       delay:
+        fixedDelay: 2s
         percentage:
           value: 50
-        fixedDelay: 2s
+    match:
+    - headers:
+        city:
+          exact: BJ
     route:
-      - destination:
-          host: niche-configs
-          subset: v1
+    - destination:
+        host: niche-configs
+        subset: v1
   - route:
       - destination:
           host: niche-configs

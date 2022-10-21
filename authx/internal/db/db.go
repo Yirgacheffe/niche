@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+
+	_ "github.com/lib/pq"
 )
 
 type DB struct {

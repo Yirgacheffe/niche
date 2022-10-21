@@ -7,10 +7,10 @@ help:
 all: test build
 
 build:
-	go build -o ${BINARY_NAME} main.go
+	go build -o ${BINARY_NAME} ./cmd/main.go
 
 run:
-	go build -o ${BINARY_NAME} main.go
+	go build -o ${BINARY_NAME} ./cmd/main.go
 	./${BINARY_NAME}
 
 clean:
@@ -18,7 +18,10 @@ clean:
 	rm ${BINARY_NAME}
 
 test:
-	go test -v main.go
+	go test -v ./...
+
+vet:
+	go vet ./...
 
 deps:
 	@printf "go get github.com/gorilla/mux"

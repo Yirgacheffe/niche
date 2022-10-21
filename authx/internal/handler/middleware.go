@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 )
 
 // testing purpose, apply on single endpoint
-func withMetrics(next http.HandlerFunc) http.HandlerFunc {
+func WithMetrics(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		began := time.Now()
 		next.ServeHTTP(w, r)

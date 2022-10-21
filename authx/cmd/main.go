@@ -10,7 +10,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	sql "niche-auth/db"
+	sql "niche-auth/internal/db"
+	h "niche-auth/internal/handler"
 )
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	ah := NewAuthHandler(db)
+	ah := h.NewAuthHandler(db)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -46,7 +47,7 @@ func main() {
 	router := mux.NewRouter()
 	handler := c.Handler(router)
 
-	router.HandleFunc("/oauth/auth", withMetrics(ah.Login)).Methods("POST")
+	router.HandleFunc("/oauth/auth", h.WithMetrics(ah.Login)).Methods("POST")
 	router.HandleFunc("/health",
 		func(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(map[string]bool{"ok": true})

@@ -1,0 +1,11 @@
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+ name: niche-todox-req-auth
+spec:
+  selector:
+    matchLabels:
+      app: niche-todox
+  jwtRules:
+  - issuer: "testers@secure.istio.io"
+    jwksUri: "https://raw.githubusercontent.com/istio/istio/release-1.5/security/tools/jwt/samples/jwks.json"

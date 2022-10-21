@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: niche-todo-required-jwt
+spec:
+  selector:
+    matchLabels:
+      app: niche-todo
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+       requestPrincipals: ["tester@secure.istio.io/tester@secure.istio.io"]

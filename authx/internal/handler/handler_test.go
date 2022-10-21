@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -11,6 +11,19 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+var db *sql.DB
+
+func setup() {
+	conn, err := sql.Open("sqlite3", "./account.db")
+	if err != nil {
+		panic(err)
+	}
+
+	db = conn
+	ensureTableExists()
+	clearTable()
+}
 
 func Test_AuthHandler_Login401(t *testing.T) {
 

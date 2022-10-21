@@ -13,7 +13,7 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
 
-RUN go build -ldflags="-w -s" -o /$GOPATH/bin/niche-auth
+RUN go build -ldflags="-w -s" -o /$GOPATH/bin/niche-auth ./cmd/main.go
 
 # GET artifacts
 FROM scratch

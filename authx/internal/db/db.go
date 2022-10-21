@@ -46,8 +46,6 @@ func ConnectSQL(host, port, user, password, dbname string) (*DB, error) {
 		return nil, err
 	}
 
-	// sql.Open("postgres", "postgres://user:pass@localhost/db")
-
 	// Note: IdleConns should always be less than or equal to openConns
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)

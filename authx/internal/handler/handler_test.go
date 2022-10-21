@@ -1,18 +1,39 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"niche-auth/internal/model"
 )
 
-var db *sql.DB
+const tableCreationQuery = `CREATE TABLE IF NOT EXISTS account
+(
+	id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	username   TEXT NOT NULL,
+	password   TEXT NOT NULL,
+	email      TEXT NOT NULL
+)
+`
+
+const insertStmt = `INSERT INTO account(username, password, email) VALUES($1, $2, $3)`
+
+var sqliteConn *sql.DB
+
+func ensureTableExists() {
+	if _, err := sqliteConn.Exec(tableCreationQuery); err != nil {
+		log.Fatal(err)
+	}
+}
 
 func setup() {
 	conn, err := sql.Open("sqlite3", "./account.db")
@@ -20,9 +41,26 @@ func setup() {
 		panic(err)
 	}
 
-	db = conn
+	sqliteConn = conn
 	ensureTableExists()
 	clearTable()
+}
+
+func clearTable() {
+	log.Println("----------------------- Clear table -------------------------")
+	sqliteConn.Exec("DELETE FROM account")
+	sqliteConn.Exec("DELETE FROM sqlite_sequence where name=account")
+}
+
+func addItems(count int) {
+	if count < 1 {
+		count = 1
+	}
+
+	for i := 0; i < count; i++ {
+		idx := strconv.Itoa(i)
+		sqliteConn.Exec(insertStmt, "user"+idx, "pwd"+idx, "email"+idx)
+	}
 }
 
 func Test_AuthHandler_Login401(t *testing.T) {
@@ -42,7 +80,7 @@ func Test_AuthHandler_Login401(t *testing.T) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
-	h := &AuthHandler{NewAccountRepo(db)}
+	h := &AuthHandler{model.NewAccountRepo(sqliteConn)}
 	h.Login(rr, req)
 
 	res := rr.Result()
@@ -81,7 +119,7 @@ func Test_AuthHandler_Login200(t *testing.T) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
-	h := &AuthHandler{NewAccountRepo(db)}
+	h := &AuthHandler{model.NewAccountRepo(sqliteConn)}
 	h.Login(rr, req)
 
 	res := rr.Result()

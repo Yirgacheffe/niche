@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrInvalidParam = errors.New("Invalid parameter")
+	ErrInvalidParam = errors.New("invalid parameter")
 )
 
 type AccountRepo interface {
@@ -22,8 +22,8 @@ type pgRepo struct {
 	*sql.DB
 }
 
-func (p *pgRepo) GetAccount(user, pass string) (Account, error) {
-	if len(user) == 0 || len(pass) == 0 {
+func (p *pgRepo) GetAccount(userName, password string) (Account, error) {
+	if len(userName) == 0 || len(password) == 0 {
 		return Account{}, ErrInvalidParam
 	}
 
@@ -36,7 +36,7 @@ func (p *pgRepo) GetAccount(user, pass string) (Account, error) {
 	defer stmt.Close()
 	f := Account{}
 
-	row := stmt.QueryRow(user, pass)
+	row := stmt.QueryRow(userName, password)
 	if err = row.Scan(&f.ID, &f.Email); err != nil {
 		return Account{}, err
 	}
